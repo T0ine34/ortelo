@@ -8,5 +8,9 @@
     "build": "webpack"
   },
   "author": "Lila BRANDON, Antoine BUIREY, Jebril BOUFROUR, Tanguy HORARD, Tom DIEZ",
-  "license": "ISC"
+  "license": "ISC",
+  "devDependencies": {
+    "webpack": "^5.88.2",
+    "webpack-cli": "^5.1.4"
+  }
 }
