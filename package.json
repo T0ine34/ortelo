@@ -1,0 +1,12 @@
+{
+  "name": "sae-s3.a.01-2023-sujet02",
+  "version": "1.0.0",
+  "description": "SAE sujet 2 othello en ligne",
+  "private": true,
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "build": "webpack"
+  },
+  "author": "Lila BRANDON, Antoine BUIREY, Jebril BOUFROUR, Tanguy HORARD, Tom DIEZ",
+  "license": "ISC"
+}
