@@ -16,19 +16,20 @@ myForm.addEventListener('submit', function(e){
     if(!uin.value) return;
     myForm.style.display = 'none'
     socket = io();
-    socket.emit('login', uin.value)
-    let username
-    socket.on('getSelectedUsername', (name) => {
-        username = name
-    })
 
-    socket.on('new_message', (msg) => {
-        console.log(msg)
+    let username = uin.value
+    socket.emit('newUser', uin.value)
+
+    socket.on('newUser', (name) => {
         let item = document.createElement('li');
-        item.textContent = username + " : " + msg;
+        item.textContent = name + " a rejoint le chat ! ";
+        item.innerHTML += "&#128075;"
         messages.appendChild(item);
         window.scrollTo(0, document.body.scrollHeight);
-        
+    })
+
+    socket.on('new_message', (username, msg) => {
+        receive_message(username, msg)
     })
 
     let form = document.querySelector('#messageForm');
@@ -38,7 +39,7 @@ myForm.addEventListener('submit', function(e){
     form.addEventListener('submit', function(e) {
         e.preventDefault();
         if (input.value) {
-            socket.emit('send_message', input.value);
+            socket.emit('send_message', username, input.value);
             input.value = '';
         }
     });
@@ -46,5 +47,9 @@ myForm.addEventListener('submit', function(e){
 })
 
 
-
-
+let receive_message = (username, msg) => {
+    let item = document.createElement('li');
+    item.textContent = username + " : " + msg;
+    messages.appendChild(item);
+    window.scrollTo(0, document.body.scrollHeight);
+}

@@ -11,29 +11,20 @@ app.get('/', (req, res) => {
     res.sendFile(__dirname + '/index.html');
 });
 
-let users = []
 io.on('connection', (socket) => {
 
-    socket.on('login', (name) => {
-        users.push(name)
-        console.log(`${name} connected to the site`);
-        socket.emit('getSelectedUsername', name)
+    socket.on('newUser', (name) => {
+        io.emit("newUser", name);
     })
 
 
     socket.on('disconnect', () => {
-        console.log('a user disconnected')
+
     })
 
-    socket.on('send_message', (msg) => {
-        io.emit('new_message', msg)
+    socket.on('send_message', (username, msg) => {
+        io.emit('new_message', username, msg)
     })
-
-    socket.on('send-username', function(username) {
-        socket.username = username;
-        users.push(socket.username);
-        console.log(users);
-    });
 
 
 });
