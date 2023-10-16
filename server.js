@@ -18,8 +18,9 @@ io.on('connection', (socket) => {                       //catching the connectio
     })
 
 
-    socket.on('disconnect', () => {                     //catching the disconnect event, triggered by the client when he leaves the chat
-                                                        //NOT IMPLEMENTED YET
+    socket.on('disconnect', (reason) => {                     //catching the disconnect event, triggered by the client when he leaves the chat
+        io.emit("new_message", "SERVER", "Un utilisateur a quitté le chat");
+        io.emit("new_message", "SERVER", "Raison : " + reason);
     })
 
     socket.on('send_message', (username, msg) => {      //catching the send_message event, triggered by the client when he sends a message
