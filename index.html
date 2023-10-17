@@ -1,23 +1,41 @@
 <!DOCTYPE html>
 <html>
   <head>
-    <title>Socket.IO chat</title>
-    <link rel="stylesheet" href="style.css">
+    <title>Ortelo</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" type="image/x-icon" href="./assets/images/ortelo_logo.png">
+    <link rel="stylesheet" href="./assets/stylesheets/style.css">
   </head>
+
   <body>
-    <!-- Messages box -->
-      <div class="messagesDiv">
+    <div class="container">
+      
+      <img class="app_banner" src="./assets/images/ortelo_banner.png" alt="App Banner"> </h1>
+      <nav>
+        <ul class="top_navbar">
+            <li class="top_navbar_item top_navbar_item_left"> Utilisateur </li>
+            <li class="top_navbar_item top_navbar_item_right"> Jeux </li>
+        </ul>
+      </nav>
+
+    </div>
+      <!-- Messages box -->
+      <div id="chat_container">
         <h3> Discussion générale </h3>
         <ul id="messages"></ul>
-        <form id="messageForm" action="">
-          <input id="input" autocomplete="off" /><button>Send</button>
+        <form id="message_form" action="">
+          <input id="send_message" autocomplete="off" /><button>Send</button>
         </form>
       </div>
     <!-- Messages box -->
-    <div>
-      
+
     </div>
-    <footer> &copy; Oversi 2023 <br> BRANDON, HORARD, BUIREY, DIEZ, BOUFROUR</footer>
+
+    
+    
+
+    <!-- <footer> &copy; Oversi 2023 <br> BRANDON, HORARD, BUIREY, DIEZ, BOUFROUR</footer> -->
   </body>
   <script src="/socket.io/socket.io.js"></script>
   <script src="client.js"></script>

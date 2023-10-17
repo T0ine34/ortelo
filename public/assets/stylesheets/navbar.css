@@ -1,0 +1,30 @@
+.top_navbar {
+    list-style-type: none;
+    overflow: hidden;
+    width: auto;
+    background-color: rgb(80, 80, 253);
+}
+
+.top_navbar_item {
+    display: inline;
+    text-align: center;
+    color: rgb(245, 227, 227);
+    font-size: x-large;
+    width: 10%;
+}
+
+.top_navbar_item_left {
+    float: left;
+    margin-left: 5%;
+}
+
+.top_navbar_item_mid {
+    margin-left: auto;
+    margin-right: auto;
+    width: auto;
+}
+
+.top_navbar_item_right {
+    float: right;
+    margin-right: 30%;
+}

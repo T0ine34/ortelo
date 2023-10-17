@@ -1,0 +1,33 @@
+#chat_container {
+    background: rgba(84, 146, 246, 0.69); 
+    padding: 0.25rem; 
+    position: fixed; 
+    bottom: 10;  left: 0;  right: 0;
+    width: 20%;
+    height: 100%;
+}
+
+#chat_container h3 {
+    text-align: center;
+}
+
+#message_form {
+    text-align: center;
+    position: fixed;
+    left: 0;
+    bottom:0px;
+    width: auto;
+}
+
+#send_message { 
+    border: none;
+    padding: 0 1rem;
+    flex-grow: 1;
+    border-radius:2rem;
+    margin: 0.25rem;
+    width: auto;
+}
+
+#send_message:focus {
+    outline: none;
+}
