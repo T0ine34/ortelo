@@ -1,5 +1,5 @@
 //! this is not completed yet, and is not ready for use
-//! this may by subject to major changes
+//! this may be subject to major changes
 
 const EVENTS = Object.freeze({
     CHAT : {
