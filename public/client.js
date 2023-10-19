@@ -18,7 +18,7 @@ myForm.addEventListener('submit', function(e){                      //this is tr
 
     let username = uin.value
     csocket.emit(EVENTS.CHAT.USER_JOINED, username);                               //sending the newUser event to the server, with the username as parameter
-    socket.on(EVENTS.CHAT.USER_JOINED, (timestamp, name) => {                                //catching the newUser event, triggered by the server when a new user joins the chat
+    csocket.on(EVENTS.CHAT.USER_JOINED, (timestamp, name) => {                                //catching the newUser event, triggered by the server when a new user joins the chat
         let item = document.createElement('li');
         item.textContent = name + " a rejoint le chat ! ";
         item.innerHTML += "&#128075;"
@@ -55,9 +55,10 @@ myForm.addEventListener('submit', function(e){                      //this is tr
 })
 
 
-let receive_message = (username, msg) => {
+let receive_message = (timestamp, username, msg) => {
     let item = document.createElement('li');
     item.textContent = username + " : " + msg;
+    item.innerHTML += String(timestamp);
     messages.appendChild(item);
     window.scrollTo(0, document.body.scrollHeight);
 }

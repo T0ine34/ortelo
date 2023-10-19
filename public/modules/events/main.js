@@ -3,23 +3,23 @@
 
 const EVENTS = Object.freeze({
     CHAT : {
-        MESSAGE: Symbol('chat:message'),            //a message has been sent or received
+        MESSAGE: 'chat:message',            //a message has been sent or received
             // data : {(timestamp), (username), (message)}
-        USER_JOINED:  Symbol('chat:user_joined'),   //a user has joined the chat
+        USER_JOINED:  'chat:user_joined',   //a user has joined the chat
             //data : {(timestamp), (username)}
-        USER_LEFT:  Symbol('chat:user_left'),       //a user has left the chat
+        USER_LEFT:  'chat:user_left',       //a user has left the chat
             //data : {(timestamp), (username)}
     },
     GAME : {
-        USER_JOINED:  Symbol('game:user_joined'),   //a user has joined the game
+        USER_JOINED:  'game:user_joined',   //a user has joined the game
             //data : {(timestamp), (username)}
-        USER_LEFT:  Symbol('game:user_left'),       //a user has left the game
+        USER_LEFT: 'game:user_left',       //a user has left the game
             //data : {(timestamp), (username)}
-        START:  Symbol('game:start'),               //the game has started
+        START:  'game:start',               //the game has started
             //data : {(timestamp), [...data]}              //data is dependant on the game, may be null
-        END:  Symbol('game:end'),                   //the game has ended
+        END:  'game:end',                   //the game has ended
             //data : {(timestamp), [...data]}              //data is dependant on the game, may be null
-        DATA: Symbol('game:data'),                  //this is used for sending data to the game, this will depend on the game
+        DATA: 'game:data',                  //this is used for sending data to the game, this will depend on the game
             //data : {(timestamp), [...data]}              //data is dependant on the game, may be null
     },
     //! events below are default events, and don't need to be triggered manually
@@ -133,6 +133,12 @@ class CSocket{
             });
             return;
         }
+        if(event === EVENTS.DISCONNECT){
+            this._socket.on(event, (reason) => {
+                callback(reason);
+            });
+            return;
+        }
         throw new Error("invalid event " + event);
     }
 
@@ -225,4 +231,9 @@ class CIO{
     }
 }
 
-module.exports = { EVENTS, Room, CIO, CSocket };
+try{
+    module.exports = { EVENTS, Room, CIO, CSocket };
+}
+catch(e){
+    // we are loading it in the browser
+}
