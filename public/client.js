@@ -1,14 +1,14 @@
 let socket
 
-// let mydiv = document.createElement('div');
-// mydiv.id = 'usernameDiv'
+let mydiv = document.createElement('div');
+mydiv.id = 'usernameDiv'
 
-// let myForm = document.createElement('form')
-// myForm.id = 'usernameForm'
-// myForm.innerHTML = '<input id="usernameInput" autocomplete="on" placeholder="Choisir un pseudo" /><button>CHOISIR</button>'
+let myForm = document.createElement('form')
+myForm.id = 'usernameForm'
+myForm.innerHTML = '<input id="usernameInput" autocomplete="on" placeholder="Choisir un pseudo" /><button>CHOISIR</button>'
 
-// mydiv.appendChild(myForm)
-// document.body.appendChild(mydiv);
+mydiv.appendChild(myForm)
+document.body.appendChild(mydiv);
 
 myForm.addEventListener('submit', function(e){                      //this is triggered when the user click on "CHOISIR"
     e.preventDefault()
@@ -32,9 +32,9 @@ myForm.addEventListener('submit', function(e){                      //this is tr
         receive_message(username, msg)
     })
 
-    let form = document.querySelector('#messageForm');
+    let form = document.querySelector('#message_form');
     let messages = document.querySelector('#messages');
-    let input = document.querySelector('#input');
+    let input = document.querySelector('#send_message');
 
     form.addEventListener('submit', function(e) {                   //this is triggered when the user click on "Send"
         e.preventDefault();
