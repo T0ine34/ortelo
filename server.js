@@ -18,8 +18,8 @@ io.on('connection', (socket) => {                       //catching the connectio
     })
 
 
-    socket.on('disconnect', (reason) => {                     //catching the disconnect event, triggered by the client when he leaves the chat
-        io.emit("new_message", "SERVER", "Un utilisateur a quitté le chat");
+    socket.on('disconnect', (reason, name) => {                     //catching the disconnect event, triggered by the client when he leaves the chat
+        io.emit("new_message", "SERVER", `${name} a quitté le chat`);
         io.emit("new_message", "SERVER", "Raison : " + reason);
     })
 
