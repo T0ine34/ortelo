@@ -3,7 +3,7 @@
     padding: 0.25rem;  
     position: fixed; 
     left: 0;  right: 0;
-    height: 100%;
+    height: -webkit-fill-available;
 }
 
 #chat_container h3 {
@@ -14,11 +14,10 @@
 
 #message_form {
     text-align: center;
-    position: fixed;
-    left: 0;
-    bottom:0px;
-    display: grid; 
-    box-sizing: border-box; 
+    position: absolute;
+    left: 5px;
+    bottom:5px;
+    width : 90%;
 }
 
 
