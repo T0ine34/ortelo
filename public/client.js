@@ -1,4 +1,3 @@
-let socket
 
 let mydiv = document.createElement('div');
 mydiv.id = 'usernameDiv'
@@ -15,22 +14,31 @@ myForm.addEventListener('submit', function(e){                      //this is tr
     let uin = document.querySelector("#usernameInput")
     if(!uin.value) return;
     myForm.style.display = 'none'
-    socket = io();
+    let csocket = new CSocket(io());
 
     let username = uin.value
-    socket.emit('newUser', username);                               //sending the newUser event to the server, with the username as parameter
-
-    socket.on('newUser', (name) => {                                //catching the newUser event, triggered by the server when a new user joins the chat
+    csocket.emit(EVENTS.CHAT.USER_JOINED, username);                               //sending the newUser event to the server, with the username as parameter
+    csocket.on(EVENTS.CHAT.USER_JOINED, (timestamp, name) => {                                //catching the newUser event, triggered by the server when a new user joins the chat
         let item = document.createElement('li');
         item.textContent = name + " a rejoint le chat ! ";
         item.innerHTML += "&#128075;"
+        item.innerHTML += String(timestamp);
         messages.appendChild(item);
         window.scrollTo(0, document.body.scrollHeight);
     })
 
-    socket.on('new_message', (username, msg) => {                   //catching the new_message event, triggered by the server when a user sends a message
-        receive_message(username, msg)
+    csocket.on(EVENTS.CHAT.MESSAGE, (timestamp, username, msg) => {                   //catching the new_message event, triggered by the server when a user sends a message
+        receive_message(timestamp, username, msg)
     })
+
+    csocket.on(EVENTS.CHAT.USER_LEFT, (timestamp, username) => {                   //catching the new_message event, triggered by the server when a user sends a message
+        let item = document.createElement('li');
+        item.textContent = username + " a quitté le chat ! ";
+        item.innerHTML += "&#128078;"
+        item.innerHTML += String(timestamp);
+        messages.appendChild(item);
+        window.scrollTo(0, document.body.scrollHeight);
+    });
 
     let form = document.querySelector('#message_form');
     let messages = document.querySelector('#messages');
@@ -39,7 +47,7 @@ myForm.addEventListener('submit', function(e){                      //this is tr
     form.addEventListener('submit', function(e) {                   //this is triggered when the user click on "Send"
         e.preventDefault();
         if (input.value) {
-            socket.emit('send_message', username, input.value);     //sending the send_message event to the server, with the username and the message as parameters
+            csocket.emit(EVENTS.CHAT.MESSAGE, username, input.value);     //sending the send_message event to the server, with the username and the message as parameters
             input.value = '';
         }
     });
@@ -47,9 +55,10 @@ myForm.addEventListener('submit', function(e){                      //this is tr
 })
 
 
-let receive_message = (username, msg) => {
+let receive_message = (timestamp, username, msg) => {
     let item = document.createElement('li');
     item.textContent = username + " : " + msg;
+    item.innerHTML += String(timestamp);
     messages.appendChild(item);
     window.scrollTo(0, document.body.scrollHeight);
 }
