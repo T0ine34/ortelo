@@ -8,13 +8,24 @@
         width: 90%;
     }
     
+    #profile_bottom {
+        display: block;
+        position: absolute;
+        bottom: 0px;
+        width: 10em;
+        height: 10em;
+    }
 }
 
 
-@media (min-width: 701px) and ( max-width: 1200px) {
+@media (min-width: 701px) {
+
+    #bottom_container {
+        display: none;
+    }
     
     #chat_container {
-        max-width: 30%;
+        max-width: 25%;
     }
     
     #message_form {

@@ -3,7 +3,7 @@
     padding: 0.25rem;  
     position: fixed; 
     left: 0;  right: 0;
-    height: -webkit-fill-available;
+    height: 100%;
 }
 
 #chat_container h3 {
@@ -44,9 +44,7 @@
 
 #send_message { 
     border: none;
-    /* padding: 0 1rem; */
-    /* flex-grow: 1; */
-    /* border-radius:2rem; */
+    font-size: larger;
     margin: 0.1rem;
     width: 100%;
 }

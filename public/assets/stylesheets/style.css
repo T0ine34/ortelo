@@ -16,7 +16,7 @@ body {
 }
 
 #app_container {
-    height: 100%;
+    height: -webkit-fill-available;
 }
 
 .app_banner {
