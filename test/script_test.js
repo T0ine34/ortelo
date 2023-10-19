@@ -18,8 +18,14 @@ const simulateUser = (userId) => {
         socket.on('newUser', (name) => {
             console.log(`Notification: ${name} a rejoint le chat!`);
         });
+        socket.on('new_message', (username, message) => {
+            console.log(`Message reçu de ${username}: ${message}`);
+        });
 
-        
+        // Simuler l'envoi de plusieurs messages
+        for (let i = 0; i < MESSAGES_TO_SEND; i++) {
+            socket.emit('send_message', username, `Message_${i}`);
+        }
     });
 };
 
