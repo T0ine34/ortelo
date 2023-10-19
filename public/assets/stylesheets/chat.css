@@ -1,14 +1,15 @@
 #chat_container {
     background: rgba(84, 146, 246, 0.69); 
-    padding: 0.25rem; 
+    padding: 0.25rem;  
     position: fixed; 
-    bottom: 10;  left: 0;  right: 0;
-    width: 20%;
+    left: 0;  right: 0;
     height: 100%;
 }
 
 #chat_container h3 {
     text-align: center;
+    overflow: hidden;
+    word-wrap: break-word;
 }
 
 #message_form {
@@ -16,16 +17,39 @@
     position: fixed;
     left: 0;
     bottom:0px;
-    width: auto;
+    display: grid; 
+    box-sizing: border-box; 
 }
+
+
+#message_form > button {
+    background: #333;
+    border: none;
+    margin: 0.25rem;
+    padding-bottom: 5px;
+    border-radius: 3px;
+    outline: none;
+    color: #fff;
+}
+
+#messages { 
+    list-style-type: none; 
+    margin: 0; 
+    padding: 0;
+    max-height: 65%;
+    overflow-y: auto;
+    overflow-x: hidden;
+}
+#messages > li { padding: 0.5rem 1rem; }
+#messages > li:nth-child(odd) { background: #efefef; }
 
 #send_message { 
     border: none;
-    padding: 0 1rem;
-    flex-grow: 1;
-    border-radius:2rem;
-    margin: 0.25rem;
-    width: auto;
+    /* padding: 0 1rem; */
+    /* flex-grow: 1; */
+    /* border-radius:2rem; */
+    margin: 0.1rem;
+    width: 100%;
 }
 
 #send_message:focus {

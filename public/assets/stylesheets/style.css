@@ -1,10 +1,21 @@
+@import url("./queried_style.css");
 @import url("./navbar.css");
 @import url("./chat.css");
 
-body { margin: 0; padding-bottom: 3rem; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; }
-
-.container {
+body {
+    margin: 0;
+    padding-bottom: 3rem;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    height: 100%;
     width: 100%;
+}
+
+.top_container {
+    width: 100%;
+    height: 100%;
+}
+
+#app_container {
     height: 100%;
 }
 
@@ -32,22 +43,14 @@ body { margin: 0; padding-bottom: 3rem; font-family: -apple-system, BlinkMacSyst
 }
 
 .messagesDiv > h3 { text-align: center; }
+ 
 
-#messageForm {
-    display: grid; 
-    height: 2.5rem; 
-    box-sizing: border-box; 
-    backdrop-filter: blur(10px); }
-
-#messageForm > button { background: #333; border: none; padding: 0 1rem; margin: 0.25rem; border-radius: 3px; outline: none; color: #fff; }
-
-#messages { 
-    list-style-type: none; 
-    margin: 0; 
-    padding: 0;
-    max-height: 60%;
-    overflow-y: auto;
-    overflow-x: hidden;
+#messageForm > button {
+    background: #333;
+    border: none;
+    padding: 0 1rem;
+    margin: 0.25rem;
+    border-radius: 3px;
+    outline: none;
+    color: #fff;
 }
-#messages > li { padding: 0.5rem 1rem; }
-#messages > li:nth-child(odd) { background: #efefef; }

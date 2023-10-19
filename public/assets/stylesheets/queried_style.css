@@ -1,0 +1,42 @@
+@media (max-width: 700px) {
+    
+    #chat_container {
+        max-width: 100%;
+    }
+
+    #message_form {
+        width: 90%;
+    }
+    
+}
+
+
+@media (min-width: 701px) and ( max-width: 1200px) {
+    
+    #chat_container {
+        max-width: 30%;
+    }
+    
+    #message_form {
+        width: 60%;
+    }
+    
+}
+
+@media (max-height: 700px) {
+
+    #message_form > button {
+        height: 100%;
+        width: 100%;
+    }
+
+}
+
+@media (min-height: 701px) {
+
+    #message_form > button {
+        height: 70%;
+        width: 100%;
+    }
+
+}
