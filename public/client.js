@@ -62,5 +62,3 @@ let receive_message = (timestamp, username, msg) => {
     messages.appendChild(item);
     window.scrollTo(0, document.body.scrollHeight);
 }
-
-(new GameLoader()).init()

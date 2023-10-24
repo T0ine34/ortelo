@@ -18,6 +18,7 @@ app.get('/', (req, res) => {
 
 cio.on_event_broadcast(EVENTS.CHAT.MESSAGE);
 
+loadGames()
 
 cio.on(EVENTS.CONNECTION, (csocket) => {
     csocket.on(EVENTS.CHAT.USER_JOINED, (timestamp, username) => { //catching the user_joined event, triggered by the client when he click on "CHOISIR"
@@ -29,8 +30,10 @@ cio.on(EVENTS.CONNECTION, (csocket) => {
     });
 });
 
-function loadGames() {
-    gameLoader.getFiles()
+async function loadGames() {
+    await gameLoader.getFiles()
+    console.log(gameLoader.gameFiles)
+    // gameLoader.readAGame()
     //TODO GET ALL GAMES TO SHOW ON WEBPAGE
 }
 

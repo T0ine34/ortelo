@@ -4,13 +4,13 @@ const JSZip = require('jszip');
 
 class GameLoader {
     
-    constructor(path="../../games/") {
+    constructor(path="./public/games/") {
         this._path = path
         this._jsZip = new JSZip()
         this._gameFiles = []
     }
 
-    getFiles() {
+    async getFiles() {
         fs.readdir(this._path, (err, data) => {
             if(err) throw err
             for(let i = 0; i < data.length; i++){
@@ -25,7 +25,7 @@ class GameLoader {
             if (err) throw err;
 
             this._jsZip.loadAsync(data).then(function (zipFile) {
-                
+                console.log(zipFile);
             });
 
         });
