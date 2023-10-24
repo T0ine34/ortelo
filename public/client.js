@@ -58,7 +58,8 @@ myForm.addEventListener('submit', function(e){                      //this is tr
 let receive_message = (timestamp, username, msg) => {
     let item = document.createElement('li');
     item.textContent = username + " : " + msg;
-    item.innerHTML += String(timestamp);
+    let d = new Date(timestamp);
+    item.innerHTML += "<span class=\"timestamp\">"+d.getHours()+":"+d.getMinutes()+":"+d.getSeconds()+"</span>";
     messages.appendChild(item);
     window.scrollTo(0, document.body.scrollHeight);
 }

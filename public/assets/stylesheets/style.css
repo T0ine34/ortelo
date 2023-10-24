@@ -54,3 +54,8 @@ body {
     outline: none;
     color: #fff;
 }
+
+.timestamp{
+    font-size: 0.5rem;
+    color: #aaa;
+}

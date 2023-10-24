@@ -1,5 +1,4 @@
-//! this is not completed yet, and is not ready for use
-//! this may be subject to major changes
+
 
 const EVENTS = Object.freeze({
     CHAT : {
@@ -38,18 +37,27 @@ class Room{
     constructor(name){
         this._name = name;
         this._users = new Set();
-        this._banned = new Set();
+        this._user_list = new Set();
+        this._use_as_whitelist = false; //if true, the _user_list will be used as a whitelist instead of a blacklist
     }
 
     addUser(user){
+        //add the user to the room if he is not in blacklist or if he is in whitelist
+        //return true if the user has been added, false otherwise
         if(!user instanceof CSocket) throw new Error("user is not a CSocket Object");
-        if(this._banned.has(user.id)) return false;
-        this._users.add(user);
-        return true;
+        if(this.can_join(user)){
+            this._users.add(user);
+            return true;
+        }
+        else{
+            return false;
+        }
     }    
 
     removeUser(user){
+        //remove the user from the room
         if(!user instanceof CSocket) throw new Error("user is not a CSocket Object");
+        if(!this._users.has(user)) throw new Error("user is not in the room");
         this._users.delete(user);
     }
 
@@ -62,16 +70,123 @@ class Room{
     }
 
     kick(user){
+        //force a user to leave the room
         if(!user instanceof CSocket) throw new Error("user is not a CSocket Object");
         this._users.delete(user);
-        user.leave(this);
     }
 
-    ban(user){
+    set use_whitelist(bool){
+        if(typeof bool !== "boolean") throw new Error("bool is not a boolean");
+        if(this._use_as_whitelist === bool) return;
+        this._user_list.clear();
+        this._use_as_whitelist = bool;
+    }
+
+    get use_whitelist(){
+        return this._use_as_whitelist;
+    }
+
+    add_to_whitelist(user){
+        if(!this._use_as_whitelist) throw new Error("this room is not using a whitelist");
+        this.add_to_list(user);
+    }
+
+    add_to_blacklist(user){
+        if(this._use_as_whitelist) throw new Error("this room is not using a blacklist");
+        this.add_to_list(user);
+    }
+
+    add_to_list(user){
         if(!user instanceof CSocket) throw new Error("user is not a CSocket Object");
-        this._banned.add(user.id);
-        this._users.delete(user);
-        user.leave(this);
+        this._user_list.add(user);
+    }
+
+    can_join(user){
+        if(!user instanceof CSocket) throw new Error("user is not a CSocket Object");
+        if(this._use_as_whitelist){
+            return this._user_list.has(user);
+        }
+        else{
+            return !this._user_list.has(user);
+        }
+    }
+
+    emit(event, ...args){
+        if(event === EVENTS.CHAT.MESSAGE){
+            if (args.length !== 2) throw new Error("invalid number of arguments, expected username and message");
+            let [username, message] = args;
+            for(let user of this._users){
+                user.emit(event, username, message);
+            }
+            return;
+        }
+        if(event === EVENTS.CHAT.USER_JOINED || event === EVENTS.CHAT.USER_LEFT){
+            if (args.length !== 1) throw new Error("invalid number of arguments, expected username");
+            let [username] = args;
+            for(let user of this._users){
+                user.emit(event, username);
+            }
+            return;
+        }
+        if(event === EVENTS.GAME.USER_JOINED || event === EVENTS.GAME.USER_LEFT){
+            if (args.length !== 1) throw new Error("invalid number of arguments, expected username");
+            let [username] = args;
+            for(let user of this._users){
+                user.emit(event, username);
+            }
+            return;
+        }
+        if(event === EVENTS.GAME.START || event === EVENTS.GAME.END || event === EVENTS.GAME.DATA){
+            for(let user of this._users){
+                user.emit(event, ...args);
+            }
+            return;
+        }
+        throw new Error("invalid event " + event);
+    }
+
+    on(event, callback){
+        if(event === EVENTS.CHAT.MESSAGE){
+            for(let user of this._users){
+                user.on(event, (timestamp, username, message) => {
+                    callback(timestamp, username, message);
+                });
+            }
+            return;
+        }
+        if(event === EVENTS.CHAT.USER_JOINED || event === EVENTS.CHAT.USER_LEFT){
+            for(let user of this._users){
+                user.on(event, (timestamp, username) => {
+                    callback(timestamp, username);
+                });
+            }
+            return;
+        }
+        if(event === EVENTS.GAME.USER_JOINED || event === EVENTS.GAME.USER_LEFT){
+            for(let user of this._users){
+                user.on(event, (timestamp, username) => {
+                    callback(timestamp, username);
+                });
+            }
+            return;
+        }
+        if(event === EVENTS.GAME.START || event === EVENTS.GAME.END || event === EVENTS.GAME.DATA){
+            for(let user of this._users){
+                user.on(event, (timestamp, data) => {
+                    callback(timestamp, data);
+                });
+            }
+            return;
+        }
+        if(event === EVENTS.DISCONNECT){
+            for(let user of this._users){
+                user.on(event, (reason) => {
+                    callback(reason);
+                });
+            }
+            return;
+        }
+        throw new Error("invalid event " + event);
     }
 }
 
@@ -148,8 +263,8 @@ class CSocket{
 
     join(room){
         if(!room instanceof Room) throw new Error("room is not a Room Object");
-        if(this._socket.join(room.name)){
-            room.addUser(this);
+        if(room.addUser(this)){
+            this._socket.join(room.name);
         }
         else{
             throw new Error("unable to join room " + room.name);
@@ -157,7 +272,7 @@ class CSocket{
     }
 
     leave(room){
-        this._socket.leave(room);
+        room.removeUser(this);
     }
 
     get id(){
