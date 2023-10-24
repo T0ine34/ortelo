@@ -1,4 +1,3 @@
-
 let mydiv = document.createElement('div');
 mydiv.id = 'usernameDiv'
 
@@ -30,7 +29,7 @@ myForm.addEventListener('submit', function(e){                      //this is tr
     csocket.on(EVENTS.CHAT.MESSAGE, (timestamp, username, msg) => {                   //catching the new_message event, triggered by the server when a user sends a message
         receive_message(timestamp, username, msg)
     })
-
+    
     csocket.on(EVENTS.CHAT.USER_LEFT, (timestamp, username) => {                   //catching the new_message event, triggered by the server when a user sends a message
         let item = document.createElement('li');
         item.textContent = username + " a quitté le chat ! ";
@@ -39,11 +38,11 @@ myForm.addEventListener('submit', function(e){                      //this is tr
         messages.appendChild(item);
         window.scrollTo(0, document.body.scrollHeight);
     });
-
+    
     let form = document.querySelector('#message_form');
     let messages = document.querySelector('#messages');
     let input = document.querySelector('#send_message');
-
+    
     form.addEventListener('submit', function(e) {                   //this is triggered when the user click on "Send"
         e.preventDefault();
         if (input.value) {
@@ -63,3 +62,5 @@ let receive_message = (timestamp, username, msg) => {
     messages.appendChild(item);
     window.scrollTo(0, document.body.scrollHeight);
 }
+
+(new GameLoader()).init()

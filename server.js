@@ -6,7 +6,9 @@ const server = http.createServer(app);
 const { Server } = require("socket.io");
 const io = new Server(server);
 const cio = new CIO(io);
+const { GameLoader } = require('./public/modules/loader/loader.js');
 
+const gameLoader = new GameLoader();
 
 app.use(express.static("public"));
 
@@ -27,7 +29,10 @@ cio.on(EVENTS.CONNECTION, (csocket) => {
     });
 });
 
-
+function loadGames() {
+    gameLoader.getFiles()
+    //TODO GET ALL GAMES TO SHOW ON WEBPAGE
+}
 
 
     //                                                     //socket is the link between this user and the server
