@@ -25,7 +25,8 @@
     }
     
     #chat_container {
-        max-width: 25%;
+        width: 20%;
+        max-width: 250px;
     }
     
     #message_form {
