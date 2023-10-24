@@ -1,7 +1,9 @@
 //NOTE this file is only for testing purposes, it is not part of the project
 //NOTE it's for testing the implementation of the csocket and room classes
+//use /help in the chat to get the list of commands
 
 const { EVENTS, Room, CIO, CSocket } = require('./public/modules/events/main.js');
+const { parseCMD } = require('./public/modules/cmd/main.js');
 const express = require('express');
 const app = express();
 const http = require('http');
@@ -18,6 +20,9 @@ app.get('/', (req, res) => {
 
 let room = new Room("testRoom");
 
+let rooms = new Map();
+rooms.set(room.name, room);
+
 
 cio.on(EVENTS.CONNECTION, (csocket) => {
     csocket.join(room);
@@ -27,10 +32,8 @@ cio.on(EVENTS.CONNECTION, (csocket) => {
     });
 
     csocket.on(EVENTS.CHAT.MESSAGE, (timestamp, username, msg) => {      //catching the send_message event, triggered by the client when he sends a message
-        if(msg == "kick"){
-            csocket.leave(room);
-            csocket.emit(EVENTS.CHAT.MESSAGE, "server", "you have been kicked from the room");
-            console.log("user kicked");
+        if(! parseCMD(msg, csocket, cio, rooms)){
+            cio.emit(EVENTS.CHAT.MESSAGE, timestamp, username, msg)           //broadcasting the new_message event to all the users, including the sender
         }
     });
 });

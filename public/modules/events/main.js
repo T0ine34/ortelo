@@ -1,25 +1,46 @@
 
-
 const EVENTS = Object.freeze({
     CHAT : {
         MESSAGE: 'chat:message',            //a message has been sent or received
             // data : {(timestamp), (username), (message)}
+            //send by client or server(broadcast)
         USER_JOINED:  'chat:user_joined',   //a user has joined the chat
             //data : {(timestamp), (username)}
+            //send by client or server(broadcast)
         USER_LEFT:  'chat:user_left',       //a user has left the chat
             //data : {(timestamp), (username)}
+            //send by client or server(broadcast)
+        SYSTEM : {
+            BROADCAST : 'chat:system:broadcast', //a message has been broadcasted to all users
+                //data : {(timestamp), (message)}
+                //send by server(broadcast)
+            INFO : 'chat:system:info',           //this is an information sent to a user (not broadcasted)
+                //data : {(timestamp), (message)}
+                //send by server(not broadcasted)
+            ERROR : 'chat:system:error',         //an error has occured
+                //data : {(timestamp), (reason)}
+                //send by server(broadcast or not)
+            WARNING : 'chat:system:warning',     //a warning has been sent
+                //data : {(timestamp), (reason)}
+                //send by server(broadcast or not)
+        }
     },
     GAME : {
         USER_JOINED:  'game:user_joined',   //a user has joined the game
             //data : {(timestamp), (username)}
+            //send by client or server(broadcast)
         USER_LEFT: 'game:user_left',       //a user has left the game
             //data : {(timestamp), (username)}
+            //send by client or server(broadcast)
         START:  'game:start',               //the game has started
             //data : {(timestamp), [...data]}              //data is dependant on the game, may be null
+            //send by server(broadcast)
         END:  'game:end',                   //the game has ended
             //data : {(timestamp), [...data]}              //data is dependant on the game, may be null
+            //send by server(broadcast)
         DATA: 'game:data',                  //this is used for sending data to the game, this will depend on the game
             //data : {(timestamp), [...data]}              //data is dependant on the game, may be null
+            //send by client or server(broadcast or not)
     },
     //! events below are default events, and don't need to be triggered manually
     CONNECTION : 'connection',                      //a new user has connected (this is a default event, not a custom one)
@@ -111,6 +132,11 @@ class Room{
         }
     }
 
+    isIn(user){
+        if(!user instanceof CSocket) throw new Error("user is not a CSocket Object");
+        return this._users.has(user);
+    }
+
     emit(event, ...args){
         if(event === EVENTS.CHAT.MESSAGE){
             if (args.length !== 2) throw new Error("invalid number of arguments, expected username and message");
@@ -196,7 +222,7 @@ class CSocket{
         if(!socket) throw new Error("socket is undefined");
         this._socket = socket;
     }
-    
+
     emit(event, ...args){
         if(event === EVENTS.CHAT.MESSAGE){
             if (args.length !== 2) throw new Error("invalid number of arguments, expected username and message");
@@ -218,6 +244,12 @@ class CSocket{
         }
         if(event === EVENTS.GAME.START || event === EVENTS.GAME.END || event === EVENTS.GAME.DATA){
             this._socket.emit(event, {timestamp: Date.now(), data: args});
+            return;
+        }
+        if(event === EVENTS.CHAT.SYSTEM.ERROR || event === EVENTS.CHAT.SYSTEM.INFO || event === EVENTS.CHAT.SYSTEM.WARNING){
+            if (args.length !== 1) throw new Error("invalid number of arguments, expected message");
+            let [message] = args;
+            this._socket.emit(event, {timestamp: Date.now(), message});
             return;
         }
         throw new Error("invalid event " + event);
@@ -251,6 +283,18 @@ class CSocket{
         if(event === EVENTS.DISCONNECT){
             this._socket.on(event, (reason) => {
                 callback(reason);
+            });
+            return;
+        }
+        if(event === EVENTS.CHAT.SYSTEM.ERROR || event === EVENTS.CHAT.SYSTEM.INFO || event === EVENTS.CHAT.SYSTEM.WARNING){
+            this._socket.on(event, (data) => {
+                callback(data.timestamp, data.message);
+            });
+            return;
+        }
+        if(event === EVENTS.CHAT.SYSTEM.BROADCAST){
+            this._socket.on(event, (data) => {
+                callback(data.timestamp, data.message);
             });
             return;
         }

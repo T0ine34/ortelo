@@ -1,3 +1,4 @@
+
 let mydiv = document.createElement('div');
 mydiv.id = 'usernameDiv'
 
@@ -34,11 +35,50 @@ myForm.addEventListener('submit', function(e){                      //this is tr
         let item = document.createElement('li');
         item.textContent = username + " a quitté le chat ! ";
         item.innerHTML += "&#128078;"
-        item.innerHTML += String(timestamp);
+        let d = new Date(timestamp);
+        item.innerHTML += "<span class=\"timestamp\">"+d.getHours()+":"+d.getMinutes()+":"+d.getSeconds()+"</span>";
         messages.appendChild(item);
         window.scrollTo(0, document.body.scrollHeight);
     });
-    
+
+    csocket.on(EVENTS.CHAT.SYSTEM.ERROR, (timestamp, msg) => {                   //catching the new_message event, triggered by the server when a user sends a message
+        let item = document.createElement('li');
+        item.textContent = "Erreur : " + msg;
+        let d = new Date(timestamp);
+        item.innerHTML += "<span class=\"timestamp\">"+d.getHours()+":"+d.getMinutes()+":"+d.getSeconds()+"</span>";
+        messages.appendChild(item);
+        window.scrollTo(0, document.body.scrollHeight);
+    });
+
+    csocket.on(EVENTS.CHAT.SYSTEM.WARNING, (timestamp, msg) => {                   //catching the new_message event, triggered by the server when a user sends a message
+        let item = document.createElement('li');
+        item.textContent = "Warning : " + msg;
+        let d = new Date(timestamp);
+        item.innerHTML += "<span class=\"timestamp\">"+d.getHours()+":"+d.getMinutes()+":"+d.getSeconds()+"</span>";
+        messages.appendChild(item);
+        window.scrollTo(0, document.body.scrollHeight);
+    });
+
+
+    csocket.on(EVENTS.CHAT.SYSTEM.BROADCAST, (timestamp, msg) => {              //catching the new_message event, triggered by the server when a user sends a message
+        let item = document.createElement('li');
+        item.textContent = "Broadcast : " + msg;
+        let d = new Date(timestamp);
+        item.innerHTML += "<span class=\"timestamp\">"+d.getHours()+":"+d.getMinutes()+":"+d.getSeconds()+"</span>";
+        messages.appendChild(item);
+        window.scrollTo(0, document.body.scrollHeight);
+    });
+
+    csocket.on(EVENTS.CHAT.SYSTEM.INFO, (timestamp, msg) => {                   //catching the new_message event, triggered by the server when a user sends a message
+        let item = document.createElement('li');
+        item.textContent = "Info : " + msg;
+        let d = new Date(timestamp);
+        item.innerHTML += "<span class=\"timestamp\">"+d.getHours()+":"+d.getMinutes()+":"+d.getSeconds()+"</span>";
+        messages.appendChild(item);
+        window.scrollTo(0, document.body.scrollHeight);
+    });
+
+
     let form = document.querySelector('#message_form');
     let messages = document.querySelector('#messages');
     let input = document.querySelector('#send_message');
