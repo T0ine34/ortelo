@@ -1,119 +1,165 @@
-const { EVENTS } = require("../events/main.js");
+const { EVENTS, Room } = require("../events/main.js");
 
 function parseCMD(str, socket, io, rooms){ //rooms is a map of room names to room objects
     //return true if we parsed a command (even if it's an invalid one), false otherwise
     if(str.startsWith("/")){ //it's a command
-        let cmd = str.split(" ")[0].substring(1);
-        let args = str.split(" ").slice(1);
-        switch(cmd){
+        let tokens = str.substring(1).split(" ");
+        switch(tokens[0]){
             case "help":
-                socket.emit(EVENTS.CHAT.SYSTEM.INFO, "Available commands : /help, /join, /leave, /list, /kick, /ban, /unban, /info");
-                break;
-            case "join":
-                if(args.length == 0){
-                    socket.emit(EVENTS.CHAT.SYSTEM.ERROR, "Usage : /join <room>");
-                    break;
-                }
-                if(rooms.has(args[0])){
-                    if(!rooms.get(args[0]).isIn(socket)){
-                        socket.join(rooms.get(args[0]));
-                        socket.emit(EVENTS.CHAT.SYSTEM.INFO, "You joined room "+args[0]);
-                    }
-                    else{
-                        socket.emit(EVENTS.CHAT.SYSTEM.ERROR, "You are already in room "+args[0]);
-                    }
+                if(tokens.length == 1){
+                    socket.emit(EVENTS.CHAT.SYSTEM.INFO, "Available commands : /help, /room");
+                    return true;
                 }
                 else{
-                    socket.emit(EVENTS.CHAT.SYSTEM.ERROR, "Room "+args[0]+" doesn't exist");
-                }
-                break;
-            case "leave":
-                if(args.length == 0){
-                    socket.emit(EVENTS.CHAT.SYSTEM.ERROR, "Usage : /leave <room>");
-                    break;
-                }
-                if(rooms.has(args[0])){
-                    try{
-                        socket.leave(rooms.get(args[0]));
+                    switch(tokens[1]){
+                        case "room":
+                            socket.emit(EVENTS.CHAT.SYSTEM.INFO, "Usage: /room {join | leave | create | delete | set_visible | info | list} [room_name] [username | boolean]");
+                            return true;
+                        default:
+                            socket.emit(EVENTS.CHAT.SYSTEM.ERROR, "Unknown command /help "+tokens[1]);
+                            return true;
                     }
-                    catch(e){
-                        socket.emit(EVENTS.CHAT.SYSTEM.ERROR, "You are not in room "+args[0]);
-                        break;
-                    }
-                    socket.emit(EVENTS.CHAT.SYSTEM.INFO, "You left room "+args[0]);
+                }
+            case "room":
+                if(tokens.length == 1){
+                    socket.emit(EVENTS.CHAT.SYSTEM.ERROR, "Usage: /room {join | leave | create | delete | set_visible | info | list} [room_name] [username | boolean]");
+                    return true;
                 }
                 else{
-                    socket.emit(EVENTS.CHAT.SYSTEM.ERROR, "Room "+args[0]+" doesn't exist");
-                }
-                break;
-            case "list":
-                socket.emit(EVENTS.CHAT.SYSTEM.INFO, "Rooms : "+Array.from(rooms.keys()).join(", "));
-                break;
-            case "kick":
-                if(args.length != 3){
-                    socket.emit(EVENTS.CHAT.SYSTEM.ERROR, "Usage : /kick <user> from <room>");
-                    break;
-                }
-                if(rooms.has(args[2])){
-                    if(rooms.get(args[2]).has(args[0])){
-                        rooms.get(args[2]).get(args[0]).kick();
-                        socket.emit(EVENTS.CHAT.SYSTEM.INFO, "User "+args[0]+" has been kicked from room "+args[2]);
+                    switch(tokens[1]){
+                        case "join":
+                            if(tokens.length == 3){
+                                if(rooms.has(tokens[2])){
+                                    if(rooms.get(tokens[2]).can_join(socket)){
+                                        rooms.get(tokens[2]).join(socket);
+                                        socket.emit(EVENTS.CHAT.SYSTEM.INFO, "You joined the room "+tokens[2]);
+                                        return true;
+                                    }
+                                    else{
+                                        socket.emit(EVENTS.CHAT.SYSTEM.ERROR, "You can't join the room "+tokens[2]);
+                                        return true;
+                                    }
+                                }
+                                else{
+                                    socket.emit(EVENTS.CHAT.SYSTEM.ERROR, "Unknown room "+tokens[2]);
+                                    return true;
+                                }
+                            }
+                            else{
+                                socket.emit(EVENTS.CHAT.SYSTEM.ERROR, "Usage: /room join [room_name]");
+                                return true;
+                            }
+                        case "leave":
+                            if(tokens.length == 3){
+                                if(rooms.has(tokens[2])){
+                                    if(!rooms.get(tokens[2]).isIn(socket)){
+                                        socket.emit(EVENTS.CHAT.SYSTEM.ERROR, "You are not in the room "+tokens[2]);
+                                        return true;
+                                    }
+                                    rooms.get(tokens[2]).remove(socket);
+                                    socket.emit(EVENTS.CHAT.SYSTEM.INFO, "You left the room "+tokens[2]);
+                                    return true;
+                                }
+                                else{
+                                    socket.emit(EVENTS.CHAT.SYSTEM.ERROR, "Unknown room "+tokens[2]);
+                                    return true;
+                                }
+                            }
+                            else{
+                                socket.emit(EVENTS.CHAT.SYSTEM.ERROR, "Usage: /room leave [room_name]");
+                                return true;
+                            }
+                        case "create":
+                            if(tokens.length == 3){
+                                if(rooms.has(tokens[2])){
+                                    socket.emit(EVENTS.CHAT.SYSTEM.ERROR, "Room "+tokens[2]+" already exists");
+                                    return true;
+                                }
+                                else{
+                                    rooms.set(tokens[2], new Room(tokens[2]));
+                                    socket.emit(EVENTS.CHAT.SYSTEM.INFO, "Room "+tokens[2]+" created");
+                                    return true;
+                                }
+                            }
+                            else{
+                                socket.emit(EVENTS.CHAT.SYSTEM.ERROR, "Usage: /room create [room_name]");
+                                return true;
+                            }
+                        case "delete":
+                            if(tokens.length == 3){
+                                if(rooms.has(tokens[2])){
+                                    rooms.delete(tokens[2]);
+                                    socket.emit(EVENTS.CHAT.SYSTEM.INFO, "Room "+tokens[2]+" deleted");
+                                    return true;
+                                }
+                                else{
+                                    socket.emit(EVENTS.CHAT.SYSTEM.ERROR, "Unknown room "+tokens[2]);
+                                    return true;
+                                }
+                            }
+                            else{
+                                socket.emit(EVENTS.CHAT.SYSTEM.ERROR, "Usage: /room delete [room_name]");
+                                return true;
+                            }
+                        case "set_visible":
+                            if(tokens.length == 4){
+                                if(rooms.has(tokens[2])){
+                                    if(tokens[3] == "true"){
+                                        rooms.get(tokens[2]).visible = true;
+                                        socket.emit(EVENTS.CHAT.SYSTEM.INFO, "Room "+tokens[2]+" is now visible");
+                                        return true;
+                                    }
+                                    else if(tokens[3] == "false"){
+                                        rooms.get(tokens[2]).visible = false;
+                                        socket.emit(EVENTS.CHAT.SYSTEM.INFO, "Room "+tokens[2]+" is now invisible");
+                                        return true;
+                                    }
+                                    else{
+                                        socket.emit(EVENTS.CHAT.SYSTEM.ERROR, "Unknown boolean "+tokens[3]);
+                                        return true;
+                                    }
+                                }
+                                else{
+                                    socket.emit(EVENTS.CHAT.SYSTEM.ERROR, "Unknown room "+tokens[2]);
+                                    return true;
+                                }
+                            }
+                            else{
+                                socket.emit(EVENTS.CHAT.SYSTEM.ERROR, "Usage: /room set_visible [room_name] [true | false]");
+                                return true;
+                            }
+                        case "info":
+                            if(tokens.length == 3){
+                                if(rooms.has(tokens[2])){
+                                    socket.emit(EVENTS.CHAT.SYSTEM.INFO, rooms.get(tokens[2]).toString());
+                                    return true;
+                                }
+                                else{
+                                    socket.emit(EVENTS.CHAT.SYSTEM.ERROR, "Unknown room "+tokens[2]);
+                                    return true;
+                                }
+                            }
+                            else{
+                                socket.emit(EVENTS.CHAT.SYSTEM.ERROR, "Usage: /room info [room_name]");
+                                return true;
+                            }
+                        case "list":
+                            let str = "Avaliable rooms : ";
+                            for(let room of rooms.values()){
+                                str += room.name;
+                                str += " ";
+                            }
+                            socket.emit(EVENTS.CHAT.SYSTEM.INFO, str);
+                            return true;
+                        default:
+                            socket.emit(EVENTS.CHAT.SYSTEM.ERROR, "Unknown command /room "+tokens[1]);
+                            return true;
                     }
-                    else{
-                        socket.emit(EVENTS.CHAT.SYSTEM.ERROR, "User "+args[0]+" is not in room "+args[2]);
-                    }
                 }
-                else{
-                    socket.emit(EVENTS.CHAT.SYSTEM.ERROR, "Room "+args[2]+" doesn't exist");
-                }
-                break;
-            case "ban":
-                if(args.length != 3){
-                    socket.emit(EVENTS.CHAT.SYSTEM.ERROR, "Usage : /ban <user> from <room>");
-                    break;
-                }
-                if(rooms.has(args[2])){
-                    if(rooms.get(args[2]).has(args[0])){
-                        rooms.get(args[2]).get(args[0]).ban();
-                        socket.emit(EVENTS.CHAT.SYSTEM.INFO, "User "+args[0]+" has been banned from room "+args[2]);
-                    }
-                    else{
-                        socket.emit(EVENTS.CHAT.SYSTEM.ERROR, "User "+args[0]+" is not in room "+args[2]);
-                    }
-                }
-                else{
-                    socket.emit(EVENTS.CHAT.SYSTEM.ERROR, "Room "+args[2]+" doesn't exist");
-                }
-                break;
-            case "unban":
-                if(args.length != 3){
-                    socket.emit(EVENTS.CHAT.SYSTEM.ERROR, "Usage : /unban <user> from <room>");
-                    break;
-                }
-                if(rooms.has(args[2])){
-                    if(rooms.get(args[2]).has(args[0])){
-                        rooms.get(args[2]).get(args[0]).unban();
-                        socket.emit(EVENTS.CHAT.SYSTEM.INFO, "User "+args[0]+" has been unbanned from room "+args[2]);
-                    }
-                    else{
-                        socket.emit(EVENTS.CHAT.SYSTEM.ERROR, "User "+args[0]+" is not in room "+args[2]);
-                    }
-                }
-                else{
-                    socket.emit(EVENTS.CHAT.SYSTEM.ERROR, "Room "+args[2]+" doesn't exist");
-                }
-                break;
-            case "info":
-                if(args.length != 1){
-                    socket.emit(EVENTS.CHAT.SYSTEM.ERROR, "Usage : /info <msg>");
-                    break;
-                }
-                io.emit(EVENTS.CHAT.SYSTEM.BROADCAST, args[0]);
             default:
-                socket.emit(EVENTS.CHAT.SYSTEM.ERROR, "Unknown command : "+cmd);
+                socket.emit(EVENTS.CHAT.SYSTEM.ERROR, "Unknown command "+tokens[0]);
                 return true;
         }
-        return true;
     }
     return false;
 }

@@ -7,6 +7,7 @@ const { Server } = require("socket.io");
 const io = new Server(server);
 const cio = new CIO(io);
 const { GameLoader } = require('./public/modules/loader/loader.js');
+const { parseCMD } = require('./public/modules/cmd/main.js');
 
 const gameLoader = new GameLoader();
 
@@ -16,16 +17,31 @@ app.get('/', (req, res) => {
     res.sendFile(__dirname + '/index.html');
 });
 
-cio.on_event_broadcast(EVENTS.CHAT.MESSAGE);
-
+let rooms = new Map();
+rooms.set("general", new Room("general"));
+rooms.set("test", new Room("test"));
+let prv = new Room("private");
+prv.visible = false;
+prv.use_whitelist = true;
+rooms.set("private", prv);
 
 cio.on(EVENTS.CONNECTION, (csocket) => {
     csocket.on(EVENTS.CHAT.USER_JOINED, (timestamp, username) => { //catching the user_joined event, triggered by the client when he click on "CHOISIR"
         cio.emit(EVENTS.CHAT.USER_JOINED, timestamp, username);     //broadcasting the user_joined event to all the users, including the new one
+        if(username == "antoine"){
+            rooms.get("private").add_to_whitelist(csocket);
+            csocket.emit(EVENTS.CHAT.SYSTEM.INFO, "You are now in the whitelist of room private");
+        }
     });
 
     csocket.on(EVENTS.DISCONNECT, (reason) => {                     //catching the disconnect event, triggered by the client when he leaves the chat
         cio.emit(EVENTS.CHAT.USER_LEFT, Date.now(), "");
+    });
+
+    csocket.on(EVENTS.CHAT.MESSAGE, (timestamp, username, msg) => { //catching the send_message event, triggered by the client when he sends a message
+        if (!parseCMD(msg, csocket, cio, rooms)) {
+            cio.emit(EVENTS.CHAT.MESSAGE, timestamp, username, msg); //broadcasting the new_message event to all the users, including the sender
+        }
     });
 });
 

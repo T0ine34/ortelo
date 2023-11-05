@@ -60,6 +60,17 @@ class Room{
         this._users = new Set();
         this._user_list = new Set();
         this._use_as_whitelist = false; //if true, the _user_list will be used as a whitelist instead of a blacklist
+        this._is_visible = true;        //if false, the room will not be visible by users that cannot join it
+                                        //if true, the room will be visible by all users
+    }
+
+    set visible(bool){
+        if(typeof bool !== "boolean") throw new Error("bool is not a boolean");
+        this._is_visible = bool;
+    }
+
+    get visible(){
+        return this._is_visible;
     }
 
     addUser(user){
@@ -130,6 +141,11 @@ class Room{
         else{
             return !this._user_list.has(user);
         }
+    }
+
+    can_see(user){
+        if(!user instanceof CSocket) throw new Error("user is not a CSocket Object");
+        return this._is_visible || this.can_join(user); //if the room is visible, everyone can see it, otherwise only users that can join it can see it
     }
 
     isIn(user){
