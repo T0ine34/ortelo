@@ -9,6 +9,8 @@ myForm.innerHTML = '<input id="usernameInput" autocomplete="on" placeholder="Cho
 mydiv.appendChild(myForm)
 document.body.appendChild(mydiv);
 
+const MAX_HISTORY_SIZE = 100;
+
 myForm.addEventListener('submit', function(e){                      //this is triggered when the user click on "CHOISIR"
     e.preventDefault()
     let uin = document.querySelector("#usernameInput")
@@ -78,15 +80,51 @@ myForm.addEventListener('submit', function(e){                      //this is tr
         window.scrollTo(0, document.body.scrollHeight);
     });
 
-
     let form = document.querySelector('#message_form');
     let messages = document.querySelector('#messages');
     let input = document.querySelector('#send_message');
+
+    let history = [];
+    let history_index = 0;
+
+    function history_up(){
+        if(history_index > 0){
+            history_index--;
+            input.value = history[history_index];
+        }
+    }
+    function history_down(){
+        if(history_index < history.length){
+            history_index++;
+            if(history_index == history.length){
+                input.value = "";
+            }
+            else{
+                input.value = history[history_index];
+            }
+        }
+    }
+
+    input.addEventListener('keydown', function(e) {
+        if(e.keyCode == 38){ //arrow up
+            history_up();
+        }
+        else if(e.keyCode == 40){ //arrow down
+            history_down();
+        }
+    });
     
     form.addEventListener('submit', function(e) {                   //this is triggered when the user click on "Send"
         e.preventDefault();
         if (input.value) {
             csocket.emit(EVENTS.CHAT.MESSAGE, username, input.value);     //sending the send_message event to the server, with the username and the message as parameters
+            history.push(input.value);
+            history_index = history.length;
+
+            while(history.length > MAX_HISTORY_SIZE){
+                history.shift(); //remove the first element
+            }
+
             input.value = '';
         }
     });
