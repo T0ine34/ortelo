@@ -10,7 +10,7 @@ To isntall the server, you need to :
 - get the lastest release
 - extract the files
 - run `npm install` in the root folder
-- run `npx nodemon serer.js` in the root folder
+- run `npx nodemon server.js` in the root folder
 - that's it, the server is running on port 3000
 
 To connect to it as a client, you need to :
