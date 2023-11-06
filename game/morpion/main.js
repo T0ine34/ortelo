@@ -34,6 +34,12 @@ function renderBoard() {
         showVictoryAnimation();
     } else if (board.flat().every(cell => cell !== "")) {
         statusElement.textContent = "Match nul!";
+        let zombie = document.getElementById("fighterX");
+        let ghost = document.getElementById("fighterO");
+        zombie.classList.remove("zombieFast");
+        ghost.classList.remove("ghostFast");
+        zombie.classList.remove("zombie");
+        ghost.classList.remove("ghost");
     } else {
         playerClass = (currentPlayer === "X") ? "red-color" : "blue-color";
         statusElement.innerHTML = "Tour de <span class='" + playerClass + "'>" + currentPlayer + "</span>";
