@@ -6,14 +6,14 @@ const server = http.createServer(app);
 const { Server } = require("socket.io");
 const io = new Server(server);
 const cio = new CIO(io);
-const { GameLoader } = require('./public/modules/loader/loader.js');
+const { GameLoader } = require('./server_modules/loader/loader.js');
 
 const gameLoader = new GameLoader();
 
 app.use(express.static("public"));
 
 app.get('/', (req, res) => {
-    res.sendFile(__dirname + '/index.html');
+    res.sendFile(__dirname + 'public/index.html');
 });
 
 cio.on_event_broadcast(EVENTS.CHAT.MESSAGE);
