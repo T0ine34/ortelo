@@ -1,0 +1,16 @@
+{
+    "name": "Morpion",
+    "version": "0.0.1",
+    "description": "Play real morpion",
+    "mainscript": "main.js",
+    "images": {
+        "icon": "icon.png",
+        "sprite": "images/sprite.jpg",
+        "background": "images/background.jpg"
+    },
+    "sounds": {
+        "music": "sounds/music.mp3"
+    },
+    "html": "index.html",
+    "css": "styles.css"
+}

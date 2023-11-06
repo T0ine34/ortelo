@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Morpion</title>
+    <link rel="stylesheet" href="styles.css">
+    <script src="main.js" defer></script>
+</head>
+<body>
+<h1>Morpion</h1>
+<div id="morpionContainer">
+    <table id="gameBoard">
+        <tr>
+            <td onclick="handleMove(0, 0)"></td>
+            <td onclick="handleMove(0, 1)"></td>
+            <td onclick="handleMove(0, 2)"></td>
+        </tr>
+        <tr>
+            <td onclick="handleMove(1, 0)"></td>
+            <td onclick="handleMove(1, 1)"></td>
+            <td onclick="handleMove(1, 2)"></td>
+        </tr>
+        <tr>
+            <td onclick="handleMove(2, 0)"></td>
+            <td onclick="handleMove(2, 1)"></td>
+            <td onclick="handleMove(2, 2)"></td>
+        </tr>
+    </table>
+    <p id="gameStatus"></p>
+    <div id="fighters">
+        <div id="fighterX" class="fighter zombie">🧟</div>
+        <div id="fighterO" class="fighter">👻</div>
+    </div>
+</div>
+<div id="victoryPumpkin1" class="victoryPumpkin">🎃</div>
+<div id="victoryPumpkin2" class="victoryPumpkin">🎃</div>
+<div id="victoryPumpkin3" class="victoryPumpkin">🎃</div>
+<div id="victoryPumpkin4" class="victoryPumpkin">🎃</div>
+<div id="victoryPumpkin5" class="victoryPumpkin">🎃</div>
+<div id="victoryPumpkin6" class="victoryPumpkin">🎃</div>
+<div id="victoryPumpkin7" class="victoryPumpkin">🎃</div>
+<div id="victoryPumpkin8" class="victoryPumpkin">🎃</div>
+<div id="victoryPumpkin9" class="victoryPumpkin">🎃</div>
+<div id="victoryPumpkin0" class="victoryPumpkin">🎃</div>
+</body>
+</html>
