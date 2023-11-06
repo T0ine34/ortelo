@@ -24,20 +24,18 @@ cio.on(EVENTS.CONNECTION, (csocket) => {
     csocket.on(EVENTS.CHAT.USER_JOINED, (timestamp, username) => { //catching the user_joined event, triggered by the client when he click on "CHOISIR"
         cio.emit(EVENTS.CHAT.USER_JOINED, timestamp, username);     //broadcasting the user_joined event to all the users, including the new one
     });
-
+    
     csocket.on(EVENTS.DISCONNECT, (reason) => {                     //catching the disconnect event, triggered by the client when he leaves the chat
         cio.emit(EVENTS.CHAT.USER_LEFT, Date.now(), "");
     });
 });
 
-async function loadGames() {
-    await gameLoader.getFiles()
-    console.log(gameLoader.gameFiles)
+function loadGames() {
+    gameLoader.getFiles()
+    gameLoader.readAGame(gameLoader.gameFiles[0])
     // gameLoader.readAGame()
     //TODO GET ALL GAMES TO SHOW ON WEBPAGE
 }
-
-
     //                                                     //socket is the link between this user and the server
     // socket.on('newUser', (name) => {                    //catching the newUser event, triggered by the client when he click on "CHOISIR"
     //     io.emit("newUser", name);                       //broadcasting the newUser event to all the users, including the new one
