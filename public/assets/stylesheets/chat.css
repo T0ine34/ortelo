@@ -12,14 +12,14 @@
     word-wrap: break-word;
 }
 
-#message_form {
+/* #message_form {
     text-align: center;
     position: fixed;
     left: 5px;
     bottom: 0px;
-}
+} */
 
-
+/* 
 #message_form > button {
     background: #333;
     border: none;
@@ -28,7 +28,7 @@
     border-radius: 3px;
     outline: none;
     color: #fff;
-}
+} */
 
 #messages { 
     list-style-type: none; 

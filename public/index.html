@@ -34,13 +34,18 @@
     
 
         <div class="row d-flex align-items-stretch h-100">
-
             <div id="chat_container" class="col-3">
                 <h3> Discussion générale </h3>
                 <ul id="messages"></ul>
-                <form id="message_form" action="">
-                <input id="send_message" autocomplete="off" /><button>Envoyer</button>
+                <form id="message_form">
+                    <div class="form-group">
+
+                        <input type="text" class="input-group-text" id="send_message" autocomplete="off" />
+                        <button class="form-control">Envoyer</button>
+                    </div>
                 </form>
+                <!-- <form id="message_form" action=""> -->
+                <!-- </form> -->
             </div>
             <div class="col-9 ">
                 APP

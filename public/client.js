@@ -138,5 +138,5 @@ let receive_message = (timestamp, username, msg) => {
     let d = new Date(timestamp);
     item.innerHTML += "<span class=\"timestamp\">"+d.getHours()+":"+d.getMinutes()+":"+d.getSeconds()+"</span>";
     messages.appendChild(item);
-    window.scrollTo(0, document.body.scrollHeight);
+    //window.scrollTo(0, document.body.scrollHeight);
 }
