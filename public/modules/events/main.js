@@ -89,7 +89,11 @@ class Room{
         else{
             return false;
         }
-    }    
+    } 
+
+    join(user){
+        return this.addUser(user);
+    }
 
     removeUser(user){
         //remove the user from the room

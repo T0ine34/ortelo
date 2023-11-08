@@ -16,6 +16,10 @@ class User{
         this._rooms = new Map();      // Map of rooms the user is in
     }
 
+    get rooms() {
+        return this._rooms;
+    }
+
     get username() {
         return this._username;
     }
