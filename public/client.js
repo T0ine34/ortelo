@@ -19,7 +19,7 @@ myForm.addEventListener('submit', function(e){                      //this is tr
     let csocket = new CSocket(io());
 
     let username = uin.value
-    csocket.emit(EVENTS.CHAT.USER_JOINED, username);                               //sending the newUser event to the server, with the username as parameter
+    csocket.emit(EVENTS.MISC.USERNAME, username);                               //sending the newUser event to the server, with the username as parameter
     csocket.on(EVENTS.CHAT.USER_JOINED, (timestamp, name) => {                                //catching the newUser event, triggered by the server when a new user joins the chat
         let item = document.createElement('li');
         item.textContent = name + " a rejoint le chat ! ";
@@ -43,7 +43,7 @@ myForm.addEventListener('submit', function(e){                      //this is tr
         window.scrollTo(0, document.body.scrollHeight);
     });
 
-    csocket.on(EVENTS.CHAT.SYSTEM.ERROR, (timestamp, msg) => {                   //catching the new_message event, triggered by the server when a user sends a message
+    csocket.on(EVENTS.SYSTEM.ERROR, (timestamp, msg) => {                   //catching the new_message event, triggered by the server when a user sends a message
         let item = document.createElement('li');
         item.textContent = "Erreur : " + msg;
         let d = new Date(timestamp);
@@ -52,7 +52,7 @@ myForm.addEventListener('submit', function(e){                      //this is tr
         window.scrollTo(0, document.body.scrollHeight);
     });
 
-    csocket.on(EVENTS.CHAT.SYSTEM.WARNING, (timestamp, msg) => {                   //catching the new_message event, triggered by the server when a user sends a message
+    csocket.on(EVENTS.SYSTEM.WARNING, (timestamp, msg) => {                   //catching the new_message event, triggered by the server when a user sends a message
         let item = document.createElement('li');
         item.textContent = "Warning : " + msg;
         let d = new Date(timestamp);
@@ -62,7 +62,7 @@ myForm.addEventListener('submit', function(e){                      //this is tr
     });
 
 
-    csocket.on(EVENTS.CHAT.SYSTEM.BROADCAST, (timestamp, msg) => {              //catching the new_message event, triggered by the server when a user sends a message
+    csocket.on(EVENTS.SYSTEM.BROADCAST, (timestamp, msg) => {              //catching the new_message event, triggered by the server when a user sends a message
         let item = document.createElement('li');
         item.textContent = "Broadcast : " + msg;
         let d = new Date(timestamp);
@@ -71,7 +71,7 @@ myForm.addEventListener('submit', function(e){                      //this is tr
         window.scrollTo(0, document.body.scrollHeight);
     });
 
-    csocket.on(EVENTS.CHAT.SYSTEM.INFO, (timestamp, msg) => {                   //catching the new_message event, triggered by the server when a user sends a message
+    csocket.on(EVENTS.SYSTEM.INFO, (timestamp, msg) => {                   //catching the new_message event, triggered by the server when a user sends a message
         let item = document.createElement('li');
         item.textContent = "Info : " + msg;
         let d = new Date(timestamp);

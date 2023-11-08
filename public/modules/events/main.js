@@ -10,20 +10,20 @@ const EVENTS = Object.freeze({
         USER_LEFT:  'chat:user_left',       //a user has left the chat
             //data : {(timestamp), (username)}
             //send by client or server(broadcast)
-        SYSTEM : {
-            BROADCAST : 'chat:system:broadcast', //a message has been broadcasted to all users
-                //data : {(timestamp), (message)}
-                //send by server(broadcast)
-            INFO : 'chat:system:info',           //this is an information sent to a user (not broadcasted)
-                //data : {(timestamp), (message)}
-                //send by server(not broadcasted)
-            ERROR : 'chat:system:error',         //an error has occured
-                //data : {(timestamp), (reason)}
-                //send by server(broadcast or not)
-            WARNING : 'chat:system:warning',     //a warning has been sent
-                //data : {(timestamp), (reason)}
-                //send by server(broadcast or not)
-        }
+    },
+    SYSTEM : {
+        BROADCAST : 'chat:system:broadcast', //a message has been broadcasted to all users
+            //data : {(timestamp), (message)}
+            //send by server(broadcast)
+        INFO : 'chat:system:info',           //this is an information sent to a user (not broadcasted)
+            //data : {(timestamp), (message)}
+            //send by server(not broadcasted)
+        ERROR : 'chat:system:error',         //an error has occured
+            //data : {(timestamp), (reason)}
+            //send by server(broadcast or not)
+        WARNING : 'chat:system:warning',     //a warning has been sent
+            //data : {(timestamp), (reason)}
+            //send by server(broadcast or not)
     },
     GAME : {
         USER_JOINED:  'game:user_joined',   //a user has joined the game
@@ -41,6 +41,11 @@ const EVENTS = Object.freeze({
         DATA: 'game:data',                  //this is used for sending data to the game, this will depend on the game
             //data : {(timestamp), [...data]}              //data is dependant on the game, may be null
             //send by client or server(broadcast or not)
+    },
+    MISC : {
+        USERNAME: 'misc:username',          //this is used for sending the username to the server
+            //data : {(timestamp), (username)}
+            //send by client
     },
     //! events below are default events, and don't need to be triggered manually
     CONNECTION : 'connection',                      //a new user has connected (this is a default event, not a custom one)
@@ -255,6 +260,7 @@ class CSocket{
         if(event === EVENTS.GAME.USER_JOINED || event === EVENTS.GAME.USER_LEFT){
             if (args.length !== 1) throw new Error("invalid number of arguments, expected username");
             let [username] = args;
+            console.log("emitting " + event + " with " + username + " using " + this._socket + " ("+typeof this._socket+")");
             this._socket.emit(event, {timestamp: Date.now(), username});
             return;
         }
@@ -262,10 +268,16 @@ class CSocket{
             this._socket.emit(event, {timestamp: Date.now(), data: args});
             return;
         }
-        if(event === EVENTS.CHAT.SYSTEM.ERROR || event === EVENTS.CHAT.SYSTEM.INFO || event === EVENTS.CHAT.SYSTEM.WARNING){
+        if(event === EVENTS.SYSTEM.ERROR || event === EVENTS.SYSTEM.INFO || event === EVENTS.SYSTEM.WARNING){
             if (args.length !== 1) throw new Error("invalid number of arguments, expected message");
             let [message] = args;
             this._socket.emit(event, {timestamp: Date.now(), message});
+            return;
+        }
+        if(event === EVENTS.MISC.USERNAME){
+            if (args.length !== 1) throw new Error("invalid number of arguments, expected username");
+            let [username] = args;
+            this._socket.emit(event, {timestamp: Date.now(), username});
             return;
         }
         throw new Error("invalid event " + event);
@@ -302,15 +314,73 @@ class CSocket{
             });
             return;
         }
-        if(event === EVENTS.CHAT.SYSTEM.ERROR || event === EVENTS.CHAT.SYSTEM.INFO || event === EVENTS.CHAT.SYSTEM.WARNING){
+        if(event === EVENTS.SYSTEM.ERROR || event === EVENTS.SYSTEM.INFO || event === EVENTS.SYSTEM.WARNING){
             this._socket.on(event, (data) => {
                 callback(data.timestamp, data.message);
             });
             return;
         }
-        if(event === EVENTS.CHAT.SYSTEM.BROADCAST){
+        if(event === EVENTS.SYSTEM.BROADCAST){
             this._socket.on(event, (data) => {
                 callback(data.timestamp, data.message);
+            });
+            return;
+        }
+        if(event === EVENTS.MISC.USERNAME){
+            this._socket.on(event, (data) => {
+                callback(data.timestamp, data.username);
+            });
+            return;
+        }
+        throw new Error("invalid event " + event);
+    }
+
+    once(event, callback){
+        if(event === EVENTS.CHAT.MESSAGE){
+            this._socket.once(event, (data) => {
+                callback(data.timestamp, data.username, data.message);
+            });
+            return;
+        }
+        if(event === EVENTS.CHAT.USER_JOINED || event === EVENTS.CHAT.USER_LEFT){
+            this._socket.once(event, (data) => {
+                callback(data.timestamp, data.username);
+            });
+            return;
+        }
+        if(event === EVENTS.GAME.USER_JOINED || event === EVENTS.GAME.USER_LEFT){
+            this._socket.once(event, (data) => {
+                callback(data.timestamp, data.username);
+            });
+            return;
+        }
+        if(event === EVENTS.GAME.START || event === EVENTS.GAME.END || event === EVENTS.GAME.DATA){
+            this._socket.once(event, (data) => {
+                callback(data.timestamp, data.data);
+            });
+            return;
+        }
+        if(event === EVENTS.DISCONNECT){
+            this._socket.once(event, (reason) => {
+                callback(reason);
+            });
+            return;
+        }
+        if(event === EVENTS.SYSTEM.ERROR || event === EVENTS.SYSTEM.INFO || event === EVENTS.SYSTEM.WARNING){
+            this._socket.once(event, (data) => {
+                callback(data.timestamp, data.message);
+            });
+            return;
+        }
+        if(event === EVENTS.SYSTEM.BROADCAST){
+            this._socket.once(event, (data) => {
+                callback(data.timestamp, data.message);
+            });
+            return;
+        }
+        if(event === EVENTS.MISC.USERNAME){
+            this._socket.once(event, (data) => {
+                callback(data.timestamp, data.username);
             });
             return;
         }

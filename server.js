@@ -2,6 +2,7 @@ const express = require('express');
 const app = express();
 const http = require('http');
 const { EVENTS, Room, CIO, CSocket } = require('./public/modules/events/main.js');
+const { User } = require('./public/modules/user/main.js');
 const server = http.createServer(app);
 const { Server } = require("socket.io");
 const io = new Server(server);
@@ -18,26 +19,31 @@ app.get('/', (req, res) => {
 
 cio.on_event_broadcast(EVENTS.CHAT.MESSAGE);
 
+
+let rooms = new Map();
+rooms.set("general", new Room("general"));
+
+
 loadGames()
 
 cio.on(EVENTS.CONNECTION, (csocket) => {
-    csocket.on(EVENTS.CHAT.USER_JOINED, (timestamp, username) => { //catching the user_joined event, triggered by the client when he click on "CHOISIR"
-        cio.emit(EVENTS.CHAT.USER_JOINED, timestamp, username);     //broadcasting the user_joined event to all the users, including the new one
-        if(username == "antoine"){
-            rooms.get("private").add_to_whitelist(csocket);
-            csocket.emit(EVENTS.CHAT.SYSTEM.INFO, "You are now in the whitelist of room private");
-        }
-    });
-    
-    csocket.on(EVENTS.DISCONNECT, (reason) => {                     //catching the disconnect event, triggered by the client when he leaves the chat
-        cio.emit(EVENTS.CHAT.USER_LEFT, Date.now(), "");
+    csocket.once(EVENTS.MISC.USERNAME, (timestamp, username) => {
+        let user = new User(csocket, username);                                     //building the user object
+        csocket.emit(EVENTS.SYSTEM.INFO, "You are now connected as " + username);   //sending a message to the user to inform him that he is connected
+        rooms.get("general").emit(EVENTS.CHAT.USER_JOINED, username);               //broadcasting the newUser event to all the users of the general room, excepting the new one
+        user.joinRoom(rooms.get("general"));                                        //adding the user to the general room
+
+        user.on(EVENTS.DISCONNECT, (reason) => {                     //catching the disconnect event, triggered by the client when he leaves the chat
+            cio.emit(EVENTS.CHAT.USER_LEFT, Date.now(), "");
+        });
+
+        user.on(EVENTS.CHAT.MESSAGE, (timestamp, username, msg) => { //catching the send_message event, triggered by the client when he sends a message
+            if (!parseCMD(msg, csocket, cio, rooms)) {
+                cio.emit(EVENTS.CHAT.MESSAGE, timestamp, username, msg); //broadcasting the new_message event to all the users, including the sender
+            }
+        });
     });
 
-    csocket.on(EVENTS.CHAT.MESSAGE, (timestamp, username, msg) => { //catching the send_message event, triggered by the client when he sends a message
-        if (!parseCMD(msg, csocket, cio, rooms)) {
-            cio.emit(EVENTS.CHAT.MESSAGE, timestamp, username, msg); //broadcasting the new_message event to all the users, including the sender
-        }
-    });
 });
 
 function loadGames() {
