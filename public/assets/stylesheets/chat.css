@@ -4,6 +4,8 @@
     box-sizing: border-box;
     left: 0;  right: 0;
     height: 100%;
+    /* display: flex; */
+    align-items: flex-end; 
 }
 
 #chat_container h3 {
@@ -19,22 +21,18 @@
     bottom: 0px;
 } */
 
-/* 
+
 #message_form > button {
-    background: #333;
     border: none;
     margin: 0.25rem;
     padding-bottom: 5px;
-    border-radius: 3px;
-    outline: none;
-    color: #fff;
-} */
+}
 
 #messages { 
     list-style-type: none; 
-    /* margin: 0; 
-    padding: 0; */
-    /* max-height: 65%; */
+    margin: 0; 
+    padding: 0;
+    max-height: 80%;
     overflow-y: auto;
     overflow-x: hidden;
 }

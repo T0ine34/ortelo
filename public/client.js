@@ -1,8 +1,8 @@
 const MAX_HISTORY_SIZE = 100;
 
 let username
-while (username == null || username == "") {
-    username = prompt("Enter your username")
+while (username == null || username == "" || !username.trim().length || username.length > 16) {
+    username = prompt("Enter your username (can not be longer than 16 characters)")
 }
 
 let csocket = new CSocket(io());
@@ -124,5 +124,5 @@ let receive_message = (timestamp, username, msg) => {
     let d = new Date(timestamp);
     item.innerHTML += "<span class=\"timestamp\">"+d.getHours()+":"+d.getMinutes()+":"+d.getSeconds()+"</span>";
     messages.appendChild(item);
-    //window.scrollTo(0, document.body.scrollHeight);
+    item.scrollIntoView();
 }
