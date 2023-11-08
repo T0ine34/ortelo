@@ -1,16 +1,33 @@
 const { EVENTS, Room, CSocket } = require('../events/main');
 
 
-class User extends CSocket {
+class User{
     constructor(socket, username) {
-        super(socket);               // Calling the CSocket parent class constructor
+        if (typeof username !== "string") {
+            throw new Error("The username must be a string.");
+        }
+        if(socket instanceof CSocket){
+            this._socket = socket;
+        }
+        else if(socket instanceof Socket){
+            this._socket = new CSocket(socket);
+        }
         this._username = username;   // User name
         this._rooms = new Map();      // Map of rooms the user is in
-
     }
 
     get username() {
         return this._username;
+    }
+
+    emit(event, ...args) {
+        this._socket.emit(event, ...args);
+    }
+    on(event, callback) {
+        this._socket.on(event, callback);
+    }
+    once(event, callback) {
+        this._socket.once(event, callback);
     }
 
     //Method for joining a room 
