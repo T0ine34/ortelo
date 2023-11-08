@@ -8,6 +8,7 @@ const { Server } = require("socket.io");
 const io = new Server(server);
 const cio = new CIO(io);
 const { GameLoader } = require('./server_modules/loader/loader.js');
+const { parseCMD } = require('./server_modules/cmd/main.js');
 
 const gameLoader = new GameLoader();
 
@@ -16,8 +17,6 @@ app.use(express.static("public"));
 app.get('/', (req, res) => {
     res.sendFile(__dirname + 'public/index.html');
 });
-
-cio.on_event_broadcast(EVENTS.CHAT.MESSAGE);
 
 
 let rooms = new Map();
@@ -39,7 +38,9 @@ cio.on(EVENTS.CONNECTION, (csocket) => {
 
         user.on(EVENTS.CHAT.MESSAGE, (timestamp, username, msg) => { //catching the send_message event, triggered by the client when he sends a message
             if (!parseCMD(msg, csocket, cio, rooms)) {
-                cio.emit(EVENTS.CHAT.MESSAGE, timestamp, username, msg); //broadcasting the new_message event to all the users, including the sender
+                for(let room of user.rooms.values()){
+                    room.emit(EVENTS.CHAT.MESSAGE, username, msg); //broadcasting the new_message event to all the users, including the sender
+                }
             }
         });
     });
