@@ -264,7 +264,6 @@ class CSocket{
         if(event === EVENTS.GAME.USER_JOINED || event === EVENTS.GAME.USER_LEFT){
             if (args.length !== 1) throw new Error("invalid number of arguments, expected username");
             let [username] = args;
-            console.log("emitting " + event + " with " + username + " using " + this._socket + " ("+typeof this._socket+")");
             this._socket.emit(event, {timestamp: Date.now(), username});
             return;
         }

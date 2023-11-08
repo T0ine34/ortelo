@@ -28,16 +28,19 @@ loadGames()
 cio.on(EVENTS.CONNECTION, (csocket) => {
     csocket.once(EVENTS.MISC.USERNAME, (timestamp, username) => {
         let user = new User(csocket, username);                                     //building the user object
-        csocket.emit(EVENTS.SYSTEM.INFO, "You are now connected as " + username);   //sending a message to the user to inform him that he is connected
+        user.emit(EVENTS.SYSTEM.INFO, "You are now connected as " + username);   //sending a message to the user to inform him that he is connected
         rooms.get("general").emit(EVENTS.CHAT.USER_JOINED, username);               //broadcasting the newUser event to all the users of the general room, excepting the new one
         user.joinRoom(rooms.get("general"));                                        //adding the user to the general room
 
-        user.on(EVENTS.DISCONNECT, (reason) => {                     //catching the disconnect event, triggered by the client when he leaves the chat
-            cio.emit(EVENTS.CHAT.USER_LEFT, Date.now(), "");
+        user.on(EVENTS.DISCONNECT, (reason) => {
+            for(let room of user.rooms.values()){
+                room.emit(EVENTS.CHAT.USER_LEFT, Date.now(), ""); 
+            }
         });
 
         user.on(EVENTS.CHAT.MESSAGE, (timestamp, username, msg) => { //catching the send_message event, triggered by the client when he sends a message
-            if (!parseCMD(msg, csocket, cio, rooms)) {
+            if (!parseCMD(msg, user, cio, rooms)) {
+                console.log(user.rooms);
                 for(let room of user.rooms.values()){
                     room.emit(EVENTS.CHAT.MESSAGE, username, msg); //broadcasting the new_message event to all the users, including the sender
                 }
