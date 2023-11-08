@@ -1,8 +1,8 @@
 const MAX_HISTORY_SIZE = 100;
 
-let username
+let username;
 while (username == null || username == "" || !username.trim().length || username.length > 16) {
-    username = prompt("Enter your username (can not be longer than 16 characters)")
+    username = prompt("Enter your username (can not be longer than 16 characters)");
 }
 
 let csocket = new CSocket(io());
@@ -11,20 +11,20 @@ csocket.emit(EVENTS.MISC.USERNAME, username);                               //se
 csocket.on(EVENTS.CHAT.USER_JOINED, (timestamp, name) => {                                //catching the newUser event, triggered by the server when a new user joins the chat
     let item = document.createElement('li');
     item.textContent = name + " a rejoint le chat ! ";
-    item.innerHTML += "&#128075;"
+    item.innerHTML += "&#128075;";
     item.innerHTML += String(timestamp);
     messages.appendChild(item);
     window.scrollTo(0, document.body.scrollHeight);
-})
+});
 
 csocket.on(EVENTS.CHAT.MESSAGE, (timestamp, username, msg) => {                   //catching the new_message event, triggered by the server when a user sends a message
-    receive_message(timestamp, username, msg)
-})
+    receive_message(timestamp, username, msg);
+});
 
 csocket.on(EVENTS.CHAT.USER_LEFT, (timestamp, username) => {                   //catching the new_message event, triggered by the server when a user sends a message
     let item = document.createElement('li');
     item.textContent = username + " a quitté le chat ! ";
-    item.innerHTML += "&#128078;"
+    item.innerHTML += "&#128078;";
     let d = new Date(timestamp);
     item.innerHTML += "<span class=\"timestamp\">"+d.getHours()+":"+d.getMinutes()+":"+d.getSeconds()+"</span>";
     messages.appendChild(item);
