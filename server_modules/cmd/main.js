@@ -32,7 +32,7 @@ function parseCMD(str, user, io, rooms){ //rooms is a map of room names to room 
                             if(tokens.length == 3){
                                 if(rooms.has(tokens[2])){
                                     if(rooms.get(tokens[2]).can_join(user)){
-                                        rooms.get(tokens[2]).join(user);
+                                        user.joinRoom(rooms.get(tokens[2]));
                                         user.emit(EVENTS.SYSTEM.INFO, "You joined the room "+tokens[2]);
                                         return true;
                                     }
@@ -53,11 +53,11 @@ function parseCMD(str, user, io, rooms){ //rooms is a map of room names to room 
                         case "leave":
                             if(tokens.length == 3){
                                 if(rooms.has(tokens[2])){
-                                    if(!rooms.get(tokens[2]).isIn(user)){
+                                    if(!rooms.get(tokens[2]).isIn(user.socket)){
                                         user.emit(EVENTS.SYSTEM.ERROR, "You are not in the room "+tokens[2]);
                                         return true;
                                     }
-                                    rooms.get(tokens[2]).removeUser(user);
+                                    rooms.get(tokens[2]).removeUser(user.socket);
                                     user.emit(EVENTS.SYSTEM.INFO, "You left the room "+tokens[2]);
                                     return true;
                                 }
@@ -158,7 +158,7 @@ function parseCMD(str, user, io, rooms){ //rooms is a map of room names to room 
                                     //only show rooms where I am in
                                     let str = "";
                                     for(let room of rooms.values()){
-                                        if(room.isIn(user)){
+                                        if(room.isIn(user.socket)){
                                             str += room.name+"\n";
                                         }
                                     }

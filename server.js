@@ -34,15 +34,16 @@ cio.on(EVENTS.CONNECTION, (csocket) => {
 
         user.on(EVENTS.DISCONNECT, (reason) => {
             for(let room of user.rooms.values()){
-                room.emit(EVENTS.CHAT.USER_LEFT, Date.now(), ""); 
+                room.emit(EVENTS.CHAT.USER_LEFT, ""); 
             }
         });
 
         user.on(EVENTS.CHAT.MESSAGE, (timestamp, username, msg) => { //catching the send_message event, triggered by the client when he sends a message
             if (!parseCMD(msg, user, cio, rooms)) {
-                console.log(user.rooms);
                 for(let room of user.rooms.values()){
-                    room.emit(EVENTS.CHAT.MESSAGE, username, msg); //broadcasting the new_message event to all the users, including the sender
+                    if(room.isIn(user.socket)){
+                        room.emit(EVENTS.CHAT.MESSAGE, username, msg); //broadcasting the new_message event to all the users, including the sender
+                    }
                 }
             }
         });

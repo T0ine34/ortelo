@@ -24,6 +24,10 @@ class User{
         return this._username;
     }
 
+    get socket() {
+        return this._socket;
+    }
+
     emit(event, ...args) {
         this._socket.emit(event, ...args);
     }
@@ -37,9 +41,8 @@ class User{
     //Method for joining a room 
     joinRoom(room) {
         if (room instanceof Room) {
-            room.addUser(this);
+            this._socket.join(room);
             this._rooms.set(room.name, room);
-            this.emit(EVENTS.GAME.USER_JOINED, this._username);
         } else {
             throw new Error("The supplied object is not an instance of the Room class.");
         }
@@ -50,7 +53,6 @@ class User{
         if (room instanceof Room) {
             room.removeUser(this);
             this._rooms.delete(room.name);
-            this.emit(EVENTS.GAME.USER_LEFT, this._username);
         } else {
             throw new Error("The supplied object is not an instance of the Room class.");
         }
