@@ -1,7 +1,7 @@
 #chat_container {
     background: rgba(84, 146, 246, 0.69); 
-    padding: 0.25rem;  
-    position: fixed; 
+    padding: 0.25rem;
+    box-sizing: border-box;
     left: 0;  right: 0;
     height: 100%;
 }
@@ -16,8 +16,6 @@
     text-align: center;
     position: fixed;
     left: 5px;
-    width : calc(20% - 20px);
-    max-width:calc(250px - 20px); 
     bottom: 0px;
 }
 
@@ -34,9 +32,9 @@
 
 #messages { 
     list-style-type: none; 
-    margin: 0; 
-    padding: 0;
-    max-height: 65%;
+    /* margin: 0; 
+    padding: 0; */
+    /* max-height: 65%; */
     overflow-y: auto;
     overflow-x: hidden;
 }
@@ -44,7 +42,7 @@
 #messages > li:nth-child(odd) { background: #efefef; }
 
 #send_message { 
-    border: none;
+    border: 1px solid black;
     font-size: larger;
     margin: 0.1rem;
     width: 100%;

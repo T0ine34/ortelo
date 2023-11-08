@@ -1,22 +1,32 @@
-@import url("./queried_style.css");
-@import url("./navbar.css");
-@import url("./chat.css");
+/* @import url("./queried_style.css");
+@import url("./navbar.css");*/
+@import url("./chat.css"); 
 
 body {
     margin: 0;
-    padding-bottom: 3rem;
     font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-    height: 100%;
+    height: 100vh;
     width: 100%;
+}
+
+.bg-blue {
+    background-color: rgba(84, 146, 246, 0.69);
+    font-size: x-large;
+}
+
+/* .littlenav {
+    height: 2.5em;
+    text-align: center;
+
 }
 
 .top_container {
     width: 100%;
     height: 100%;
-}
+}*/
 
 #app_container {
-    height: -webkit-fill-available;
+    height: 80%;
 }
 
 .app_banner {
@@ -28,7 +38,7 @@ body {
 }
 
 
-#usernameDiv {
+/*#usernameDiv {
     margin-top: 1%;
     display: flex;
     justify-content: center;
@@ -58,4 +68,4 @@ body {
 .timestamp{
     font-size: 0.5rem;
     color: #aaa;
-}
+} */

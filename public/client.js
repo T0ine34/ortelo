@@ -18,7 +18,7 @@ myForm.addEventListener('submit', function(e){                      //this is tr
     let csocket = new CSocket(io());
 
     let username = uin.value
-    csocket.emit(EVENTS.CHAT.USER_JOINED, username);                               //sending the newUser event to the server, with the username as parameter
+    csocket.emit(EVENTS.CHAT.USER_JOINED, username);                             //sending the newUser event to the server, with the username as parameter
     csocket.on(EVENTS.CHAT.USER_JOINED, (timestamp, name) => {                                //catching the newUser event, triggered by the server when a new user joins the chat
         let item = document.createElement('li');
         item.textContent = name + " a rejoint le chat ! ";

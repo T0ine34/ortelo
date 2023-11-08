@@ -5,45 +5,62 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="icon" type="image/x-icon" href="./assets/images/ortelo_logo.png">
+    <link rel="stylesheet" href="./bootstrap/css/bootstrap.min.css">
     <link rel="stylesheet" href="./assets/stylesheets/style.css">
-  </head>
+</head>
 
-  <body>
-    <div class="top_container">
-      
-      <img class="app_banner" src="./assets/images/ortelo_banner.png" alt="App Banner"> </h1>
-      <nav>
-        <ul class="top_navbar">
-            <li class="top_navbar_item top_navbar_item_left"> Utilisateur </li>
-            <li class="top_navbar_item top_navbar_item_right"> Jeux </li>
-        </ul>
-      </nav>
+<body>
+    <div class="container-fluid" id="app_container">
+        
+        <div class="row">    
+            <img class="app_banner" src="./assets/images/ortelo_banner.png" alt="App Banner"> </h1>
+        </div>
+        <div class="row littlenav">
+            <div class="col bg-blue"> Utilisateur </div>
+            <div class="col bg-blue"> Jeux </div>
+        </div>
 
-    </div>
+        <!-- <div class="row">
+            
+            <div id="bottom_container">
+                <nav>
+                  <ul class="bottom_navbar">
+                    <li> <button> <img id="profile_bottom" src="./assets/images/profile.png"> </button> </li>
+                  </ul>
+                </nav>
+            </div>   
+            
+        </div> -->
     
-    <div id="bottom_container">
-        <nav>
-          <ul class="bottom_navbar">
-            <li> <button> <img id="profile_bottom" src="./assets/images/profile.png"> </button> </li>
-          </ul>
-        </nav>
-    </div>   
 
-    <div id="app_container">
+        <div class="row d-flex align-items-stretch h-100">
+
+            <div id="chat_container" class="col-3">
+                <h3> Discussion générale </h3>
+                <ul id="messages"></ul>
+                <form id="message_form" action="">
+                <input id="send_message" autocomplete="off" /><button>Envoyer</button>
+                </form>
+            </div>
+            <div class="col-9 ">
+                APP
+            </div>
+    
+        </div>
       
-      <!-- Messages box -->
-      <div id="chat_container">
-        <h3> Discussion générale </h3>
-        <ul id="messages"></ul>
-        <form id="message_form" action="">
-          <input id="send_message" autocomplete="off" /><button>Envoyer</button>
-        </form>
-      </div>
-      <!-- Messages box -->
+        <!-- Messages box -->
+        <!-- <div id="chat_container">
+            <h3> Discussion générale </h3>
+            <ul id="messages"></ul>
+            <form id="message_form" action="">
+            <input id="send_message" autocomplete="off" /><button>Envoyer</button>
+            </form>
+        </div> -->
+        <!-- Messages box -->
 
-      <div id="games_container">
+        <div id="games_container">
 
-      </div>
+        </div>
 
     
 
