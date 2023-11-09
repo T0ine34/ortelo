@@ -18,8 +18,10 @@ class GameLoader {
     }
 
 
-    readAGame(filePath) {
-        (new Game(filePath)).init()
+    async readAGame(filePath) {
+        let game = new Game(filePath)
+        await game.init()
+        return game;
     }
 
     addGameToApp(filePath){
