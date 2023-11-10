@@ -16,7 +16,7 @@
             <img class="app_banner" src="./assets/images/ortelo_banner.png" alt="App Banner"> </h1>
         </div>
         <div class="row littlenav">
-            <!-- <div class="col bg-blue"> Utilisateur </div> -->
+            <div class="col-3 bg-blue"> Social </div>
             <div class="col bg-blue"> Jeux </div>
         </div>
 
@@ -34,46 +34,37 @@
     
 
         <div class="row d-flex align-items-stretch h-100">
+
             <div id="chat_container" class="col-3">
+                
                 <h3> Discussion générale </h3>
                 <ul id="messages" class="overflow-auto"></ul>
+
                 <form id="message_form">
+
                     <div class="form-group align-self-end">
 
                         <input type="text" class="input-group-text" id="send_message" autocomplete="off" />
                         <button class="form-control btn btn-primary">Envoyer</button>
+
                     </div>
+
                 </form>
-                <!-- <form id="message_form" action=""> -->
-                <!-- </form> -->
+
             </div>
+            
             <div class="col-9" id="games_container">
                 
             </div>
     
-        </div>
-      
-        <!-- Messages box -->
-        <!-- <div id="chat_container">
-            <h3> Discussion générale </h3>
-            <ul id="messages"></ul>
-            <form id="message_form" action="">
-            <input id="send_message" autocomplete="off" /><button>Envoyer</button>
-            </form>
-        </div> -->
-        <!-- Messages box -->
-
-        <div id="games_container">
 
         </div>
-
-    
 
     </div>
 
     
 
-    <!-- <footer> &copy; Oversi 2023 <br> BRANDON, HORARD, BUIREY, DIEZ, BOUFROUR</footer> -->
+    
   </body>
   <script src="/socket.io/socket.io.js"></script>
     <script src="./modules/events/events.js"></script>

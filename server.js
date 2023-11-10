@@ -21,10 +21,8 @@ app.get('/events', (req, res) => {
     res.sendFile(__dirname + '/public/modules/events/events.json');
 });
 
-
 let rooms = new Map();
 rooms.set("general", new Room("general"));
-
 
 loadGames()
 
@@ -55,9 +53,10 @@ cio.on("connection", (csocket) => {
 
 });
 
-function loadGames() {
+async function loadGames() {
     gameLoader.getFiles()
-    gameLoader.readAGame(gameLoader.gameFiles[0])
+    let game = await gameLoader.readAGame(gameLoader.gameFiles[1]);
+    console.log(game);
     // gameLoader.readAGame()
     //TODO GET ALL GAMES TO SHOW ON WEBPAGE
 }
