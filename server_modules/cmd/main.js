@@ -1,5 +1,5 @@
-const { EVENTS, Room } = require("../../public/modules/events/main.js");
-const { User } = require("../../public/modules/user/main.js");
+const { EVENTS, Room } = require("../events/main.js");
+const { User } = require("../user/main.js");
 
 function parseCMD(str, user, io, rooms){ //rooms is a map of room names to room objects
     //return true if we parsed a command (even if it's an invalid one), false otherwise
@@ -8,22 +8,22 @@ function parseCMD(str, user, io, rooms){ //rooms is a map of room names to room 
         switch(tokens[0]){
             case "help":
                 if(tokens.length == 1){
-                    user.emit(EVENTS.SYSTEM.INFO, "Available commands : /help, /room");
+                    user.emit(EVENTS.SYSTEM.INFO, Date.now(), "Available commands : /help, /room");
                     return true;
                 }
                 else{
                     switch(tokens[1]){
                         case "room":
-                            user.emit(EVENTS.SYSTEM.INFO, "Usage: /room {join | leave | create | delete | set_visible | info | list} [room_name] [username | boolean]");
+                            user.emit(EVENTS.SYSTEM.INFO, Date.now(), "Usage: /room {join | leave | create | delete | set_visible | info | list} [room_name] [username | boolean]");
                             return true;
                         default:
-                            user.emit(EVENTS.SYSTEM.ERROR, "Unknown command /help "+tokens[1]);
+                            user.emit(EVENTS.SYSTEM.ERROR, Date.now(), "Unknown command /help "+tokens[1]);
                             return true;
                     }
                 }
             case "room":
                 if(tokens.length == 1){
-                    user.emit(EVENTS.SYSTEM.ERROR, "Usage: /room {join | leave | create | delete | set_visible | info | list} [room_name] [username | boolean]");
+                    user.emit(EVENTS.SYSTEM.ERROR, Date.now(), "Usage: /room {join | leave | create | delete | set_visible | info | list} [room_name] [username | boolean]");
                     return true;
                 }
                 else{
@@ -33,73 +33,73 @@ function parseCMD(str, user, io, rooms){ //rooms is a map of room names to room 
                                 if(rooms.has(tokens[2])){
                                     if(rooms.get(tokens[2]).can_join(user)){
                                         user.joinRoom(rooms.get(tokens[2]));
-                                        user.emit(EVENTS.SYSTEM.INFO, "You joined the room "+tokens[2]);
+                                        user.emit(EVENTS.SYSTEM.INFO, Date.now(), "You joined the room "+tokens[2]);
                                         return true;
                                     }
                                     else{
-                                        user.emit(EVENTS.SYSTEM.ERROR, "You can't join the room "+tokens[2]);
+                                        user.emit(EVENTS.SYSTEM.ERROR, Date.now(), "You can't join the room "+tokens[2]);
                                         return true;
                                     }
                                 }
                                 else{
-                                    user.emit(EVENTS.SYSTEM.ERROR, "Unknown room "+tokens[2]);
+                                    user.emit(EVENTS.SYSTEM.ERROR, Date.now(), "Unknown room "+tokens[2]);
                                     return true;
                                 }
                             }
                             else{
-                                user.emit(EVENTS.SYSTEM.ERROR, "Usage: /room join [room_name]");
+                                user.emit(EVENTS.SYSTEM.ERROR, Date.now(), "Usage: /room join [room_name]");
                                 return true;
                             }
                         case "leave":
                             if(tokens.length == 3){
                                 if(rooms.has(tokens[2])){
                                     if(!rooms.get(tokens[2]).isIn(user.socket)){
-                                        user.emit(EVENTS.SYSTEM.ERROR, "You are not in the room "+tokens[2]);
+                                        user.emit(EVENTS.SYSTEM.ERROR, Date.now(), "You are not in the room "+tokens[2]);
                                         return true;
                                     }
                                     rooms.get(tokens[2]).removeUser(user.socket);
-                                    user.emit(EVENTS.SYSTEM.INFO, "You left the room "+tokens[2]);
+                                    user.emit(EVENTS.SYSTEM.INFO, Date.now(), "You left the room "+tokens[2]);
                                     return true;
                                 }
                                 else{
-                                    user.emit(EVENTS.SYSTEM.ERROR, "Unknown room "+tokens[2]);
+                                    user.emit(EVENTS.SYSTEM.ERROR, Date.now(), "Unknown room "+tokens[2]);
                                     return true;
                                 }
                             }
                             else{
-                                user.emit(EVENTS.SYSTEM.ERROR, "Usage: /room leave [room_name]");
+                                user.emit(EVENTS.SYSTEM.ERROR, Date.now(), "Usage: /room leave [room_name]");
                                 return true;
                             }
                         case "create":
                             if(tokens.length == 3){
                                 if(rooms.has(tokens[2])){
-                                    user.emit(EVENTS.SYSTEM.ERROR, "Room "+tokens[2]+" already exists");
+                                    user.emit(EVENTS.SYSTEM.ERROR, Date.now(), "Room "+tokens[2]+" already exists");
                                     return true;
                                 }
                                 else{
                                     rooms.set(tokens[2], new Room(tokens[2]));
-                                    user.emit(EVENTS.SYSTEM.INFO, "Room "+tokens[2]+" created");
+                                    user.emit(EVENTS.SYSTEM.INFO, Date.now(), "Room "+tokens[2]+" created");
                                     return true;
                                 }
                             }
                             else{
-                                user.emit(EVENTS.SYSTEM.ERROR, "Usage: /room create [room_name]");
+                                user.emit(EVENTS.SYSTEM.ERROR, Date.now(), "Usage: /room create [room_name]");
                                 return true;
                             }
                         case "delete":
                             if(tokens.length == 3){
                                 if(rooms.has(tokens[2])){
                                     rooms.delete(tokens[2]);
-                                    user.emit(EVENTS.SYSTEM.INFO, "Room "+tokens[2]+" deleted");
+                                    user.emit(EVENTS.SYSTEM.INFO, Date.now(), "Room "+tokens[2]+" deleted");
                                     return true;
                                 }
                                 else{
-                                    user.emit(EVENTS.SYSTEM.ERROR, "Unknown room "+tokens[2]);
+                                    user.emit(EVENTS.SYSTEM.ERROR, Date.now(), "Unknown room "+tokens[2]);
                                     return true;
                                 }
                             }
                             else{
-                                user.emit(EVENTS.SYSTEM.ERROR, "Usage: /room delete [room_name]");
+                                user.emit(EVENTS.SYSTEM.ERROR, Date.now(), "Usage: /room delete [room_name]");
                                 return true;
                             }
                         case "set_visible":
@@ -107,41 +107,41 @@ function parseCMD(str, user, io, rooms){ //rooms is a map of room names to room 
                                 if(rooms.has(tokens[2])){
                                     if(tokens[3] == "true"){
                                         rooms.get(tokens[2]).visible = true;
-                                        user.emit(EVENTS.SYSTEM.INFO, "Room "+tokens[2]+" is now visible");
+                                        user.emit(EVENTS.SYSTEM.INFO, Date.now(), "Room "+tokens[2]+" is now visible");
                                         return true;
                                     }
                                     else if(tokens[3] == "false"){
                                         rooms.get(tokens[2]).visible = false;
-                                        user.emit(EVENTS.SYSTEM.INFO, "Room "+tokens[2]+" is now invisible");
+                                        user.emit(EVENTS.SYSTEM.INFO, Date.now(), "Room "+tokens[2]+" is now invisible");
                                         return true;
                                     }
                                     else{
-                                        user.emit(EVENTS.SYSTEM.ERROR, "Unknown boolean "+tokens[3]);
+                                        user.emit(EVENTS.SYSTEM.ERROR, Date.now(), "Unknown boolean "+tokens[3]);
                                         return true;
                                     }
                                 }
                                 else{
-                                    user.emit(EVENTS.SYSTEM.ERROR, "Unknown room "+tokens[2]);
+                                    user.emit(EVENTS.SYSTEM.ERROR, Date.now(), "Unknown room "+tokens[2]);
                                     return true;
                                 }
                             }
                             else{
-                                user.emit(EVENTS.SYSTEM.ERROR, "Usage: /room set_visible [room_name] [true | false]");
+                                user.emit(EVENTS.SYSTEM.ERROR, Date.now(), "Usage: /room set_visible [room_name] [true | false]");
                                 return true;
                             }
                         case "info":
                             if(tokens.length == 3){
                                 if(rooms.has(tokens[2])){
-                                    user.emit(EVENTS.SYSTEM.INFO, rooms.get(tokens[2]).toString());
+                                    user.emit(EVENTS.SYSTEM.INFO, Date.now(), rooms.get(tokens[2]).toString());
                                     return true;
                                 }
                                 else{
-                                    user.emit(EVENTS.SYSTEM.ERROR, "Unknown room "+tokens[2]);
+                                    user.emit(EVENTS.SYSTEM.ERROR, Date.now(), "Unknown room "+tokens[2]);
                                     return true;
                                 }
                             }
                             else{
-                                user.emit(EVENTS.SYSTEM.ERROR, "Usage: /room info [room_name]");
+                                user.emit(EVENTS.SYSTEM.ERROR, Date.now(), "Usage: /room info [room_name]");
                                 return true;
                             }
                         case "list":
@@ -151,7 +151,7 @@ function parseCMD(str, user, io, rooms){ //rooms is a map of room names to room 
                                     for(let room of rooms.values()){
                                         str += room.name+"\n";
                                     }
-                                    user.emit(EVENTS.SYSTEM.INFO, str);
+                                    user.emit(EVENTS.SYSTEM.INFO, Date.now(), str);
                                     return true;
                                 }
                                 else if(tokens[2] == "mines"){
@@ -162,26 +162,26 @@ function parseCMD(str, user, io, rooms){ //rooms is a map of room names to room 
                                             str += room.name+"\n";
                                         }
                                     }
-                                    user.emit(EVENTS.SYSTEM.INFO, str);
+                                    user.emit(EVENTS.SYSTEM.INFO,  Date.now(), str);
                                     return true;
                                 }
                                 else{
-                                    user.emit(EVENTS.SYSTEM.ERROR, "Unknown room list "+tokens[2]);
+                                    user.emit(EVENTS.SYSTEM.ERROR, Date.now(), "Unknown room list "+tokens[2]);
                                     return true;
                                 }
                             }
                             else{
-                                user.emit(EVENTS.SYSTEM.ERROR, "Usage: /room list [all | mines]");
+                                user.emit(EVENTS.SYSTEM.ERROR, Date.now(), "Usage: /room list [all | mines]");
                                 return true;
                             }
                             return true;
                         default:
-                            user.emit(EVENTS.SYSTEM.ERROR, "Unknown command /room "+tokens[1]);
+                            user.emit(EVENTS.SYSTEM.ERROR, Date.now(), "Unknown command /room "+tokens[1]);
                             return true;
                     }
                 }
             default:
-                user.emit(EVENTS.SYSTEM.ERROR, "Unknown command "+tokens[0]);
+                user.emit(EVENTS.SYSTEM.ERROR, Date.now(), "Unknown command "+tokens[0]);
                 return true;
         }
     }

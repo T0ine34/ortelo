@@ -1,13 +1,15 @@
 const MAX_HISTORY_SIZE = 100;
 
+
 let username;
 while (username == null || username == "" || !username.trim().length || username.length > 16) {
     username = prompt("Enter your username (can not be longer than 16 characters)");
 }
 
 let csocket = new CSocket(io());
+csocket.emit(EVENTS.MISC.USERNAME, Date.now(), username);                               //sending the newUser event to the server, with the username as parameter
 
-csocket.emit(EVENTS.MISC.USERNAME, username);                               //sending the newUser event to the server, with the username as parameter
+
 csocket.on(EVENTS.CHAT.USER_JOINED, (timestamp, name) => {                                //catching the newUser event, triggered by the server when a new user joins the chat
     let item = document.createElement('li');
     item.textContent = name + " a rejoint le chat ! ";
@@ -68,6 +70,7 @@ csocket.on(EVENTS.SYSTEM.INFO, (timestamp, msg) => {                   //catchin
     window.scrollTo(0, document.body.scrollHeight);
 });
 
+
 let form = document.querySelector('#message_form');
 let messages = document.querySelector('#messages');
 let input = document.querySelector('#send_message');
@@ -105,7 +108,7 @@ input.addEventListener('keydown', function(e) {
 form.addEventListener('submit', function(e) {                   //this is triggered when the user click on "Send"
     e.preventDefault();
     if (input.value) {
-        csocket.emit(EVENTS.CHAT.MESSAGE, username, input.value);     //sending the send_message event to the server, with the username and the message as parameters
+        csocket.emit(EVENTS.CHAT.MESSAGE, Date.now(), username, input.value);     //sending the send_message event to the server, with the username and the message as parameters
         history.push(input.value);
         history_index = history.length;
 
