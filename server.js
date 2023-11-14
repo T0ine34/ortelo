@@ -12,10 +12,12 @@ const { parseCMD } = require('./server_modules/cmd/main.js');
 const { Settings } = require('./server_modules/settings/main.js');
 const { is_json, is_json_matching } = require('./server_modules/json_checker/main.js');
 
-if(!is_json("./config.json")){ throw new Error("config.json is not a valid json file"); }
-if(!is_json_matching("./config.json")){ throw new Error("config.json is not matching the structure"); }
 
-var settings = new Settings("./config.json"); //from this line, this should be the only path to data file (not modules) in the whole server
+const config_filepath = "./config.json";
+if(!is_json(config_filepath)){ throw new Error("config.json is not a valid json file"); }
+if(!is_json_matching(config_filepath)){ throw new Error("config.json is not matching the structure"); }
+
+var settings = new Settings(config_filepath); //from this line, there shouldn't be any hard-coded path in the code of any used module; all the paths should be in the config.json file
 
 const gameLoader = new GameLoader();
 
@@ -41,7 +43,7 @@ for(let room of settings.get("default_rooms")){
 }
 
 
-// loadGames();
+loadGames();
 
 let general = settings.get("general_room_name");
 
