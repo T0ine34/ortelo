@@ -9,33 +9,44 @@ const io = new Server(server);
 const cio = new CIO(io);
 const { GameLoader } = require('./server_modules/loader/loader.js');
 const { parseCMD } = require('./server_modules/cmd/main.js');
+const { Settings } = require('./server_modules/settings/main.js');
+
+var settings = new Settings("./config.json"); //this should be the only path to data file (not modules) in the whole server
 
 const gameLoader = new GameLoader();
 
-app.use(express.static("public"));
+app.use(express.static(settings.get("public_dir")));
 
-app.get('/', (req, res) => {
-    res.sendFile(__dirname + '/public/index.html');
-});
 app.get('/events', (req, res) => {
-    res.sendFile(__dirname + '/public/modules/events/events.json');
+    res.sendFile(__dirname +'/' + settings.get('paths.events'));
 });
 
-app.get('*', (req, res) => {
-    res.sendFile(__dirname + '/public/404.html');
+app.get('*', (req, res) => { //redirect every other request to 404 page
+    res.sendFile(__dirname + '/' + settings.get('paths.404'));
 });
 
 let rooms = new Map();
-rooms.set("general", new Room("general"));
+for(let room of settings.get("default_rooms")){
+    let r = new Room(room.name);
+    r.visible = room.visible;
+    r.use_whitelist = room.whitelist;
+    for(let username of room.userlist){
+        r.add_to_list(username);
+    }
+    rooms.set(room.name, r);
+}
 
-loadGames();
 
-cio.on("connection", (csocket) => {
+// loadGames();
+
+let general = settings.get("general_room_name");
+
+cio.on(EVENTS.INTERNAL.CONNECTION, (csocket) => {
     csocket.once(EVENTS.MISC.USERNAME, (timestamp, username) => {
         let user = new User(csocket, username);    //building the user object
         user.emit(EVENTS.SYSTEM.INFO, Date.now(), "You are now connected as " + username);   //sending a message to the user to inform him that he is connected
-        rooms.get("general").emit(EVENTS.CHAT.USER_JOINED, Date.now(), username);               //broadcasting the newUser event to all the users of the general room, excepting the new one
-        user.joinRoom(rooms.get("general"));                                        //adding the user to the general room
+        rooms.get(general).emit(EVENTS.CHAT.USER_JOINED, Date.now(), username);               //broadcasting the newUser event to all the users of the general room, excepting the new one
+        user.joinRoom(rooms.get(general));                                        //adding the user to the general room
 
         user.on(EVENTS.INTERNAL.DISCONNECT, (reason) => {
             for(let room of user.rooms.values()){
@@ -65,6 +76,6 @@ async function loadGames() {
     //TODO GET ALL GAMES TO SHOW ON WEBPAGE
 }
 
-server.listen(3000, () => {
-    console.log('listening on *:3000');
+server.listen(settings.get("port"), () => {
+    console.log('listening on *:'+server.address().port);
 });

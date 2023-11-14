@@ -1,0 +1,22 @@
+{
+    "port" : 3000,
+    "database" : {
+        "path" : "./database/mabase.db",
+        "type" : "sqlite3"
+    },
+    "public_dir" : "public",
+    "default_rooms" : [
+        {
+            "name" : "general",
+            "description" : "General discussion",
+            "visible" : true,
+            "whitelist" : false,
+            "userlist" : []
+        }
+    ],
+    "general_room_name" : "general",
+    "paths" : {
+        "events" : "%public_dir%/modules/events/events.json",
+        "404" : "%public_dir%/404.html"
+    }
+}
