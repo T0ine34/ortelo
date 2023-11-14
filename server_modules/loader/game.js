@@ -8,7 +8,7 @@ class Game {
         this._gamePath = gamePath;
         this._name = "null";
         this._icon = "null";
-        this._jsZip = new JSZip()
+        this._jsZip = new JSZip();
     }
 
     async init() {
@@ -16,7 +16,7 @@ class Game {
         // SI IL Y A UN DOSSIER SOUNDS MAIS PAS DE CHEMIN DANS 
         // L'INDEX.JSON, ERREUR (c'est un exemple)
         let zipData = fs.readFileSync(this._gamePath);
-        const gameFiles = await this._jsZip.loadAsync(zipData)
+        const gameFiles = await this._jsZip.loadAsync(zipData);
         const jsonData = JSON.parse(await gameFiles.file("index.json").async("string"));
             
         const name = jsonData.name;
@@ -27,7 +27,7 @@ class Game {
         if(icon) this._icon = await icon.async("uint8array");
 
         let base64String = btoa(String.fromCharCode.apply(null, zipData));
-        this._icon = base64String
+        this._icon = base64String;
     }
 
     get icon(){
@@ -40,6 +40,4 @@ class Game {
 
 }
 
-try {
-    module.exports = {Game}
-} catch(e){}
+module.exports = {Game};

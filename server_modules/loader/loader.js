@@ -5,22 +5,22 @@ const { Game } = require('./game');
 class GameLoader {
     
     constructor(path="./public/games/") {
-        this._path = path
-        this._jsZip = new JSZip()
-        this._gameFiles = []
+        this._path = path;
+        this._jsZip = new JSZip();
+        this._gameFiles = [];
     }
 
     getFiles() {
         let data = fs.readdirSync(this._path);
         for(let i = 0; i < data.length; i++){
-            this._gameFiles.push(`${this._path}${data[i]}`)
+            this._gameFiles.push(`${this._path}${data[i]}`);
         }
     }
 
 
     async readAGame(filePath) {
-        let game = new Game(filePath)
-        await game.init()
+        let game = new Game(filePath);
+        await game.init();
         return game;
     }
 
@@ -39,6 +39,5 @@ class GameLoader {
 
 }
 
-try {
-    module.exports = { GameLoader }
-} catch (e){}
+
+module.exports = { GameLoader };

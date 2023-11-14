@@ -24,7 +24,7 @@ app.get('/events', (req, res) => {
 let rooms = new Map();
 rooms.set("general", new Room("general"));
 
-loadGames()
+loadGames();
 
 cio.on("connection", (csocket) => {
     csocket.once(EVENTS.MISC.USERNAME, (timestamp, username) => {
@@ -54,10 +54,10 @@ cio.on("connection", (csocket) => {
 });
 
 async function loadGames() {
-    gameLoader.getFiles()
+    gameLoader.getFiles();
     let game = await gameLoader.readAGame(gameLoader.gameFiles[1]);
     console.log(game);
-    // gameLoader.readAGame()
+    // gameLoader.readAGame();
     //TODO GET ALL GAMES TO SHOW ON WEBPAGE
 }
 

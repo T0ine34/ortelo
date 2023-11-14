@@ -107,7 +107,7 @@ input.addEventListener('keydown', function(e) {
 
 form.addEventListener('submit', function(e) {                   //this is triggered when the user click on "Send"
     e.preventDefault();
-    if (input.value) {
+    if (input.value){
         csocket.emit(EVENTS.CHAT.MESSAGE, Date.now(), username, input.value);     //sending the send_message event to the server, with the username and the message as parameters
         history.push(input.value);
         history_index = history.length;
