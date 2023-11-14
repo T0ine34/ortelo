@@ -21,6 +21,10 @@ app.get('/events', (req, res) => {
     res.sendFile(__dirname + '/public/modules/events/events.json');
 });
 
+app.get('*', (req, res) => {
+    res.sendFile(__dirname + '/public/404.html');
+});
+
 let rooms = new Map();
 rooms.set("general", new Room("general"));
 
