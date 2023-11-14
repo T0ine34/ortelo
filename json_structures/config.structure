@@ -1,0 +1,99 @@
+{
+    "type" : "dict",
+    "required" : true,
+    "content" :{
+        "port" : {
+            "type" : "int",
+            "min" : 1024,
+            "max" : 65535,
+            "required" : true
+        },
+        "database" : {
+            "type" : "dict",
+            "required" : true,
+            "content" : {
+                "path" : {
+                    "type" : "string",
+                    "min_length" : 1,
+                    "max_length" : null,
+                    "required" : true
+                },
+                "type" : {
+                    "type" : "string",
+                    "min_length" : 1,
+                    "max_length" : null,
+                    "required" : true
+                }
+            }
+        },
+        "public_dir" : {
+            "type" : "string",
+            "min_length" : 1,
+            "max_length" : null,
+            "required" : true
+        },
+        "default_rooms" : {
+            "type" : "list",
+            "min_length" : 1,
+            "max_length" : null,
+            "required" : false,
+            "content_template" : {
+                "type" : "dict",
+                "required" : true,
+                "content" : {
+                    "name" : {
+                        "type" : "string",
+                        "min_length" : 1,
+                        "max_length" : null,
+                        "required" : true
+                    },
+                    "description" : {
+                        "type" : "string",
+                        "min_length" : 1,
+                        "max_length" : null,
+                        "required" : false
+                    },
+                    "visible" : {
+                        "type" : "boolean",
+                        "required" : false
+                    },
+                    "whitelist" : {
+                        "type" : "boolean",
+                        "required" : false
+                    },
+                    "userlist" : {
+                        "type" : "list",
+                        "max_length" : null,
+                        "required" : false,
+                        "content_template" : {
+                            "name" : {
+                                "type" : "string",
+                                "min_length" : 1,
+                                "max_length" : null,
+                                "required" : true
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "general_room_name" : {
+            "type" : "string",
+            "min_length" : 1,
+            "max_length" : null,
+            "required" : true
+        },
+        "paths" : {
+            "type" : "undefined_dict",
+            "required" : true,
+            "min_length" : 0,
+            "max_length" : null,
+            "content_template" : {
+                "type" : "string",
+                "min_length" : 1,
+                "max_length" : null,
+                "required" : true
+            }
+        }
+    }
+}

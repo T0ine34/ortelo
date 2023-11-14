@@ -10,8 +10,12 @@ const cio = new CIO(io);
 const { GameLoader } = require('./server_modules/loader/loader.js');
 const { parseCMD } = require('./server_modules/cmd/main.js');
 const { Settings } = require('./server_modules/settings/main.js');
+const { is_json, is_json_matching } = require('./server_modules/json_checker/main.js');
 
-var settings = new Settings("./config.json"); //this should be the only path to data file (not modules) in the whole server
+if(!is_json("./config.json")){ throw new Error("config.json is not a valid json file"); }
+if(!is_json_matching("./config.json")){ throw new Error("config.json is not matching the structure"); }
+
+var settings = new Settings("./config.json"); //from this line, this should be the only path to data file (not modules) in the whole server
 
 const gameLoader = new GameLoader();
 
