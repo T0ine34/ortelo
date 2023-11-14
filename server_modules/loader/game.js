@@ -24,8 +24,7 @@ class Game {
         this._name = name;
 
         let icon = gameFiles.file(jsonData.icon);
-        let bytes = await icon.async("uint8array")
-        if(icon) this._icon = bytes;
+        if(icon) this._icon = await icon.async("uint8array");
 
         let base64String = btoa(String.fromCharCode.apply(null, zipData));
         this._icon = base64String
