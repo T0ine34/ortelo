@@ -35,7 +35,7 @@
             ],
             "server_to_client": true,
             "client_to_server": false,
-            "description": "A player will joined the game. (this is triggered before the user join; the user will not be able to see this message)"
+            "description": "A player will join the game. (this is triggered before the user join; the user will not be able to see this message)"
         },
         "USER_JOINED":{
             "type" : "event",
