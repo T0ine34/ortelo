@@ -16,6 +16,7 @@
     ],
     "general_room_name" : "general",
     "paths" : {
+        "connection" : "%public_dir%/modules/connection.html",
         "events" : "%public_dir%/modules/events/events.json",
         "404" : "%public_dir%/404.html"
     }
