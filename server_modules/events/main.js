@@ -1,5 +1,5 @@
 const { EVENTS, EVENT } = require("../../public/modules/events/events.js");
-const { Server } =        require("socket.io");
+const { Server }        = require("socket.io");
 
 class Room{
     constructor(name){

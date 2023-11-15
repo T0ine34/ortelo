@@ -1,5 +1,3 @@
-//const util = require('util');
-
 class EVENTS_NAMESPACE{
     constructor(node, node_name = "EVENTS"){
         this.string = node_name.toLowerCase();

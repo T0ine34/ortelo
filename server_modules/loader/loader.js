@@ -1,5 +1,5 @@
-const fs = require('fs');
-const JSZip = require('jszip');
+const fs       = require('fs');
+const JSZip    = require('jszip');
 const { Game } = require('./game');
 
 class GameLoader {
