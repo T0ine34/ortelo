@@ -1,4 +1,5 @@
 const { EVENTS, EVENT } = require("../../public/modules/events/events.js");
+const { Server } =        require("socket.io");
 
 class Room{
     constructor(name){
@@ -224,6 +225,10 @@ class CIO{
         this._io = io;
 
         this._sockets = new Set();
+    }
+
+    static from_server(server){
+        return new CIO(new Server(server));
     }
 
     on(event, callback){

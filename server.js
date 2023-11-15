@@ -1,17 +1,19 @@
-const express = require('express');
-const app = express();
-const http = require('http');
-const { EVENTS, Room, CIO, CSocket } = require('./server_modules/events/main.js');
-const { User } = require('./server_modules/user/main.js');
-const server = http.createServer(app);
-const { Server } = require("socket.io");
-const io = new Server(server);
-const cio = new CIO(io);
-const { GameLoader } = require('./server_modules/loader/loader.js');
-const { parseCMD } = require('./server_modules/cmd/main.js');
-const { Settings } = require('./server_modules/settings/main.js');
-const { is_json, is_json_matching } = require('./server_modules/json_checker/main.js');
+// -------------------------------------------------------------------- REQUIRED MODULES
 
+const http                              = require('http');
+const express                           = require('express');
+const { Server }                        = require("socket.io");
+const { parseCMD }                      = require('./server_modules/cmd/main.js');
+const { User }                          = require('./server_modules/user/main.js');
+const { EVENTS, Room, CIO, CSocket }    = require('./server_modules/events/main.js');
+const { Settings }                      = require('./server_modules/settings/main.js');
+const { GameLoader }                    = require('./server_modules/loader/loader.js');
+const { is_json, is_json_matching }     = require('./server_modules/json_checker/main.js');
+
+// -------------------------------------------------------------------- SERVER INITIALIZATION
+const app = express();
+const server = http.createServer(app);
+const cio = CIO.from_server(server);
 
 const config_filepath = "./config.json";
 if(!is_json(config_filepath)){ throw new Error("config.json is not a valid json file"); }
@@ -20,6 +22,9 @@ if(!is_json_matching(config_filepath)){ throw new Error("config.json is not matc
 var settings = new Settings(config_filepath); //from this line, there shouldn't be any hard-coded path in the code of any used module; all the paths should be in the config.json file
 
 const gameLoader = new GameLoader();
+
+
+// -------------------------------------------------------------------- SERVER CONFIGURATION
 
 app.use(express.static(settings.get("public_dir")));
 
@@ -41,11 +46,22 @@ for(let room of settings.get("default_rooms")){
     }
     rooms.set(room.name, r);
 }
+let general = settings.get("general_room_name");
 
 
 loadGames();
 
-let general = settings.get("general_room_name");
+// -------------------------------------------------------------------- SERVER FUNCTIONS
+
+async function loadGames() {
+    gameLoader.getFiles();
+    let game = await gameLoader.readAGame(gameLoader.gameFiles[1]);
+    console.log(game);
+    // gameLoader.readAGame();
+    //TODO GET ALL GAMES TO SHOW ON WEBPAGE
+}
+
+// -------------------------------------------------------------------- SERVER EVENTS
 
 cio.on(EVENTS.INTERNAL.CONNECTION, (csocket) => {
     csocket.once(EVENTS.MISC.USERNAME, (timestamp, username) => {
@@ -74,13 +90,7 @@ cio.on(EVENTS.INTERNAL.CONNECTION, (csocket) => {
 
 });
 
-async function loadGames() {
-    gameLoader.getFiles();
-    let game = await gameLoader.readAGame(gameLoader.gameFiles[1]);
-    console.log(game);
-    // gameLoader.readAGame();
-    //TODO GET ALL GAMES TO SHOW ON WEBPAGE
-}
+// -------------------------------------------------------------------- SERVER START
 
 server.listen(settings.get("port"), () => {
     console.log('listening on *:'+server.address().port);
