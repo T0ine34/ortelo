@@ -71,6 +71,20 @@ class Settings{
             throw new Error("Error while writing settings file : " + e);
         }
     }
+
+    is_set(key){
+        let tokens = key.split(".");
+        let current = this._data;
+        for(let i = 0; i < tokens.length-1; i++){
+            if(current[tokens[i]]){ //if the key exists
+                current = current[tokens[i]];
+            }
+            else{
+                return false;
+            }
+        }
+        return current[tokens[tokens.length-1]] != undefined;
+    }
 }
 
 module.exports = { Settings };
