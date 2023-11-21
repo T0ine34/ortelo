@@ -1,4 +1,18 @@
+
+/**
+ * @fileoverview This file contains the events that can be sent between the client and the server.
+ * @author Antoine Buirey
+ */
+
+/**
+ * @description This namespace can contains events that can be sent between the client and the server, and other namespaces.
+ */
 class EVENTS_NAMESPACE{
+    /**
+     * @description Create a new namespace from a node.
+     * @param {Object} node - The that will be used to create the namespace.
+     * @param {string} node_name - The name of the namespace.
+     */
     constructor(node, node_name = "EVENTS"){
         this.string = node_name.toLowerCase();
         this.description = "";
@@ -26,16 +40,35 @@ class EVENTS_NAMESPACE{
         }
     }
 
+    /**
+     * @description Return the name of the namespace.
+     * @returns {string} The name of the namespace.
+     * @note this method is automatically called when the object is converted to a string.
+     */
     toString(){
         return this.string;
     }
 
-    has(event){ //return true if the event is in the namespace, false otherwise
+    /**
+     * @description return true if the event is in the namespace, false otherwise.
+     * @param {EVENT|EVENTS_NAMESPACE} event - The event to check.
+     * @returns {boolean} true if the event is in the namespace, false otherwise.
+     */
+    has(event){
         if(!event instanceof EVENT && !event instanceof EVENTS_NAMESPACE) throw new Error("event is not an EVENT Object or an EVENTS_NAMESPACE Object");
         return event.string.startsWith(this.string);
     }
 }
+
+/**
+ * @description This class represent an event that can be sent between the client and the server.
+ */
 class EVENT{
+    /**
+     * @description Create a new event from a node.
+     * @param {Object} node - The that will be used to create the event.
+     * @param {string} node_name - The name of the event.
+     */
     constructor(node, node_name){
         this.string = node_name;
         this.description = "";
@@ -68,10 +101,14 @@ class EVENT{
         }
     }
 
+    /**
+     * @description Return the name of the event.
+     * @returns {string} The name of the event.
+     * @note this method is automatically called when the object is converted to a string.
+     */
     toString(){
         return this.string;
     }
-
 }
 
 let EVENTS = null;
