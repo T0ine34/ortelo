@@ -1,6 +1,19 @@
+/**
+ * @fileoverview The main file for the cmd module.
+ * @note This file is only used on the server side;
+ */
+
 const { EVENTS, Room } = require("../events/main.js");
 const { User } = require("../user/main.js");
 
+/**
+ * @description Parse a command and execute it.
+ * @param {string} str the command to parse
+ * @param {User} user the user that sent the command
+ * @param {io} io the socket.io server( used for broadcasting )
+ * @param {Map} rooms the map of room names to room objects
+ * @returns {boolean} true if we parsed a command (even if it's an invalid one), false otherwise
+ */
 function parseCMD(str, user, io, rooms){ //rooms is a map of room names to room objects
     //return true if we parsed a command (even if it's an invalid one), false otherwise
     if(str.startsWith("/")){ //it's a command
