@@ -1,6 +1,6 @@
 const { json } = require('express');
-const fs = require('fs');
-const JSZip = require('jszip');
+const fs       = require('fs');
+const JSZip    = require('jszip');
 
 class Game {
 

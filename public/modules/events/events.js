@@ -1,5 +1,3 @@
-//const util = require('util');
-
 class EVENTS_NAMESPACE{
     constructor(node, node_name = "EVENTS"){
         this.string = node_name.toLowerCase();
@@ -32,9 +30,10 @@ class EVENTS_NAMESPACE{
         return this.string;
     }
 
-    // [util.inspect.custom](depth, opts){
-    //     return this.toString();
-    // }
+    has(event){ //return true if the event is in the namespace, false otherwise
+        if(!event instanceof EVENT && !event instanceof EVENTS_NAMESPACE) throw new Error("event is not an EVENT Object or an EVENTS_NAMESPACE Object");
+        return event.string.startsWith(this.string);
+    }
 }
 class EVENT{
     constructor(node, node_name){
@@ -73,14 +72,6 @@ class EVENT{
         return this.string;
     }
 
-    // [util.inspect.custom](depth, opts){
-    //     return this.toString();
-    // }
-
-    has(event){
-        if(!event instanceof EVENT && !event instanceof EVENTS_NAMESPACE) throw new Error("event is not an EVENT Object or an EVENTS_NAMESPACE Object");
-        return event.string.startsWith(this.string);
-    }
 }
 
 let EVENTS = null;

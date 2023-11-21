@@ -1,5 +1,5 @@
 const { json } = require('express');
-const fs = require('fs');
+const fs       = require('fs');
 
 function is_json(filepath) {
     try {

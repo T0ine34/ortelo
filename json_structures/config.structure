@@ -77,7 +77,7 @@
                 }
             }
         },
-        "general_room_name" : {
+        "main_room_name" : {
             "type" : "string",
             "min_length" : 1,
             "max_length" : null,
@@ -89,11 +89,29 @@
             "min_length" : 0,
             "max_length" : null,
             "content_template" : {
-                "type" : "string",
-                "min_length" : 1,
-                "max_length" : null,
-                "required" : true
+                "type" : "dict",
+                "required" : true,
+                "content" : {
+                    "path" : {
+                        "type" : "string",
+                        "min_length" : 3,
+                        "max_length" : null,
+                        "required" : true
+                    },
+                    "mode" : {
+                        "type" : "string",
+                        "min_length" : 2,
+                        "max_length" : null,
+                        "required" : true
+                    }
+                }
             }
+        },
+        "default_path" : {
+            "type" : "string",
+            "min_length" : 3,
+            "max_length" : null,
+            "required" : false
         }
     }
 }

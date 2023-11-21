@@ -28,13 +28,35 @@ const gameLoader = new GameLoader();
 
 app.use(express.static(settings.get("public_dir")));
 
-app.get('/events', (req, res) => {
-    res.sendFile(__dirname +'/' + settings.get('paths.events'));
-});
+console.log("redirecting :");
+for(let path in settings.get("paths")){    
+    switch(settings.get("paths." + path+".mode")){
+        case "GET":
+            console.log("\tGET " + path + " -> " + settings.get("paths." + path+".path"));
+            app.get(path, (req, res) => {
+                res.sendFile(__dirname + '/' + settings.get("paths." + path+".path"));
+            });
+            break;
+        case "POST":
+            console.log("\tPOST " + path + " -> " + settings.get("paths." + path+".path"));
+            app.post(path, (req, res) => {
+                res.sendFile(__dirname + '/' + settings.get("paths." + path+".path"));
+            });
+            break;
+        default:
+            console.log("\tunknown mode for path " + path + " : " + settings.get("paths." + path+".mode")+"; ignoring");
+    }
+}
 
-app.get('*', (req, res) => { //redirect every other request to 404 page
-    res.sendFile(__dirname + '/' + settings.get('paths.404'));
-});
+if(settings.is_set("default_path")){
+    app.all('*', (req, res) => { //redirect every other request to 404 page
+        res.sendFile(__dirname + '/' + settings.get('default_path'));
+    });
+    console.log("\tdefault -> " + settings.get("default_path"));
+}
+else{
+    console.log("\tno path for 404 page set; ignoring");
+}
 
 let rooms = new Map();
 for(let room of settings.get("default_rooms")){
@@ -46,7 +68,7 @@ for(let room of settings.get("default_rooms")){
     }
     rooms.set(room.name, r);
 }
-let general = settings.get("general_room_name");
+let general = settings.get("main_room_name");
 
 
 loadGames();
