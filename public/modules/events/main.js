@@ -1,12 +1,13 @@
 /**
- * @fileoverview This file a client socket wrapper that can be used to send and receive events between the client and the server.
- * @note This file is only used on the client side; another file is used on the server side.
- * @author Antoine Buirey
+ * @description This namespace contain all Socket-related client classes.
+ * @namespace ClientSocket
  */
 
+
 /**
- * @description This class is used to send and receive events between the client and the server.
- * @note This class is only used on the client side; another class is used on the server side.
+ * @classdesc This class is used to send and receive events between the client and the server.
+This class is only used on the client side; {@link ServerSocket.CSocket} is used on the server side.
+ * @memberof ClientSocket
  */
 class CSocket{
     /**
@@ -21,7 +22,7 @@ class CSocket{
     /**
      * @description Return the socket.io socket object.
      * @returns {Socket} The socket.io socket object.
-     * @note This method should not be used, it's only here for compatibility with older code.
+     * @description This method should not be used, it's only here for compatibility with older code.
      * @deprecated
      */
     get id(){

@@ -24,6 +24,11 @@
         "events" : {
             "mode" : "GET",
             "path" : "%public_dir%/modules/events/events.json"
+        },
+        "doc" : {
+            "mode" : "GET",
+            "path" : "docs/",
+            "recursive" : true
         }
     },
     "default_path" : "%public_dir%/404.html"

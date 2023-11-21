@@ -1,13 +1,20 @@
 const { json } = require('express');
 const fs       = require('fs');
-
+const { BlockList } = require('net');
 
 /**
- * this function checks if a file is a json file
+ * @description contains JSON-related functions
+ * @namespace JsonChecker
+ */
+
+/**
+ * this function checks if a file is a json file, regardless of it's extension
  * @param {string} filepath the path to the file
  * @returns true if the file is a json file, false otherwise
  * @throws an error if the file is not a json file
  * @author Antoine Buirey
+ * @memberof JsonChecker
+ * @function
  */
 function is_json(filepath){
     try {
@@ -25,26 +32,40 @@ const STRUCTURES = "./json_structures/"; //the folder to store the structure fil
 /**
  * this function returns the structure name corresponding to the json file
  * 
- * example : if the json file is "./jsons/players/players.json", the structure file is "./json_structures/players.structure"
+ * example : if the json file is "./jsons/players/players.json", the structure file is "./json_structures/players.json.structure"
  * @param {string} json_filepath the path to the json file
- * @returnsa a string containing the path to the structure file
+ * @description a string containing the path to the structure file
+ * @author Antoine Buirey
+ * @memberof JsonChecker
+ * @function
+ * @private
  */
 function get_structure_name(json_filepath){
-    let splitted = json_filepath.split(".");
-    splitted[splitted.length-1] = "structure";
-    splitted = splitted.join(".").split("/");
-    return STRUCTURES+splitted[splitted.length-1];
+    let tokens = json_filepath.split("/");
+    let filename = tokens[tokens.length-1];
+    let structure_name = filename + ".structure";
+    return STRUCTURES + structure_name;
 }
 
+/**
+ * @typedef {object} json_matching_result
+ * @description an object containing the result of the json matching (this is an array only returned by the function {@link is_json_matching})
+ * @property {boolean} result the given file match the structure
+ * @property {string} reason the reason it does not match the structure (empty if it does)
+ * @author Antoine Buirey
+ * @memberof JsonChecker
+ */
 
 /**
  * this function checks if a json file matches a given structure file
  * 
  * if no structure file is given, the function will try to find the corresponding structure file
  * @param {string} filepath the path to the json file
- * @param {string|null} structure_filepath the path to the structure file
- * @returns {array} an array containing a boolean indicating if the node is valid and a string containing the error message if the node is not valid
- * @note the returned string is empty if the node is valid
+ * @param {string|null} structure_filepath the path to the structure file (if null, the function will try to find the corresponding structure file)
+ * @returns {json_matching_result} an array containing a boolean indicating if the node is valid and a string containing the error message if the node is not valid (empty if the node is valid)
+ * @memberof JsonChecker
+ * @author Antoine Buirey
+ * @function
  */
 function is_json_matching(filepath, structure_filepath = null){
     if(!structure_filepath) structure_filepath = get_structure_name(filepath);
@@ -65,7 +86,9 @@ function is_json_matching(filepath, structure_filepath = null){
      * @param {object} structure_node the corresponding node of the structure file
      * @param {number} rec_level the current recursion level, used to debug if needed
      * @returns {array} an array containing a boolean indicating if the node is valid and a string containing the error message if the node is not valid
-     * @note the returned string is empty if the node is valid
+     * @description the returned string is empty if the node is valid
+     * @function
+     * @private
      */
     function explore_node(node, node_name, structure_node, rec_level){
         //node is an part of the json file

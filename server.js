@@ -31,28 +31,56 @@ const gameLoader = new GameLoader();
 app.use(express.static(settings.get("public_dir")));
 
 console.log("redirecting :");
-for(let path in settings.get("paths")){    
+
+let excluded_paths = [];
+for(let path in settings.get("paths")){
+    excluded_paths.push("/"+path);
     switch(settings.get("paths." + path+".mode")){
         case "GET":
-            console.log("\tGET " + path + " -> " + settings.get("paths." + path+".path"));
-            app.get(path, (req, res) => {
-                res.sendFile(__dirname + '/' + settings.get("paths." + path+".path"));
-            });
+            if(settings.has("paths." + path+".recursive") && settings.get("paths." + path+".recursive")){
+                //if the path is recursive, redirect all the subpaths to the same path
+                app.get("/"+path+"/*", (req, res) => {
+                    res.sendFile(__dirname + '/' + settings.get("paths." + path+".path") + req.path.substring(path.length+1));
+                });
+                console.log("\tGET " + path + "/* -> " + settings.get("paths." + path+".path") + "*");
+            }
+            else{
+                app.get("/"+path, (req, res) => {
+                    res.sendFile(__dirname + '/' + settings.get("paths." + path+".path"));
+                });
+                console.log("\tGET " + path + " -> " + settings.get("paths." + path+".path"));
+            }
             break;
         case "POST":
-            console.log("\tPOST " + path + " -> " + settings.get("paths." + path+".path"));
-            app.post(path, (req, res) => {
-                res.sendFile(__dirname + '/' + settings.get("paths." + path+".path"));
-            });
+            console.log("\POST " + path + " -> " + settings.get("paths." + path+".path"));
+            if(settings.has("paths." + path+".recursive") && settings.get("paths." + path+".recursive")){
+                //if the path is recursive, redirect all the subpaths to the same path
+                app.post("/"+path+"/*", (req, res) => {
+                    res.sendFile(__dirname + '/' + settings.get("paths." + path+".path") + req.path.substring(path.length+1));
+                });
+                console.log("\tPOST " + path + "/* -> " + settings.get("paths." + path+".path") + "*");
+            }
+            else{
+                app.post("/"+path, (req, res) => {
+                    res.sendFile(__dirname + '/' + settings.get("paths." + path+".path"));
+                });
+                console.log("\tPOST " + path + " -> " + settings.get("paths." + path+".path"));
+            }
             break;
         default:
             console.log("\tunknown mode for path " + path + " : " + settings.get("paths." + path+".mode")+"; ignoring");
     }
 }
 
-if(settings.is_set("default_path")){
-    app.all('*', (req, res) => { //redirect every other request to 404 page
-        res.sendFile(__dirname + '/' + settings.get('default_path'));
+if(settings.has("default_path")){
+    //redirect everything except the excluded paths to the default path
+    app.use('*', (req, res, next) => {
+        if(excluded_paths.includes(req.path)){
+            next();
+        }
+        else{
+            res.status(404).sendFile(__dirname + '/' + settings.get("default_path"));
+        }
     });
     console.log("\tdefault -> " + settings.get("default_path"));
 }

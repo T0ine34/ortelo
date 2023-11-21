@@ -1,7 +1,16 @@
 const fs = require("fs");
 
+/**
+ * @description extract a substring from a string between two characters
+ * @param {string} mainstring the string to parse
+ * @param {string} start_char the start character
+ * @param {string} end_char   the end character (can be the same as the start character)
+ * @returns {string[]} array of strings that are between a start and an end character
+ * @throws {Error} if mainstring is not a string
+ * @function
+ * @private
+ */
 function get_bwn(mainstring, start_char, end_char){
-    //return all strings that are between a start and an end character (theses can be the same)
     if(!mainstring instanceof String){
         throw new Error("mainstring must be a string");
     }
@@ -22,7 +31,15 @@ function get_bwn(mainstring, start_char, end_char){
     return result;
 }
 
+/**
+ * @classdesc a class for managing settings
+ */
 class Settings{
+    /**
+     * @description constructor for the Settings class
+     * @param {string} filepath the path to the settings file (must be a JSON file)
+     * @throws {Error} if the file cannot be read
+     */
     constructor(filepath){
         try{
             this._data = JSON.parse(fs.readFileSync(filepath));
@@ -30,10 +47,17 @@ class Settings{
         catch(e){
             throw new Error("Error while reading settings file : " + e);
         }
+        this._filepath = filepath;
     }
 
+    /**
+     * @description get a value from the settings file
+     * @param {string} key the key to get the value of; can be a nested key (e.g. "a.b.c")
+     * @returns {string|boolean|number|null|Array} the value of the key
+     * @throws {Error} if the key is not found
+     * @see {@link Settings#has}
+     */
     get(key){
-
         let tokens = key.split(".");
         let current = this._data;
         for(let i = 0; i < tokens.length-1; i++){
@@ -55,15 +79,51 @@ class Settings{
         return value;
     }
 
+    /**
+     * @description set a value in the settings file, creating the keys if they do not exist
+     * @param {string} key the key to set the value of; can be a nested key (e.g. "a.b.c")
+     * @param {any} value the value to set
+     * @see {@link Settings#has}
+     */
     set(key, value){
-        this._data[key] = value;
+        let tokens = key.split(".");
+        let current = this._data;
+        for(let i = 0; i < tokens.length-1; i++){
+            if(current[tokens[i]]){ //if the key exists, go to the next level
+                current = current[tokens[i]];
+            }
+            else{
+                current[tokens[i]] = {};// else create the key
+                current = current[tokens[i]];
+            }
+        }
+        current[tokens[tokens.length-1]] = value;
     }
 
+    /**
+     * @description delete a value in the settings file, does nothing if the key does not exist
+     * @param {string} key the key to delete; can be a nested key (e.g. "a.b.c")
+     */
     delete(key){
-        delete this._data[key];
+        let tokens = key.split(".");
+        let current = this._data;
+        for(let i = 0; i < tokens.length-1; i++){
+            if(current[tokens[i]]){ //if the key exists, go to the next level
+                current = current[tokens[i]];
+            }
+            else{
+                return; //else do nothing, the key does not exist
+            }
+        }
+        delete current[tokens[tokens.length-1]];
     }
 
-    save(filepath){
+    /**
+     * @description save the settings file
+     * @param {string} filepath the path to the file to save to; if not specified, the file will be saved to the path specified in the constructor
+     * @throws {Error} if the file cannot be written
+     */
+    save(filepath = this._filepath){
         try{
             fs.writeFileSync(filepath, JSON.stringify(this._data));
         }
@@ -72,7 +132,12 @@ class Settings{
         }
     }
 
-    is_set(key){
+    /**
+     * @description check if a key exists in the settings file
+     * @param {string} key the key to check; can be a nested key (e.g. "a.b.c")
+     * @returns {boolean} true if the key exists, false otherwise
+     */
+    has(key){
         let tokens = key.split(".");
         let current = this._data;
         for(let i = 0; i < tokens.length-1; i++){

@@ -5,7 +5,14 @@
  */
 
 /**
+ * @description This namespace contains classes used for handling events.
+ * @namespace Events
+ */
+
+/**
  * @description This namespace can contains events that can be sent between the client and the server, and other namespaces.
+ * This class is not meant to be used directly, use {@link Events.EVENTS}, witch is an instance of this class instead.
+ * @memberof Events
  */
 class EVENTS_NAMESPACE{
     /**
@@ -43,7 +50,7 @@ class EVENTS_NAMESPACE{
     /**
      * @description Return the name of the namespace.
      * @returns {string} The name of the namespace.
-     * @note this method is automatically called when the object is converted to a string.
+     * @description this method is automatically called when the object is converted to a string.
      */
     toString(){
         return this.string;
@@ -62,6 +69,8 @@ class EVENTS_NAMESPACE{
 
 /**
  * @description This class represent an event that can be sent between the client and the server.
+ * This class is not meant to be used directly, use {@link Events.EVENTS} instead, witch is an instance of {@link Events.EVENTS_NAMESPACE}, and contains all the events that can be sent between the client and the server.
+ * @memberof Events
  */
 class EVENT{
     /**
@@ -104,13 +113,19 @@ class EVENT{
     /**
      * @description Return the name of the event.
      * @returns {string} The name of the event.
-     * @note this method is automatically called when the object is converted to a string.
+     * @description this method is automatically called when the object is converted to a string.
      */
     toString(){
         return this.string;
     }
 }
 
+/**
+ * @description This instance of {@link Events.EVENTS_NAMESPACE} contains all the events that can be sent between the client and the server.
+ * Accessing a property of this object will return an {@link Events.EVENT} or a {@link Events.EVENTS_NAMESPACE} object.
+ * @memberof Events
+ * @instance
+ */
 let EVENTS = null;
 try{
     //we are in the client
