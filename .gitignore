@@ -2,8 +2,5 @@
 **dist/main.js
 **package-lock.json
 *.code-workspace
-<<<<<<< HEAD
 /logs
-=======
 .vscode
->>>>>>> 65ab53662428d33e2f1a77d71d448e0be39b2025
