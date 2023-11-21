@@ -39,33 +39,7 @@ body {
 }
 
 
-/*#usernameDiv {
-    margin-top: 1%;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-}
-
-#usernameForm {
-    background-color: black;
-    position: fixed;
-    display: flex;
-    height: 1erm;
-}
-
-.messagesDiv > h3 { text-align: center; }
- 
-
-#messageForm > button {
-    background: #333;
-    border: none;
-    padding: 0 1rem;
-    margin: 0.25rem;
-    border-radius: 3px;
-    outline: none;
-    color: #fff;
-}
-
+/*
 .timestamp{
     font-size: 0.5rem;
     color: #aaa;

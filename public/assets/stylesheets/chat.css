@@ -1,31 +1,11 @@
 #chat_container {
     background: rgba(84, 146, 246, 0.69); 
-    padding: 0.25rem;
-    box-sizing: border-box;
-    left: 0;  right: 0;
-    height: 100%;
-    /* display: flex; */
-    align-items: flex-end; 
 }
 
 #chat_container h3 {
     text-align: center;
     overflow: hidden;
     word-wrap: break-word;
-}
-
-/* #message_form {
-    text-align: center;
-    position: fixed;
-    left: 5px;
-    bottom: 0px;
-} */
-
-
-#message_form > button {
-    border: none;
-    margin: 0.25rem;
-    padding-bottom: 5px;
 }
 
 #messages { 
@@ -44,8 +24,4 @@
     font-size: larger;
     margin: 0.1rem;
     width: 100%;
-}
-
-#send_message:focus {
-    outline: none;
 }

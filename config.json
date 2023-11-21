@@ -5,6 +5,7 @@
         "type" : "sqlite3"
     },
     "public_dir" : "public",
+    "logs_dir" : "logs",
     "default_rooms" : [
         {
             "name" : "general",
