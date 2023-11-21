@@ -17,7 +17,9 @@ const cio = CIO.from_server(server);
 
 const config_filepath = "./config.json";
 if(!is_json(config_filepath)){ throw new Error("config.json is not a valid json file"); }
-if(!is_json_matching(config_filepath)){ throw new Error("config.json is not matching the structure"); }
+
+[res, reason] = is_json_matching(config_filepath);
+if(!res){ throw new Error("Error while parsing config.json : " + reason); }
 
 var settings = new Settings(config_filepath); //from this line, there shouldn't be any hard-coded path in the code of any used module; all the paths should be in the config.json file
 
