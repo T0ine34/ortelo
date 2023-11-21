@@ -2,3 +2,4 @@
 **dist/main.js
 **package-lock.json
 *.code-workspace
+.vscode
