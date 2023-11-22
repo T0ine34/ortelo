@@ -42,7 +42,7 @@ class Logger {
 
     /**
      * @description Info function outputs a message in the current log file as a non-important information.
-     * @param {*} message is the message you want to log as an info. 
+     * @param {string} message is the message you want to log as an info. 
      */
     info(message) {
         if(!message) throw new Error("No message to log");
@@ -51,7 +51,7 @@ class Logger {
 
     /**
      * @description Fine function outputs a message to say something works as expected
-     * @param {*} message is the message you want to log as a fine information.
+     * @param {string} message is the message you want to log as a fine information.
      */
     fine(message) {
         if(!message) throw new Error("No message to log");
@@ -60,7 +60,7 @@ class Logger {
 
     /**
      * @description Warning function outputs a message to warn you that something may be wrong but doesn't stop the app from running
-     * @param {*} message is the message you want to log as a warning
+     * @param {string} message is the message you want to log as a warning
      */
     warning(message) {
         if(!message) throw new Error("No message to log");
@@ -69,7 +69,7 @@ class Logger {
 
     /**
      * @description Error function outputs a message when something is wrong and needs to be fixed quick.
-     * @param {*} message is the message you want to log as an error.
+     * @param {string} message is the message you want to log as an error.
      */
     error(message) {
         if(!message) throw new Error("No message to log");
