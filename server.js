@@ -148,6 +148,15 @@ cio.on(EVENTS.INTERNAL.CONNECTION, (csocket) => {
 
 // -------------------------------------------------------------------- SERVER START
 
+server.on("error", (error) => {
+    Logger.error(`Server crashed,  ${error.message}`);
+});
+
+server.on("close", () => {
+    Logger.fine("Server closing successfully");
+});
+
 server.listen(settings.get("port"), () => {
     console.log('listening on *:'+server.address().port);
 });
+

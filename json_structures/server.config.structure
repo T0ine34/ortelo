@@ -32,6 +32,30 @@
             "max_length" : null,
             "required" : true
         },
+        "logs": {
+            "type" : "dict",
+            "required" : true,
+            "content" : {
+                "dir": {
+                    "type" : "string",
+                    "min_length" : 1,
+                    "max_length" : null,
+                    "required" : true
+                },
+                "maxFiles": {
+                    "type" : "int",
+                    "min": 1,
+                    "max": 65535,
+                    "required" : true
+                },
+                "refreshTimeSec": {
+                    "type" : "int",
+                    "min": 1,
+                    "max": 2678400,
+                    "required" : true
+                }
+            }
+        },
         "default_rooms" : {
             "type" : "list",
             "min_length" : 1,
