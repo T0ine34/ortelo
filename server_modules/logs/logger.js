@@ -69,8 +69,8 @@ class Logger {
     }
 
     /**
-     * @description Severe function outputs a message when something is wrong and needs to be fixed quick.
-     * @param {*} message is the message you want to log as a severe information.
+     * @description Error function outputs a message when something is wrong and needs to be fixed quick.
+     * @param {*} message is the message you want to log as an error.
      */
     error(message) {
         if(!message) throw new Error("No message to log");
