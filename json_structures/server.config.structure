@@ -102,7 +102,11 @@
                         "type" : "string",
                         "min_length" : 2,
                         "max_length" : null,
-                        "required" : true
+                        "required" : true,
+                        "values" : [
+                            "GET",
+                            "POST"
+                        ]
                     }
                 }
             }

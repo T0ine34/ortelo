@@ -1,3 +1,12 @@
+/**
+ * @fileoverview This file is the main file of the server. It contains the server initialization, the server configuration and the server events.   
+ */
+
+/**
+ * @namespace Server
+ * @description This namespace contains all the classes and functions related to the server
+ */
+
 // -------------------------------------------------------------------- REQUIRED MODULES
 
 const http                              = require('http');
@@ -16,9 +25,11 @@ const app = express();
 const server = http.createServer(app);
 const cio = CIO.from_server(server);
 
-const config_filepath = "./config.json";
-if(!is_json(config_filepath)){ throw new Error("config.json is not a valid json file"); }
-if(!is_json_matching(config_filepath)){ throw new Error("config.json is not matching the structure"); }
+const config_filepath = "./server.config";
+if(!is_json(config_filepath)){ throw new Error(config_filepath+" is not a valid json file"); }
+
+[res, reason] = is_json_matching(config_filepath);
+if(!res){ throw new Error("Error while parsing config.json : " + reason); }
 
 var settings = new Settings(config_filepath); //from this line, there shouldn't be any hard-coded path in the code of any used module; all the paths should be in the config.json file
 
@@ -32,28 +43,56 @@ Logger.load();
 app.use(express.static(settings.get("public_dir")));
 
 console.log("redirecting :");
-for(let path in settings.get("paths")){    
+
+let excluded_paths = [];
+for(let path in settings.get("paths")){
+    excluded_paths.push("/"+path);
     switch(settings.get("paths." + path+".mode")){
         case "GET":
-            console.log("\tGET " + path + " -> " + settings.get("paths." + path+".path"));
-            app.get(path, (req, res) => {
-                res.sendFile(__dirname + '/' + settings.get("paths." + path+".path"));
-            });
+            if(settings.has("paths." + path+".recursive") && settings.get("paths." + path+".recursive")){
+                //if the path is recursive, redirect all the subpaths to the same path
+                app.get("/"+path+"/*", (req, res) => {
+                    res.sendFile(__dirname + '/' + settings.get("paths." + path+".path") + req.path.substring(path.length+1));
+                });
+                console.log("\tGET " + path + "/* -> " + settings.get("paths." + path+".path") + "*");
+            }
+            else{
+                app.get("/"+path, (req, res) => {
+                    res.sendFile(__dirname + '/' + settings.get("paths." + path+".path"));
+                });
+                console.log("\tGET " + path + " -> " + settings.get("paths." + path+".path"));
+            }
             break;
         case "POST":
-            console.log("\tPOST " + path + " -> " + settings.get("paths." + path+".path"));
-            app.post(path, (req, res) => {
-                res.sendFile(__dirname + '/' + settings.get("paths." + path+".path"));
-            });
+            console.log("\POST " + path + " -> " + settings.get("paths." + path+".path"));
+            if(settings.has("paths." + path+".recursive") && settings.get("paths." + path+".recursive")){
+                //if the path is recursive, redirect all the subpaths to the same path
+                app.post("/"+path+"/*", (req, res) => {
+                    res.sendFile(__dirname + '/' + settings.get("paths." + path+".path") + req.path.substring(path.length+1));
+                });
+                console.log("\tPOST " + path + "/* -> " + settings.get("paths." + path+".path") + "*");
+            }
+            else{
+                app.post("/"+path, (req, res) => {
+                    res.sendFile(__dirname + '/' + settings.get("paths." + path+".path"));
+                });
+                console.log("\tPOST " + path + " -> " + settings.get("paths." + path+".path"));
+            }
             break;
         default:
             console.log("\tunknown mode for path " + path + " : " + settings.get("paths." + path+".mode")+"; ignoring");
     }
 }
 
-if(settings.is_set("default_path")){
-    app.all('*', (req, res) => { //redirect every other request to 404 page
-        res.sendFile(__dirname + '/' + settings.get('default_path'));
+if(settings.has("default_path")){
+    //redirect everything except the excluded paths to the default path
+    app.use('*', (req, res, next) => {
+        if(excluded_paths.includes(req.path)){
+            next();
+        }
+        else{
+            res.status(404).sendFile(__dirname + '/' + settings.get("default_path"));
+        }
     });
     console.log("\tdefault -> " + settings.get("default_path"));
 }
