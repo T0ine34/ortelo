@@ -3,6 +3,7 @@
 const http                              = require('http');
 const express                           = require('express');
 const { Server }                        = require("socket.io");
+const Logger                            = require('./server_modules/logs/logger');
 const { parseCMD }                      = require('./server_modules/cmd/main.js');
 const { User }                          = require('./server_modules/user/main.js');
 const { EVENTS, Room, CIO, CSocket }    = require('./server_modules/events/main.js');
@@ -22,6 +23,8 @@ if(!is_json_matching(config_filepath)){ throw new Error("config.json is not matc
 var settings = new Settings(config_filepath); //from this line, there shouldn't be any hard-coded path in the code of any used module; all the paths should be in the config.json file
 
 const gameLoader = new GameLoader();
+
+Logger.load();
 
 
 // -------------------------------------------------------------------- SERVER CONFIGURATION
@@ -78,7 +81,7 @@ loadGames();
 async function loadGames() {
     gameLoader.getFiles();
     let game = await gameLoader.readAGame(gameLoader.gameFiles[1]);
-    console.log(game);
+    //console.log(game);
     // gameLoader.readAGame();
     //TODO GET ALL GAMES TO SHOW ON WEBPAGE
 }

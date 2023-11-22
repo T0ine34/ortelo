@@ -5,7 +5,11 @@
         "type" : "sqlite3"
     },
     "public_dir" : "public",
-    "logs_dir" : "logs",
+    "logs": {
+        "dir": "logs",
+        "maxFiles": 5,
+        "refreshTimeSec": 60
+    },
     "default_rooms" : [
         {
             "name" : "general",
