@@ -4,3 +4,4 @@
 *.code-workspace
 /logs
 .vscode
+/docs
