@@ -13,6 +13,10 @@ const { User } = require("../user/main.js");
  * @param {io} io the socket.io server( used for broadcasting )
  * @param {Map} rooms the map of room names to room objects
  * @returns {boolean} true if we parsed a command (even if it's an invalid one), false otherwise
+ * @see {@link ServerSocket.CIO}
+ * @see {@link ServerSocket.Room}
+ * @see {@link Server.User}
+ * @memberof Server
  */
 function parseCMD(str, user, io, rooms){ //rooms is a map of room names to room objects
     //return true if we parsed a command (even if it's an invalid one), false otherwise

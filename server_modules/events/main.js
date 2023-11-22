@@ -5,6 +5,7 @@
 
 /**
  * @namespace ServerSocket
+ * @memberof Server
  * @description This namespace contains the classes used to create a custom socket.io server implementing rooms and events.
  */
 

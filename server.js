@@ -1,3 +1,12 @@
+/**
+ * @fileoverview This file is the main file of the server. It contains the server initialization, the server configuration and the server events.   
+ */
+
+/**
+ * @namespace Server
+ * @description This namespace contains all the classes and functions related to the server
+ */
+
 // -------------------------------------------------------------------- REQUIRED MODULES
 
 const http                              = require('http');

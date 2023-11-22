@@ -5,6 +5,7 @@ const { BlockList } = require('net');
 /**
  * @description contains JSON-related functions
  * @namespace JsonChecker
+ * @memberof Server
  */
 
 /**
