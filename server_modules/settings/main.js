@@ -1,4 +1,5 @@
 const fs = require("fs");
+const {is_json, is_json_matching} = require("../json_checker/main.js");
 
 /**
  * @description extract a substring from a string between two characters
@@ -152,4 +153,10 @@ class Settings{
     }
 }
 
-module.exports = { Settings };
+const config_filepath = "./server.config";
+if(!is_json(config_filepath)){ throw new Error(config_filepath+" is not a valid json file"); }
+
+[res, reason] = is_json_matching(config_filepath);
+if(!res){ throw new Error("Error while parsing config.json : " + reason); }
+
+module.exports = new Settings(config_filepath);

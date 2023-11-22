@@ -12,11 +12,11 @@
 const http                              = require('http');
 const express                           = require('express');
 const { Server }                        = require("socket.io");
+settings                                = require('./server_modules/settings/main.js');
 const Logger                            = require('./server_modules/logs/logger');
 const { parseCMD }                      = require('./server_modules/cmd/main.js');
 const { User }                          = require('./server_modules/user/main.js');
 const { EVENTS, Room, CIO, CSocket }    = require('./server_modules/events/main.js');
-const { Settings }                      = require('./server_modules/settings/main.js');
 const { GameLoader }                    = require('./server_modules/loader/loader.js');
 const { is_json, is_json_matching }     = require('./server_modules/json_checker/main.js');
 
@@ -24,14 +24,6 @@ const { is_json, is_json_matching }     = require('./server_modules/json_checker
 const app = express();
 const server = http.createServer(app);
 const cio = CIO.from_server(server);
-
-const config_filepath = "./server.config";
-if(!is_json(config_filepath)){ throw new Error(config_filepath+" is not a valid json file"); }
-
-[res, reason] = is_json_matching(config_filepath);
-if(!res){ throw new Error("Error while parsing config.json : " + reason); }
-
-var settings = new Settings(config_filepath); //from this line, there shouldn't be any hard-coded path in the code of any used module; all the paths should be in the config.json file
 
 const gameLoader = new GameLoader();
 
