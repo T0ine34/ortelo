@@ -26,8 +26,8 @@ const app = express();
 const server = http.createServer(app);
 const cio = CIO.from_server(server);
 
-const config_filepath = "./config.json";
-if(!is_json(config_filepath)){ throw new Error("config.json is not a valid json file"); }
+const config_filepath = "./server.config";
+if(!is_json(config_filepath)){ throw new Error(config_filepath+" is not a valid json file"); }
 
 [res, reason] = is_json_matching(config_filepath);
 if(!res){ throw new Error("Error while parsing config.json : " + reason); }
