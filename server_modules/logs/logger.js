@@ -1,7 +1,6 @@
 const fs = require('fs');
 const path = require('path');
 
-let instance = null;
 const config = require('../settings/main.js');
 
 /**
@@ -11,15 +10,20 @@ const config = require('../settings/main.js');
  * @description A singleton class which provides an easy way to log infos from the app into a file every two hours.
  */
 class Logger {
-
+    static _instance = null;
     /**
      * @constructor Called only once during startup, this constructor should not be called more than once.
      * @returns an instance of itself.
      */
     constructor() {
-        if(instance) return instance;
-        instance = this;
-        return this;
+        if(!Logger._instance) { //if instance does not exist, create it
+            Logger._instance = this;
+            this.load();
+            setInterval(() => { //execute it at a regular interval set in server.config
+                this.load();
+            }, config.get("logs.refreshTimeSec") * 1000);
+        }
+        return Logger._instance;
     }
 
     /**
@@ -34,7 +38,7 @@ class Logger {
         this._logFile = filePath;
         
         
-        // Écrit dans le fichier
+        // Écrit dans le fichier //! Commments have to be in english
         this.info("Loading logger");
         this.removeOldest(); //** Removes old log files if amount of files exceeds the amount specified in config.json */
     }
@@ -120,13 +124,6 @@ class Logger {
     }
 
 }
-
-/**
- * @description Loads the logger every (time in config) seconds
- */
-setInterval(() => {
-    instance.load();
-}, config.get("logs.refreshTimeSec") * 1000);
 
 
 /**
