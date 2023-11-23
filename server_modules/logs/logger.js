@@ -31,6 +31,7 @@ class Logger {
     constructor() {
         if(!Logger._instance) { //if instance does not exist, create it
             Logger._instance = this;
+            this.use_debug = config.get("logs.useDebug");
             this.load();
             setInterval(() => { //execute it at a regular interval set in server.config
                 this.load();
@@ -48,11 +49,14 @@ class Logger {
         
         //** Updates filepath to output logs to */
         const filePath = `${config.get("logs.dir")}/${currentDate.getDate()}_${currentDate.getMonth()+1}_${currentDate.getFullYear()}_at_${currentDate.getHours() < 10 ? "0" + currentDate.getHours() : currentDate.getHours()}h${currentDate.getMinutes() < 10 ? "0" + currentDate.getMinutes() : currentDate.getMinutes()}.log`;
+        if(this._logFile && this._logFile != filePath){
+            this.info("log file changed to " + filePath + "\n nothing will be added in this file anymore");
+        }
         this._logFile = filePath;
         
         
-        // Écrit dans le fichier //! Commments have to be in english
-        this.info("Loading logger");
+        // write the first line of the log file
+        this.info("new log file created");
         this.removeOldest(); //** Removes old log files if amount of files exceeds the amount specified in config.json */
     }
 
@@ -91,6 +95,16 @@ class Logger {
     error(message) {
         if(!message) throw new Error("No message to log");
         fs.appendFileSync(this._logFile, this.getTimeString() + " [ERROR] " + indent(message,8) + "\n");
+    }
+
+    /**
+     * @description Debug function outputs a message to help you debug your app. Only works if use_debug is set to true in config file.
+     * @param {string} message is the message you want to log as a debug.
+     */
+    debug(message) {
+        if(!this.use_debug) return;
+        if(!message) throw new Error("No message to log");
+        fs.appendFileSync(this._logFile, this.getTimeString() + " [DEBUG] " + indent(message,8) + "\n");
     }
 
 

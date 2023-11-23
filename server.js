@@ -21,13 +21,17 @@ const { GameLoader }                    = require('./server_modules/loader/loade
 const { is_json, is_json_matching }     = require('./server_modules/json_checker/main.js');
 
 // -------------------------------------------------------------------- SERVER INITIALIZATION
-
+Logger.debug("intitializing express app");
 const app = express();
+Logger.debug("intitializing http server")
 const server = http.createServer(app);
+Logger.debug("intitializing CIO object using the http server")
 const cio = CIO.from_server(server);
 
+Logger.debug("intitializing game loader");
 const gameLoader = new GameLoader();
 
+Logger.debug("server initialized successfully");
 
 // -------------------------------------------------------------------- SERVER CONFIGURATION
 
@@ -35,17 +39,7 @@ app.use(express.static(settings.get("public_dir")));
 
 set_redirections();
 
-let rooms = new Map();
-for(let room of settings.get("default_rooms")){
-    let r = new Room(room.name);
-    r.visible = room.visible;
-    r.use_whitelist = room.whitelist;
-    for(let username of room.userlist){
-        r.add_to_list(username);
-    }
-    rooms.set(room.name, r); 
-}
-let general = settings.get("main_room_name");
+set_rooms();
 
 loadGames();
 
@@ -119,7 +113,29 @@ function set_redirections(){
     else{
         Logger.warning("\tNo default path specified, a 404 error will be returned for every path except the explitly redirected ones");
     }
-    Logger.fine(resume.substring(0, resume.length-1)); //removing the last \n
+    Logger.fine("Redirections set up successfully");
+    Logger.info(resume.substring(0, resume.length-1)); //removing the last \n
+}
+
+function set_rooms(){
+    Logger.info("setting up defaults rooms");
+    let resume = "default rooms :\n";
+
+    let rooms = new Map();
+    for(let room of settings.get("default_rooms")){
+        let r = new Room(room.name);
+        r.visible = room.visible;
+        r.use_whitelist = room.whitelist;
+        for(let username of room.userlist){
+            r.add_to_list(username);
+        }
+        rooms.set(room.name, r); 
+        resume += "\t" + room.name + " : visible=" + room.visible + ", using_whitelist=" + room.whitelist + ", list_of_users=[" + room.userlist + "]\n";
+    }
+    Logger.fine("Rooms set up successfully");
+    Logger.info(resume.substring(0, resume.length-1)); //removing the last \n
+    let general = settings.get("main_room_name");
+    Logger.info("general room set to " + general);
 }
 
 // -------------------------------------------------------------------- SERVER EVENTS
