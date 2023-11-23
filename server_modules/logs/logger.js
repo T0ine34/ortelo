@@ -4,6 +4,19 @@ const path = require('path');
 const config = require('../settings/main.js');
 
 /**
+ * @description Replace all \n by \n + indent
+ * @param {string} str is the string you want to indent
+ * @param {number} indent is the string you want to use to indent
+ * @returns the indented string
+ * @since 0.2.2
+ * @author Antoine Buirey
+ */
+function indent(str, indent){
+    return str.replace(/\n/g, "\n"+"\t".repeat(indent));
+}
+
+
+/**
  * @author Lila BRANDON
  * @class Logger
  * @since 0.2.1
@@ -50,7 +63,7 @@ class Logger {
      */
     info(message) {
         if(!message) throw new Error("No message to log");
-        fs.appendFileSync(this._logFile, this.getTimeString() + " [INFO] " + message + "\n");
+        fs.appendFileSync(this._logFile, this.getTimeString() + " [INFO] " + indent(message,8) + "\n");
     }
 
     /**
@@ -59,7 +72,7 @@ class Logger {
      */
     fine(message) {
         if(!message) throw new Error("No message to log");
-        fs.appendFileSync(this._logFile, this.getTimeString() + " [FINE] " + message + "\n");
+        fs.appendFileSync(this._logFile, this.getTimeString() + " [FINE] " + indent(message,8) + "\n");
     }
 
     /**
@@ -68,7 +81,7 @@ class Logger {
      */
     warning(message) {
         if(!message) throw new Error("No message to log");
-        fs.appendFileSync(this._logFile, this.getTimeString() + " [WARNING] " + message + "\n");
+        fs.appendFileSync(this._logFile, this.getTimeString() + " [WARNING] " + indent(message,8) + "\n");
     }
 
     /**
@@ -77,7 +90,7 @@ class Logger {
      */
     error(message) {
         if(!message) throw new Error("No message to log");
-        fs.appendFileSync(this._logFile, this.getTimeString() + " [ERROR] " + message + "\n");
+        fs.appendFileSync(this._logFile, this.getTimeString() + " [ERROR] " + indent(message,8) + "\n");
     }
 
 

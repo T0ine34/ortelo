@@ -75,13 +75,13 @@ function set_redirections(){
                     app.get("/"+path+"/*", (req, res) => {
                         res.sendFile(__dirname + '/' + settings.get("paths." + path+".path") + req.path.substring(path.length+1));
                     });
-                    resume += "\t\t\tGET " + path + "/* -> " + settings.get("paths." + path+".path") + "*\n";
+                    resume += "GET " + path + "/* -> " + settings.get("paths." + path+".path") + "*\n";
                 }
                 else{
                     app.get("/"+path, (req, res) => {
                         res.sendFile(__dirname + '/' + settings.get("paths." + path+".path"));
                     });
-                    resume += "\t\t\tGET " + path + " -> " + settings.get("paths." + path+".path") + "\n";
+                    resume += "GET " + path + " -> " + settings.get("paths." + path+".path") + "\n";
                 }
                 break;
             case "POST":
@@ -90,13 +90,13 @@ function set_redirections(){
                     app.post("/"+path+"/*", (req, res) => {
                         res.sendFile(__dirname + '/' + settings.get("paths." + path+".path") + req.path.substring(path.length+1));
                     });
-                    resume += "\t\t\tPOST " + path + "/* -> " + settings.get("paths." + path+".path") + "*\n";
+                    resume += "POST " + path + "/* -> " + settings.get("paths." + path+".path") + "*\n";
                 }
                 else{
                     app.post("/"+path, (req, res) => {
                         res.sendFile(__dirname + '/' + settings.get("paths." + path+".path"));
                     });
-                    resume += "\t\t\tPOST " + path + " -> " + settings.get("paths." + path+".path") + "\n";
+                    resume += "POST " + path + " -> " + settings.get("paths." + path+".path") + "\n";
                 }
                 break;
             default:
@@ -114,7 +114,7 @@ function set_redirections(){
                 res.status(404).sendFile(__dirname + '/' + settings.get("default_path"));
             }
         });
-        resume += "\t\t\t* -> " + settings.get("default_path") + "\n";
+        resume += "* -> " + settings.get("default_path") + "\n";
     }
     else{
         Logger.warning("\tNo default path specified, a 404 error will be returned for every path except the explitly redirected ones");
@@ -151,8 +151,6 @@ cio.on(EVENTS.INTERNAL.CONNECTION, (csocket) => {
 
 });
 
-// -------------------------------------------------------------------- SERVER START
-
 server.on("error", (error) => {
     Logger.error(`Server crashed,  ${error.message}`);
 });
@@ -160,6 +158,8 @@ server.on("error", (error) => {
 server.on("close", () => {
     Logger.fine("Server closing successfully");
 });
+
+// -------------------------------------------------------------------- SERVER START
 
 server.listen(settings.get("port"), () => {
     Logger.info('http server opened, listening on *:'+server.address().port);
