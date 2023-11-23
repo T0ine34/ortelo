@@ -39,7 +39,8 @@ app.use(express.static(settings.get("public_dir")));
 
 set_redirections();
 
-set_rooms();
+let rooms = new Map();
+let general = set_rooms(); //set default rooms, and get the main room name
 
 loadGames();
 
@@ -121,7 +122,6 @@ function set_rooms(){
     Logger.info("setting up defaults rooms");
     let resume = "default rooms :\n";
 
-    let rooms = new Map();
     for(let room of settings.get("default_rooms")){
         let r = new Room(room.name);
         r.visible = room.visible;
@@ -136,6 +136,7 @@ function set_rooms(){
     Logger.info(resume.substring(0, resume.length-1)); //removing the last \n
     let general = settings.get("main_room_name");
     Logger.info("general room set to " + general);
+    return general;
 }
 
 // -------------------------------------------------------------------- SERVER EVENTS

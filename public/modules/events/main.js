@@ -3,6 +3,7 @@
  * @namespace ClientSocket
  */
 
+import { EVENTS, EVENT, EVENTS_NAMESPACE } from "./events.js";
 
 /**
  * @classdesc This class is used to send and receive events between the client and the server.
@@ -79,3 +80,5 @@ class CSocket{
         this._socket.once(String(event), callback);
     }
 }
+
+export { CSocket, EVENTS };

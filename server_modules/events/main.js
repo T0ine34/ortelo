@@ -9,7 +9,7 @@
  * @description This namespace contains the classes used to create a custom socket.io server implementing rooms and events.
  */
 
-const { EVENTS, EVENT } = require("../../public/modules/events/events.js");
+const { EVENTS, EVENT } = require("./events.js");
 const { Server }        = require("socket.io");
 
 

@@ -128,15 +128,7 @@ class EVENT{
  */
 let EVENTS = null;
 
-let request = new XMLHttpRequest();
-request.open('GET', '/events', false);
-request.send(null);
-if (request.status === 200) {
-    EVENTS = new EVENTS_NAMESPACE(JSON.parse(request.responseText));
-    Object.freeze(EVENTS);
-}
-else{
-    throw new Error("Unable to load events.json");
-}
-
-export { EVENTS, EVENT, EVENTS_NAMESPACE};
+//we are in the server
+EVENTS = new EVENTS_NAMESPACE(require('../../public/assets/ressources/events.json'));
+Object.freeze(EVENTS);
+module.exports = { EVENTS, EVENT, EVENTS_NAMESPACE };

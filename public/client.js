@@ -1,5 +1,6 @@
-const MAX_HISTORY_SIZE = 100;
+import { CSocket, EVENTS } from "./modules/events/main.js";
 
+const MAX_HISTORY_SIZE = 100;
 
 let username;
 while (username == null || username == "" || !username.trim().length || username.length > 16) {
