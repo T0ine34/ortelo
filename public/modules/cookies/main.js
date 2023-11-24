@@ -42,12 +42,12 @@ class Cookies{
      * @description Set a cookie.
      * @param {string} name is the name of the cookie you want to set.
      * @param {string} value is the value of the cookie you want to set.
-     * @param {number} days is the number of days before the cookie expires.
+     * @param {number|null} hours is the number of days before the cookie expires.
      */
 
-    set(name, value, hours){
+    set(name, value, hours = null){
         let expires = "";
-        if(days){
+        if(hours){
             const date = new Date();
             date.setTime(date.getTime() + (hours*60*60*1000));
             expires = "; expires=" + date.toUTCString();
