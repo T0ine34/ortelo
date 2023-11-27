@@ -1,9 +1,3 @@
-
-/**
- * @fileoverview This file contains the events that can be sent between the client and the server.
- * @author Antoine Buirey
- */
-
 /**
  * @description This module contains classes used for handling events.
  * @module ClientEvents

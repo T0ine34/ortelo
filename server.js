@@ -1,7 +1,3 @@
-/**
- * @fileoverview This file is the main file of the server. It contains the server initialization, the server configuration and the server events.   
- */
-
 // -------------------------------------------------------------------- REQUIRED MODULES
 
 const http                              = require('http');
