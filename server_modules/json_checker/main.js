@@ -1,11 +1,11 @@
-const { json } = require('express');
 const fs       = require('fs');
-const { BlockList } = require('net');
 
 /**
  * @description contains JSON-related functions
- * @namespace JsonChecker
- * @memberof Server
+ * @module JsonChecker
+ * @category Server
+ * @author Antoine Buirey
+ * @since 0.2.1
  */
 
 /**
@@ -14,7 +14,6 @@ const { BlockList } = require('net');
  * @returns true if the file is a json file, false otherwise
  * @throws an error if the file is not a json file
  * @author Antoine Buirey
- * @memberof JsonChecker
  * @function
  */
 function is_json(filepath){
@@ -37,7 +36,6 @@ const STRUCTURES = "./json_structures/"; //the folder to store the structure fil
  * @param {string} json_filepath the path to the json file
  * @description a string containing the path to the structure file
  * @author Antoine Buirey
- * @memberof JsonChecker
  * @function
  * @private
  */
@@ -54,7 +52,6 @@ function get_structure_name(json_filepath){
  * @property {boolean} result the given file match the structure
  * @property {string} reason the reason it does not match the structure (empty if it does)
  * @author Antoine Buirey
- * @memberof JsonChecker
  */
 
 /**
@@ -64,7 +61,6 @@ function get_structure_name(json_filepath){
  * @param {string} filepath the path to the json file
  * @param {string|null} structure_filepath the path to the structure file (if null, the function will try to find the corresponding structure file)
  * @returns {json_matching_result} an array containing a boolean indicating if the node is valid and a string containing the error message if the node is not valid (empty if the node is valid)
- * @memberof JsonChecker
  * @author Antoine Buirey
  * @function
  */

@@ -1,14 +1,14 @@
 /**
- * @description This namespace contain all Socket-related client classes.
- * @namespace ClientSocket
+ * @description This module contain all Socket-related client classes.
+ * @module CustomClientSocket
+ * @category Client
  */
 
-import { EVENTS, EVENT, EVENTS_NAMESPACE } from "./events.js";
+import { EVENTS, EVENT } from "./events.js";
 
 /**
  * @classdesc This class is used to send and receive events between the client and the server.
 This class is only used on the client side; {@link ServerSocket.CSocket} is used on the server side.
- * @memberof ClientSocket
  */
 class CSocket{
     /**

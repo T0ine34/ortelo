@@ -1,12 +1,17 @@
 {
-  "dependencies": {
-    "clean-jsdoc-theme": "^4.2.17",
-    "express": "^4.18.2",
-    "jsdoc": "^4.0.2",
-    "jszip": "^3.10.1",
-    "nodemon": "^3.0.1",
-    "socket.io": "^4.7.2",
-    "socket.io-client": "^4.7.2",
-    "sqlite3": "^5.1.6"
-  }
+	"dependencies": {
+		"better-docs": "^2.7.2",
+		"express": "^4.18.2",
+		"jsdoc": "^4.0.2",
+		"jszip": "^3.10.1",
+		"nodemon": "^3.0.1",
+		"socket.io": "^4.7.2",
+		"socket.io-client": "^4.7.2",
+		"sqlite3": "^5.1.6",
+		"taffydb": "^2.7.3"
+	},
+	"scripts": {
+		"start": "npx nodemon server.js",
+		"document": "npx jsdoc -c jsdoc.config --verbose"
+	}
 }

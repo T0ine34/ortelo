@@ -1,18 +1,14 @@
 
 /**
- * @fileoverview This file contains the events that can be sent between the client and the server.
+ * @description Contains the events that can be sent between the client and the server.
  * @author Antoine Buirey
- */
-
-/**
- * @description This namespace contains classes used for handling events.
- * @namespace Events
+ * @module ServerEvents
+ * @category Server
  */
 
 /**
  * @description This namespace can contains events that can be sent between the client and the server, and other namespaces.
- * This class is not meant to be used directly, use {@link Events.EVENTS}, witch is an instance of this class instead.
- * @memberof Events
+ * This class is not meant to be used directly, use {@link Server.Events.EVENTS}, witch is an instance of this class instead.
  */
 class EVENTS_NAMESPACE{
     /**
@@ -69,8 +65,7 @@ class EVENTS_NAMESPACE{
 
 /**
  * @description This class represent an event that can be sent between the client and the server.
- * This class is not meant to be used directly, use {@link Events.EVENTS} instead, witch is an instance of {@link Events.EVENTS_NAMESPACE}, and contains all the events that can be sent between the client and the server.
- * @memberof Events
+ * This class is not meant to be used directly, use {@link ServerModules.ServerEvents.EVENTS} instead, witch is an instance of {@link ServerModules.ServerEvents.EVENTS_NAMESPACE}, and contains all the events that can be sent between the client and the server.
  */
 class EVENT{
     /**
@@ -121,9 +116,8 @@ class EVENT{
 }
 
 /**
- * @description This instance of {@link Events.EVENTS_NAMESPACE} contains all the events that can be sent between the client and the server.
- * Accessing a property of this object will return an {@link Events.EVENT} or a {@link Events.EVENTS_NAMESPACE} object.
- * @memberof Events
+ * @description This instance of {@link ServerModules.ServerEvents.EVENTS_NAMESPACE} contains all the events that can be sent between the client and the server.
+ * Accessing a property of this object will return an {@link ServerModules.ServerEvents.EVENT} or a {@link ServerModules.ServerEvents.EVENTS_NAMESPACE} object.
  * @instance
  */
 let EVENTS = null;

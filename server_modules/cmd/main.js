@@ -1,6 +1,9 @@
 /**
  * @fileoverview The main file for the cmd module.
- * @description This file is only used on the server side;
+ * @module Commands
+ * @category Server
+ * @author Antoine Buirey
+ * @since 0.2.1
  */
 
 const { EVENTS, Room } = require("../events/main.js");

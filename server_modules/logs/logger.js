@@ -4,6 +4,13 @@ const path = require('path');
 const config = require('../settings/main.js');
 
 /**
+ * @module Logger
+ * @category Server
+ * @description This module contains the Logger class.
+ * @since 0.2.1
+ */
+
+/**
  * @description Replace all \n by \n + indent
  * @param {string} str is the string you want to indent
  * @param {number} indent is the string you want to use to indent
@@ -24,10 +31,6 @@ function indent(str, indent){
  */
 class Logger {
     static _instance = null;
-    /**
-     * @constructor Called only once during startup, this constructor should not be called more than once.
-     * @returns an instance of itself.
-     */
     constructor() {
         if(!Logger._instance) { //if instance does not exist, create it
             Logger._instance = this;

@@ -1,14 +1,10 @@
-/**
- * @fileoverview this file contain a class to load a game from a zip file
- */
-
-const { json } = require('express');
 const fs       = require('fs');
 const JSZip    = require('jszip');
 
 /**
- * @classdesc this class represent a game, loaded from a zip file
+ * @description this class represent a game, loaded from a zip file
  * @author Lila Brandon
+ * @memberof module:Loader
  */
 class Game {
 

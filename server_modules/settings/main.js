@@ -2,6 +2,12 @@ const fs = require("fs");
 const {is_json, is_json_matching} = require("../json_checker/main.js");
 
 /**
+ * @description Contain class to manage settings
+ * @module Settings
+ * @category Server
+ */
+
+/**
  * @description extract a substring from a string between two characters
  * @param {string} mainstring the string to parse
  * @param {string} start_char the start character
@@ -33,7 +39,7 @@ function get_bwn(mainstring, start_char, end_char){
 }
 
 /**
- * @classdesc a class for managing settings
+ * @description a class for managing settings
  */
 class Settings{
     /**

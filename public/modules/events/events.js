@@ -5,14 +5,14 @@
  */
 
 /**
- * @description This namespace contains classes used for handling events.
- * @namespace Events
+ * @description This module contains classes used for handling events.
+ * @module ClientEvents
+ * @category Client
  */
 
 /**
  * @description This namespace can contains events that can be sent between the client and the server, and other namespaces.
- * This class is not meant to be used directly, use {@link Events.EVENTS}, witch is an instance of this class instead.
- * @memberof Events
+ * This class is not meant to be used directly, use {@link ClientModules.Events.EVENTS}, witch is an instance of this class instead.
  */
 class EVENTS_NAMESPACE{
     /**
@@ -69,8 +69,7 @@ class EVENTS_NAMESPACE{
 
 /**
  * @description This class represent an event that can be sent between the client and the server.
- * This class is not meant to be used directly, use {@link Events.EVENTS} instead, witch is an instance of {@link Events.EVENTS_NAMESPACE}, and contains all the events that can be sent between the client and the server.
- * @memberof Events
+ * This class is not meant to be used directly, use {@link EVENTS} instead, witch is an instance of {@link EVENTS_NAMESPACE}, and contains all the events that can be sent between the client and the server.
  */
 class EVENT{
     /**
@@ -121,10 +120,9 @@ class EVENT{
 }
 
 /**
- * @description This instance of {@link Events.EVENTS_NAMESPACE} contains all the events that can be sent between the client and the server.
- * Accessing a property of this object will return an {@link Events.EVENT} or a {@link Events.EVENTS_NAMESPACE} object.
- * @memberof Events
- * @instance
+ * @description This instance of {@link EVENTS_NAMESPACE} contains all the events that can be sent between the client and the server.
+ * Accessing a property of this object will return an {@link EVENT} or a {@link EVENTS_NAMESPACE} object.
+ * @instance {@link EVENTS_NAMESPACE}
  */
 let EVENTS = null;
 

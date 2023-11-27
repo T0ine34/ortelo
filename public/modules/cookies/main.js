@@ -1,20 +1,18 @@
 /**
- * @fileoverview This file contains the main classes for the cookies module.
+ * @fileoverview This file contains the cookies class witch is used to manage cookies.
+ * @module Cookies
+ * @category Client
  * @since 0.2.2
  */
 
 /**
- * @class Cookie
- * @description A class which provides an easy way to manage cookies.
+ * @class Cookies
+ * @description A singleton which provides an easy way to manage cookies. You are not supposed to create an instance of this class, use {@link cookies} instead.
  * @since 0.2.2
  * @author Antoine Buirey
  */
 class Cookies{
     static _instance = null;
-    /**
-     * @constructor Called only once during startup, this constructor should not be called more than once.
-     * @returns an instance of itself.
-     */
     constructor(){
         if(!Cookies._instance) { //if instance does not exist, create it
             Cookies._instance = this;
@@ -84,6 +82,10 @@ class Cookies{
     }
 }
 
+/**
+ * @description An instance of {@link Cookies}.
+ * @since 0.2.2
+ */
 let cookies = new Cookies();
 
 export { cookies };

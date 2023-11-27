@@ -1,12 +1,8 @@
 /**
- * @file This file contains the events module.
- * @description This file is only used on the server side; another file is used on the client side.
- */
-
-/**
- * @namespace ServerSocket
- * @memberof Server
- * @description This namespace contains the classes used to create a custom socket.io server implementing rooms and events.
+ * @module CustomServerSocket
+ * @category Server
+ * @description This module contains the classes used to create a custom socket.io server implementing rooms and events.
+ * @author Antoine Buirey
  */
 
 const { EVENTS, EVENT } = require("./events.js");
@@ -15,7 +11,7 @@ const { Server }        = require("socket.io");
 
 /**
  * @description This class is used to create a room.
- * @memberof ServerSocket
+ * @memberof Socket
  */
 class Room{
     /**
@@ -291,7 +287,6 @@ class Room{
 
 /**
  * @description This class represent a socket.
- * @memberof ServerSocket
  */
 class CSocket{  //this is server side socket
     /**
@@ -305,7 +300,7 @@ class CSocket{  //this is server side socket
     }
 
     /**
-     * @description Emit an event to the client. This event is initiated by the server. If the event is sent by a user, use {@link ServerSocket.CSocket#transmit transmit} instead.
+     * @description Emit an event to the client. This event is initiated by the server. If the event is sent by a user, use {@link Socket.CSocket#transmit transmit} instead.
      * @param {EVENT} event - The event to emit.
      * @param {...any} args - The arguments to send with the event.
      * @throws {Error} if the event is undefined.
@@ -315,7 +310,7 @@ class CSocket{  //this is server side socket
      * @throws {Error} if the type of an argument is invalid.
      * @see {@link ClientSocket.CSocket#on}
      * @see {@link ClientSocket.CSocket#once}
-     * @see {@link ServerSocket.CSocket#transmit transmit}
+     * @see {@link Socket.CSocket#transmit transmit}
      */
     emit(event, ...args){
         if(event == undefined) throw new Error("event is undefined");
@@ -331,7 +326,7 @@ class CSocket{  //this is server side socket
     }
 
     /**
-     * @description Transmit an event  sent by a user to the client. This method is used to transmit an event that was sent by a user to the client; if the event is intitiated by the server, use {@link ServerSocket.CSocket#emit emit} instead.
+     * @description Transmit an event  sent by a user to the client. This method is used to transmit an event that was sent by a user to the client; if the event is intitiated by the server, use {@link Socket.CSocket#emit emit} instead.
      * @param {EVENT} event - The event to transmit.
      * @param {...any} args - The arguments to send with the event.
      * @throws {Error} if the event is undefined.
@@ -340,7 +335,7 @@ class CSocket{  //this is server side socket
      * @throws {Error} if the type of an argument is invalid.
      * @see {@link ClientSocket.CSocket#on}
      * @see {@link ClientSocket.CSocket#once}
-     * @see {@link ServerSocket.CSocket#emit emit}
+     * @see {@link Socket.CSocket#emit emit}
      */
     transmit(event, ...args){
         if(event == undefined) throw new Error("event is undefined");
@@ -356,7 +351,7 @@ class CSocket{  //this is server side socket
     }
 
     /**
-     * @description Register a new event listener. the callback will be called every time the event is received. For a one time event listener, use {@link ServerSocket.CSocket#once once} instead.
+     * @description Register a new event listener. the callback will be called every time the event is received. For a one time event listener, use {@link Socket.CSocket#once once} instead.
      * @param {EVENT} event - The event to listen to.
      * @param {function} callback - The callback function.
      * @throws {Error} if the event is undefined.
@@ -364,7 +359,7 @@ class CSocket{  //this is server side socket
      * @throws {Error} if the event cannot be initiated by the client.
      * @throws {Error} if the callback is not a function.
      * @see {@link ClientSocket.CSocket#emit}
-     * @see {@link ServerSocket.CSocket#once}
+     * @see {@link Socket.CSocket#once}
      * 
      */
     on(event, callback){
@@ -385,7 +380,7 @@ class CSocket{  //this is server side socket
      * @throws {Error} if the event is not an EVENT object.
      * @throws {Error} if the event cannot be initiated by the client.
      * @throws {Error} if the callback is not a function.
-     * @see {@link ServerSocket.CSocket#on}
+     * @see {@link Socket.CSocket#on}
      * @see {@link ClientSocket.CSocket#emit}
      */
     once(event, callback){
@@ -442,7 +437,6 @@ class CSocket{  //this is server side socket
 
 /**
  * @description This class represent a socket.io server.
- * @memberof ServerSocket
  */
 class CIO{
     /**
@@ -458,7 +452,7 @@ class CIO{
     }
 
     /**
-     * @description Create a {@link ServerSocket.CIO CIO} object from an express server object.
+     * @description Create a {@link Socket.CIO CIO} object from an express server object.
      * @param {Server} server The express server object.
      * @returns {CIO} The CIO object.
      * @static

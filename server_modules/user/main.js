@@ -2,9 +2,15 @@ const { EVENTS, Room, CSocket } = require('../events/main.js');
 const { Socket } = require("socket.io");
 
 /**
+ * @description Contain a class representing a user connected to the server
+ * @module User
+ * @category Server
+ */
+
+
+/**
  * @classdesc This class represent a user connected to the server. It contains the socket of the user and the rooms he is in.
  * @author Jebril Boufrour, Antoine Buirey
- * @memberof Server
  */
 class User{
     /**
