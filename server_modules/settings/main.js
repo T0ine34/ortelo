@@ -39,22 +39,28 @@ function get_bwn(mainstring, start_char, end_char){
 }
 
 /**
- * @description a class for managing settings
+ * @description a class for managing settings, only one instance per file is allowed, creating a new instance with the same file will return the already existing one
  */
 class Settings{
+    static _instances = {};
+
     /**
      * @description constructor for the Settings class
      * @param {string} filepath the path to the settings file (must be a JSON file)
      * @throws {Error} if the file cannot be read
      */
     constructor(filepath){
-        try{
-            this._data = JSON.parse(fs.readFileSync(filepath));
+        if(!Settings._instances[filepath]){
+            try{
+                this._data = JSON.parse(fs.readFileSync(filepath));
+            }
+            catch(e){
+                throw new Error("Error while reading settings file : " + e);
+            }
+            this._filepath = filepath;
+            Settings._instances[filepath] = this;
         }
-        catch(e){
-            throw new Error("Error while reading settings file : " + e);
-        }
-        this._filepath = filepath;
+        return Settings._instances[filepath];
     }
 
     /**
