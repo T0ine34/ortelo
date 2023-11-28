@@ -10,8 +10,7 @@ const { Server }        = require("socket.io");
 
 
 /**
- * @description This class is used to create a room.
- * @memberof Socket
+ * @description This class is used to create a room.    
  */
 class Room{
     /**

@@ -8,6 +8,7 @@ const config = require('../settings/main.js');
  * @category Server
  * @description This module contains the Logger class.
  * @since 0.2.1
+ * @author Lila BRANDON, Antoine Buirey
  */
 
 /**
@@ -16,6 +17,7 @@ const config = require('../settings/main.js');
  * @param {number} indent is the string you want to use to indent
  * @returns the indented string
  * @since 0.2.2
+ * @private
  * @author Antoine Buirey
  */
 function indent(str, indent){
