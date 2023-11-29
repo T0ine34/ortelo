@@ -146,7 +146,7 @@ function fetchGames() {
     fetch('/games-info')
         .then(response => response.json())
         .then(games => {
-            const gamesListContainer = document.getElementById('games-list');
+            const gamesListContainer = document.getElementById('games_container');
             gamesListContainer.innerHTML = '';
 
             games.forEach(game => {

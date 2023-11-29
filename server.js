@@ -36,7 +36,7 @@ app.get('/events', (req, res) => {
 app.get('/games-info', (req, res) => {
     const gameInfos = Object.values(gameLoader.gamesData).map(game => ({
         name: game.name,
-        icon: game.iconPath
+        icon: game.iconData ? `data:image/png;base64,${game.iconData.toString('base64')}` : null
     }));
     res.json(gameInfos);
 });
