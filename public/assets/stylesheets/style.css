@@ -1,6 +1,7 @@
 /* @import url("./queried_style.css");
 @import url("./navbar.css");*/
-@import url("./chat.css"); 
+@import url("./chat.css");
+@import url("./games.css");
 
 body {
     margin: 0;
@@ -44,3 +45,4 @@ body {
     font-size: 0.5rem;
     color: #aaa;
 } */
+

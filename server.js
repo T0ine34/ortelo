@@ -1,15 +1,16 @@
 // -------------------------------------------------------------------- REQUIRED MODULES
 
-const http                              = require('http');
-const express                           = require('express');
-const { Server }                        = require("socket.io");
-settings                                = require('./server_modules/settings/main.js');
-const Logger                            = require('./server_modules/logs/logger');
+const http                            = require('http');
+const express= require('express');
+const { Server } = require("socket.io");
+const settings             = require('./server_modules/settings/main.js');
+const Logger                = require('./server_modules/logs/logger');
 const { parseCMD }                      = require('./server_modules/cmd/main.js');
 const { User }                          = require('./server_modules/user/main.js');
 const { EVENTS, Room, CIO, CSocket }    = require('./server_modules/events/main.js');
 const { GameLoader }                    = require('./server_modules/loader/loader.js');
 const { is_json, is_json_matching }     = require('./server_modules/json_checker/main.js');
+const fs = require('fs');
 
 // -------------------------------------------------------------------- SERVER INITIALIZATION
 Logger.debug("intitializing express app");
@@ -28,21 +29,31 @@ Logger.debug("server initialized successfully");
 
 app.use(express.static(settings.get("public_dir")));
 
+
+app.get('/events', (req, res) => {
+    res.sendFile(__dirname +'/' + settings.get('paths.events'));
+});
+app.get('/games-info', (req, res) => {
+    const gameInfos = Object.values(gameLoader.gamesData).map(game => ({
+        name: game.name,
+        icon: game.iconPath
+    }));
+    res.json(gameInfos);
+});
+app.get('*', (req, res) => { //redirect every other request to 404 page
+    res.sendFile(__dirname + '/' + settings.get('paths.404'));
+});
+
 set_redirections();
+
 
 let rooms = new Map();
 let general = set_rooms(); //set default rooms, and get the main room name
 
-loadGames();
-
 // -------------------------------------------------------------------- SERVER FUNCTIONS
 
 async function loadGames() {
-    gameLoader.getFiles();
-    let game = await gameLoader.readAGame(gameLoader.gameFiles[1]);
-    //console.log(game);
-    // gameLoader.readAGame();
-    //TODO GET ALL GAMES TO SHOW ON WEBPAGE
+    await gameLoader.loadAllGames();
 }
 
 function set_redirections(){
@@ -168,10 +179,10 @@ server.on("close", () => {
 });
 
 // -------------------------------------------------------------------- SERVER START
-
-server.listen(settings.get("port"), () => {
-    Logger.info('http server opened, listening on *:'+server.address().port);
+loadGames().then(() => {
+    server.listen(settings.get("port"), () => {
+        console.log('Serveur démarré sur le port: ' + settings.get("port"));
+        Logger.info('http server opened, listening on *:'+server.address().port);
+    });
 });
-
 Logger.fine("Server started successfully");
-

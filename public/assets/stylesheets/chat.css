@@ -1,5 +1,11 @@
 #chat_container {
     background: rgba(84, 146, 246, 0.69); 
+    padding: 0.25rem;
+    box-sizing: border-box;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
 }
 
 #chat_container h3 {
@@ -12,7 +18,8 @@
     list-style-type: none; 
     margin: 0; 
     padding: 0;
-    height: 78%;
+    height: auto; 
+    flex-grow: 1;
     overflow-y: auto;
     overflow-x: hidden;
 }
@@ -24,4 +31,23 @@
     font-size: larger;
     margin: 0.1rem;
     width: 100%;
+}
+
+#send_message:focus {
+    outline: none;
+}
+
+@media (max-width: 768px) {
+    #chat_container {
+        padding: 0.5rem; 
+        height: auto;
+    }
+    
+    #message_form {
+        position: relative;
+    }
+    
+    #messages {
+        height: 50vh; 
+    }
 }
