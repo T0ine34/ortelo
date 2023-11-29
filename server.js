@@ -9,6 +9,7 @@ const { EVENTS, Room, CIO, CSocket }    = require('./server_modules/events/main.
 const { Settings }                      = require('./server_modules/settings/main.js');
 const { GameLoader }                    = require('./server_modules/loader/loader.js');
 const { is_json, is_json_matching }     = require('./server_modules/json_checker/main.js');
+const fs = require('fs');
 
 // -------------------------------------------------------------------- SERVER INITIALIZATION
 const app = express();
@@ -31,10 +32,17 @@ app.use(express.static(settings.get("public_dir")));
 app.get('/events', (req, res) => {
     res.sendFile(__dirname +'/' + settings.get('paths.events'));
 });
-
+app.get('/games-info', (req, res) => {
+    const gameInfos = Object.values(gameLoader.gamesData).map(game => ({
+        name: game.name,
+        icon: game.iconPath
+    }));
+    res.json(gameInfos);
+});
 app.get('*', (req, res) => { //redirect every other request to 404 page
     res.sendFile(__dirname + '/' + settings.get('paths.404'));
 });
+
 
 let rooms = new Map();
 for(let room of settings.get("default_rooms")){
@@ -49,16 +57,10 @@ for(let room of settings.get("default_rooms")){
 let general = settings.get("general_room_name");
 
 
-loadGames();
-
 // -------------------------------------------------------------------- SERVER FUNCTIONS
 
 async function loadGames() {
-    gameLoader.getFiles();
-    let game = await gameLoader.readAGame(gameLoader.gameFiles[1]);
-    console.log(game);
-    // gameLoader.readAGame();
-    //TODO GET ALL GAMES TO SHOW ON WEBPAGE
+    await gameLoader.loadAllGames();
 }
 
 // -------------------------------------------------------------------- SERVER EVENTS
@@ -92,6 +94,8 @@ cio.on(EVENTS.INTERNAL.CONNECTION, (csocket) => {
 
 // -------------------------------------------------------------------- SERVER START
 
-server.listen(settings.get("port"), () => {
-    console.log('listening on *:'+server.address().port);
+loadGames().then(() => {
+    server.listen(settings.get("port"), () => {
+        console.log('Serveur démarré sur le port: ' + settings.get("port"));
+    });
 });

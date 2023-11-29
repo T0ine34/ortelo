@@ -8,7 +8,7 @@ while (username == null || username == "" || !username.trim().length || username
 
 let csocket = new CSocket(io());
 csocket.emit(EVENTS.MISC.USERNAME, Date.now(), username);                               //sending the newUser event to the server, with the username as parameter
-
+fetchGames();
 
 csocket.on(EVENTS.CHAT.USER_JOINED, (timestamp, name) => {                                //catching the newUser event, triggered by the server when a new user joins the chat
     let item = document.createElement('li');
@@ -128,4 +128,23 @@ let receive_message = (timestamp, username, msg) => {
     item.innerHTML += "<span class=\"timestamp\">"+d.getHours()+":"+d.getMinutes()+":"+d.getSeconds()+"</span>";
     messages.appendChild(item);
     item.scrollIntoView();
+}
+
+function fetchGames() {
+    fetch('/games-info')
+        .then(response => response.json())
+        .then(games => {
+            const gamesListContainer = document.getElementById('games-list');
+            gamesListContainer.innerHTML = '';
+
+            games.forEach(game => {
+                const gameElement = document.createElement('div');
+                gameElement.innerHTML = `<h3>${game.name}</h3>
+                                         <img src="${game.icon}" alt="${game.name}">`;
+                gamesListContainer.appendChild(gameElement);
+            });
+        })
+        .catch(error => {
+            console.error('Erreur lors du chargement des jeux:', error);
+        });
 }
