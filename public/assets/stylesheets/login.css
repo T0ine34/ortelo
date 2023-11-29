@@ -1,0 +1,53 @@
+/* Styles pour le cadre bleu du formulaire de connexion */
+#login_container {
+    background-color: rgba(84, 146, 246, 0.69);
+    padding: 20px;
+    border-radius: 10px;
+    width: 50%; /* Ajustez la largeur du cadre selon vos préférences */
+    margin: 0 auto; /* Centrez le cadre horizontalement */
+    text-align: center; /* Centrez le contenu du cadre */
+}
+
+/* Style pour la case à cocher "Rester connecté" */
+.form-group.form-check {
+    display: flex;
+    align-items: center; /* Alignez les éléments verticalement au centre */
+}
+
+.form-check-input {
+    margin-right: 5px; /* Espace entre la case à cocher et le libellé */
+}
+
+/* Style pour le bouton de connexion */
+.btn-login {
+    background-color: #333;
+    border: none;
+    padding: 0 1rem;
+    margin: 0.25rem;
+    border-radius: 3px;
+    outline: none;
+    color: #fff;
+}
+
+/* Style pour le bouton de connexion au survol */
+.btn-login:hover {
+    background-color: #555;
+    color: #fff;
+}
+
+/* Style pour les options à droite */
+.options-right {
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+    margin-top: 10px;
+}
+
+.forgot-password {
+    text-decoration: none;
+    color: #333;
+}
+
+.divider {
+    margin: 0 10px;
+}
