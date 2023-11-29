@@ -32,6 +32,34 @@
             "max_length" : null,
             "required" : true
         },
+        "logs": {
+            "type" : "dict",
+            "required" : true,
+            "content" : {
+                "dir": {
+                    "type" : "string",
+                    "min_length" : 1,
+                    "max_length" : null,
+                    "required" : true
+                },
+                "maxFiles": {
+                    "type" : "int",
+                    "min": 1,
+                    "max": 65535,
+                    "required" : true
+                },
+                "refreshTimeSec": {
+                    "type" : "int",
+                    "min": 1,
+                    "max": 2678400,
+                    "required" : true
+                },
+                "useDebug": {
+                    "type" : "boolean",
+                    "required" : true
+                }
+            }
+        },
         "default_rooms" : {
             "type" : "list",
             "min_length" : 1,
@@ -77,7 +105,7 @@
                 }
             }
         },
-        "general_room_name" : {
+        "main_room_name" : {
             "type" : "string",
             "min_length" : 1,
             "max_length" : null,
@@ -89,11 +117,33 @@
             "min_length" : 0,
             "max_length" : null,
             "content_template" : {
-                "type" : "string",
-                "min_length" : 1,
-                "max_length" : null,
-                "required" : true
+                "type" : "dict",
+                "required" : true,
+                "content" : {
+                    "path" : {
+                        "type" : "string",
+                        "min_length" : 3,
+                        "max_length" : null,
+                        "required" : true
+                    },
+                    "mode" : {
+                        "type" : "string",
+                        "min_length" : 2,
+                        "max_length" : null,
+                        "required" : true,
+                        "values" : [
+                            "GET",
+                            "POST"
+                        ]
+                    }
+                }
             }
+        },
+        "default_path" : {
+            "type" : "string",
+            "min_length" : 3,
+            "max_length" : null,
+            "required" : false
         }
     }
 }

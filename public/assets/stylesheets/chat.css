@@ -2,10 +2,10 @@
     background: rgba(84, 146, 246, 0.69); 
     padding: 0.25rem;
     box-sizing: border-box;
-    left: 0;  right: 0;
     height: 100%;
-    /* display: flex; */
-    align-items: flex-end; 
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
 }
 
 #chat_container h3 {
@@ -14,25 +14,12 @@
     word-wrap: break-word;
 }
 
-/* #message_form {
-    text-align: center;
-    position: fixed;
-    left: 5px;
-    bottom: 0px;
-} */
-
-
-#message_form > button {
-    border: none;
-    margin: 0.25rem;
-    padding-bottom: 5px;
-}
-
 #messages { 
     list-style-type: none; 
     margin: 0; 
     padding: 0;
-    height: 78%;
+    height: auto; 
+    flex-grow: 1;
     overflow-y: auto;
     overflow-x: hidden;
 }
@@ -48,4 +35,19 @@
 
 #send_message:focus {
     outline: none;
+}
+
+@media (max-width: 768px) {
+    #chat_container {
+        padding: 0.5rem; 
+        height: auto;
+    }
+    
+    #message_form {
+        position: relative;
+    }
+    
+    #messages {
+        height: 50vh; 
+    }
 }

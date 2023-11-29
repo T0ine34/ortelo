@@ -1,33 +1,34 @@
 // -------------------------------------------------------------------- REQUIRED MODULES
 
-const http                              = require('http');
-const express                           = require('express');
-const { Server }                        = require("socket.io");
+const http                            = require('http');
+const express= require('express');
+const { Server } = require("socket.io");
+const settings             = require('./server_modules/settings/main.js');
+const Logger                = require('./server_modules/logs/logger');
 const { parseCMD }                      = require('./server_modules/cmd/main.js');
 const { User }                          = require('./server_modules/user/main.js');
 const { EVENTS, Room, CIO, CSocket }    = require('./server_modules/events/main.js');
-const { Settings }                      = require('./server_modules/settings/main.js');
 const { GameLoader }                    = require('./server_modules/loader/loader.js');
 const { is_json, is_json_matching }     = require('./server_modules/json_checker/main.js');
 const fs = require('fs');
 
 // -------------------------------------------------------------------- SERVER INITIALIZATION
+Logger.debug("intitializing express app");
 const app = express();
+Logger.debug("intitializing http server")
 const server = http.createServer(app);
+Logger.debug("intitializing CIO object using the http server")
 const cio = CIO.from_server(server);
 
-const config_filepath = "./config.json";
-if(!is_json(config_filepath)){ throw new Error("config.json is not a valid json file"); }
-if(!is_json_matching(config_filepath)){ throw new Error("config.json is not matching the structure"); }
-
-var settings = new Settings(config_filepath); //from this line, there shouldn't be any hard-coded path in the code of any used module; all the paths should be in the config.json file
-
+Logger.debug("intitializing game loader");
 const gameLoader = new GameLoader();
 
+Logger.debug("server initialized successfully");
 
 // -------------------------------------------------------------------- SERVER CONFIGURATION
 
 app.use(express.static(settings.get("public_dir")));
+
 
 app.get('/events', (req, res) => {
     res.sendFile(__dirname +'/' + settings.get('paths.events'));
@@ -43,24 +44,101 @@ app.get('*', (req, res) => { //redirect every other request to 404 page
     res.sendFile(__dirname + '/' + settings.get('paths.404'));
 });
 
+set_redirections();
+
 
 let rooms = new Map();
-for(let room of settings.get("default_rooms")){
-    let r = new Room(room.name);
-    r.visible = room.visible;
-    r.use_whitelist = room.whitelist;
-    for(let username of room.userlist){
-        r.add_to_list(username);
-    }
-    rooms.set(room.name, r);
-}
-let general = settings.get("general_room_name");
-
+let general = set_rooms(); //set default rooms, and get the main room name
 
 // -------------------------------------------------------------------- SERVER FUNCTIONS
 
 async function loadGames() {
     await gameLoader.loadAllGames();
+}
+
+function set_redirections(){
+
+    Logger.info("Setting up redirections");
+
+    let resume = "redirected path :\n";
+
+    let excluded_paths = [];
+    for(let path in settings.get("paths")){
+        excluded_paths.push("/"+path);
+        switch(settings.get("paths." + path+".mode")){
+            case "GET":
+                if(settings.has("paths." + path+".recursive") && settings.get("paths." + path+".recursive")){
+                    //if the path is recursive, redirect all the subpaths to the same path
+                    app.get("/"+path+"/*", (req, res) => {
+                        res.sendFile(__dirname + '/' + settings.get("paths." + path+".path") + req.path.substring(path.length+1));
+                    });
+                    resume += "GET " + path + "/* -> " + settings.get("paths." + path+".path") + "*\n";
+                }
+                else{
+                    app.get("/"+path, (req, res) => {
+                        res.sendFile(__dirname + '/' + settings.get("paths." + path+".path"));
+                    });
+                    resume += "GET " + path + " -> " + settings.get("paths." + path+".path") + "\n";
+                }
+                break;
+            case "POST":
+                if(settings.has("paths." + path+".recursive") && settings.get("paths." + path+".recursive")){
+                    //if the path is recursive, redirect all the subpaths to the same path
+                    app.post("/"+path+"/*", (req, res) => {
+                        res.sendFile(__dirname + '/' + settings.get("paths." + path+".path") + req.path.substring(path.length+1));
+                    });
+                    resume += "POST " + path + "/* -> " + settings.get("paths." + path+".path") + "*\n";
+                }
+                else{
+                    app.post("/"+path, (req, res) => {
+                        res.sendFile(__dirname + '/' + settings.get("paths." + path+".path"));
+                    });
+                    resume += "POST " + path + " -> " + settings.get("paths." + path+".path") + "\n";
+                }
+                break;
+            default:
+                Logger.warning("\tunknown mode for path " + path + " : " + settings.get("paths." + path+".mode")+"; ignoring");
+        }
+    }
+
+    if(settings.has("default_path")){
+        //redirect everything except the excluded paths to the default path
+        app.use('*', (req, res, next) => {
+            if(excluded_paths.includes(req.path)){
+                next();
+            }
+            else{
+                res.status(404).sendFile(__dirname + '/' + settings.get("default_path"));
+            }
+        });
+        resume += "* -> " + settings.get("default_path") + "\n";
+    }
+    else{
+        Logger.warning("\tNo default path specified, a 404 error will be returned for every path except the explitly redirected ones");
+    }
+    Logger.fine("Redirections set up successfully");
+    Logger.info(resume.substring(0, resume.length-1)); //removing the last \n
+}
+
+function set_rooms(){
+    Logger.info("setting up defaults rooms");
+    let resume = "default rooms :\n";
+
+    for(let room of settings.get("default_rooms")){
+        let r = new Room(room.name);
+        r.visible = room.visible;
+        r.use_whitelist = room.whitelist;
+        for(let username of room.userlist){
+            r.add_to_list(username);
+        }
+        rooms.set(room.name, r); 
+        resume += "\t" + room.name + " : visible=" + room.visible + ", using_whitelist=" + room.whitelist + ", list_of_users=[" + room.userlist + "]\n";
+    }
+    Logger.fine("Rooms set up successfully");
+    Logger.info(resume.substring(0, resume.length-1)); //removing the last \n
+    let general = settings.get("main_room_name");
+    Logger.info("general room set to " + general);
+    return general;
 }
 
 // -------------------------------------------------------------------- SERVER EVENTS
@@ -92,10 +170,19 @@ cio.on(EVENTS.INTERNAL.CONNECTION, (csocket) => {
 
 });
 
-// -------------------------------------------------------------------- SERVER START
+server.on("error", (error) => {
+    Logger.error(`Server crashed,  ${error.message}`);
+});
 
+server.on("close", () => {
+    Logger.fine("Server closing successfully");
+});
+
+// -------------------------------------------------------------------- SERVER START
 loadGames().then(() => {
     server.listen(settings.get("port"), () => {
         console.log('Serveur démarré sur le port: ' + settings.get("port"));
+        Logger.info('http server opened, listening on *:'+server.address().port);
     });
 });
+Logger.fine("Server started successfully");

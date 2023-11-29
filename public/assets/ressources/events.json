@@ -35,7 +35,7 @@
             ],
             "server_to_client": true,
             "client_to_server": false,
-            "description": "A player will joined the game. (this is triggered before the user join; the user will not be able to see this message)"
+            "description": "A player will join the game. (this is triggered before the user join; the user will not be able to see this message)"
         },
         "USER_JOINED":{
             "type" : "event",
@@ -258,6 +258,25 @@
             "server_to_client": true,
             "client_to_server": true,
             "description": "Game data sent by the server to the client or by the client to the server. (the content will depend on the game)"
+        }
+    },
+    "GAMES_MENU": {
+        "type": "namespace",
+        "SEND_GAME": {
+            "type": "event",
+            "payload": [
+                {
+                    "name": "name",
+                    "type": "string"
+                },
+                {
+                    "name": "icon",
+                    "type": "string"
+                }
+            ],
+            "server_to_client": true,
+            "client_to_server": false,
+            "description": "The name and icon of a game, sent to client then showing up on the application"
         }
     },
     "MISC":{

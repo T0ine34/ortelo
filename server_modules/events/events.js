@@ -1,12 +1,14 @@
+
 /**
- * @description This module contains classes used for handling events.
- * @module ClientEvents
- * @category Client
+ * @description Contains the events that can be sent between the client and the server.
+ * @author Antoine Buirey
+ * @module ServerEvents
+ * @category Server
  */
 
 /**
  * @description This namespace can contains events that can be sent between the client and the server, and other namespaces.
- * This class is not meant to be used directly, use {@link ClientModules.Events.EVENTS}, witch is an instance of this class instead.
+ * This class is not meant to be used directly, use {@link Server.Events.EVENTS}, witch is an instance of this class instead.
  */
 class EVENTS_NAMESPACE{
     /**
@@ -63,7 +65,7 @@ class EVENTS_NAMESPACE{
 
 /**
  * @description This class represent an event that can be sent between the client and the server.
- * This class is not meant to be used directly, use {@link EVENTS} instead, witch is an instance of {@link EVENTS_NAMESPACE}, and contains all the events that can be sent between the client and the server.
+ * This class is not meant to be used directly, use {@link ServerModules.ServerEvents.EVENTS} instead, witch is an instance of {@link ServerModules.ServerEvents.EVENTS_NAMESPACE}, and contains all the events that can be sent between the client and the server.
  */
 class EVENT{
     /**
@@ -114,21 +116,13 @@ class EVENT{
 }
 
 /**
- * @description This instance of {@link EVENTS_NAMESPACE} contains all the events that can be sent between the client and the server.
- * Accessing a property of this object will return an {@link EVENT} or a {@link EVENTS_NAMESPACE} object.
- * @instance {@link EVENTS_NAMESPACE}
+ * @description This instance of {@link ServerModules.ServerEvents.EVENTS_NAMESPACE} contains all the events that can be sent between the client and the server.
+ * Accessing a property of this object will return an {@link ServerModules.ServerEvents.EVENT} or a {@link ServerModules.ServerEvents.EVENTS_NAMESPACE} object.
+ * @instance
  */
 let EVENTS = null;
 
-let request = new XMLHttpRequest();
-request.open('GET', '/events', false);
-request.send(null);
-if (request.status === 200) {
-    EVENTS = new EVENTS_NAMESPACE(JSON.parse(request.responseText));
-    Object.freeze(EVENTS);
-}
-else{
-    throw new Error("Unable to load events.json");
-}
-
-export { EVENTS, EVENT, EVENTS_NAMESPACE};
+//we are in the server
+EVENTS = new EVENTS_NAMESPACE(require('../../public/assets/ressources/events.json'));
+Object.freeze(EVENTS);
+module.exports = { EVENTS, EVENT, EVENTS_NAMESPACE };
