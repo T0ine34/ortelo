@@ -1,7 +1,6 @@
 const fs = require('fs');
 const JSZip = require('jszip');
 const path = require('path');
-const JSZip= require('jszip');
 const { Game } = require('./game');
 
 /**
