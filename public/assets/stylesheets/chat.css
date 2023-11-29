@@ -1,4 +1,3 @@
-/* Styles pour les écrans larges (desktop) */
 #chat_container {
     background: rgba(84, 146, 246, 0.69); 
     padding: 0.25rem;
@@ -19,7 +18,7 @@
     list-style-type: none; 
     margin: 0; 
     padding: 0;
-    height: auto; /* Ajustez la hauteur automatiquement */
+    height: auto; 
     flex-grow: 1;
     overflow-y: auto;
     overflow-x: hidden;
@@ -38,10 +37,9 @@
     outline: none;
 }
 
-/* Media query pour les écrans plus petits (mobile) */
 @media (max-width: 768px) {
     #chat_container {
-        padding: 0.5rem; /* Augmentez la marge pour un meilleur espacement sur les écrans plus petits */
+        padding: 0.5rem; 
         height: auto;
     }
     
@@ -50,6 +48,7 @@
     }
     
     #messages {
-        height: 50vh; /* Définissez une hauteur fixe pour les messages sur les écrans plus petits */
+        height: 50vh; 
     }
+}
 }

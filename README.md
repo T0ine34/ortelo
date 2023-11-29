@@ -17,6 +17,16 @@ To connect to it as a client, you need to :
 - go to the server's ip address on port 3000
 - that's it, you are connected to the server
 
+### Create documentation
+To create the documentation, you need to run the following command in the root folder :
+
+`npx jsdoc -c jsdoc.config`
+
+> Note that jsdoc was installed with the `npm install` command, so you don't need to install it again.
+
+Then,
+the documentation will be created in the `./docs` folder as an aggregate of html files.
+
 ## Add a game
 To add a game, you need to :
 - Download it from lastest release ***not avaliable for now***

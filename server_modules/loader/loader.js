@@ -2,6 +2,17 @@ const fs       = require('fs');
 const JSZip    = require('jszip');
 const { Game } = require('./game');
 
+/**
+ * @module Loader
+ * @category Server
+ * @description this module contains classes to load games from zip files
+ * @author Lila Brandon
+*/
+
+/**
+ * @classdesc this class will create {@link Server.Game} objects from zip files
+ * @author Lila Brandon
+ */
 class GameLoader {
     
     constructor(path="./public/games/") {

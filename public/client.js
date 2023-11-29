@@ -1,10 +1,22 @@
+import { CSocket, EVENTS } from "./modules/events/main.js";
+import { cookies } from "./modules/cookies/main.js";
+
 const MAX_HISTORY_SIZE = 100;
 
 
 let username;
-while (username == null || username == "" || !username.trim().length || username.length > 16) {
-    username = prompt("Enter your username (can not be longer than 16 characters)");
+if(cookies.exists("username")){
+    username = cookies.get("username");
+    console.info("username read from cookies : " + username);
 }
+else{
+    console.info("username not found in cookies");
+    while (username == null || username == "" || !username.trim().length || username.length > 16) {
+        username = prompt("Enter your username (can not be longer than 16 characters)");
+    }
+}
+cookies.set("username", username, 1); //save the username for 1 day
+console.info("username set to " + username +" for 1 hour");
 
 let csocket = new CSocket(io());
 csocket.emit(EVENTS.MISC.USERNAME, Date.now(), username);                               //sending the newUser event to the server, with the username as parameter

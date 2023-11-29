@@ -1,7 +1,22 @@
-const { EVENTS, EVENT } = require("../../public/modules/events/events.js");
+/**
+ * @module CustomServerSocket
+ * @category Server
+ * @description This module contains the classes used to create a custom socket.io server implementing rooms and events.
+ * @author Antoine Buirey
+ */
+
+const { EVENTS, EVENT } = require("./events.js");
 const { Server }        = require("socket.io");
 
+
+/**
+ * @description This class is used to create a room.    
+ */
 class Room{
+    /**
+     * @description Create a new room.
+     * @param {string} name The name of the room.
+     */
     constructor(name){
         this._name = name;
         this._users = new Set();
@@ -11,15 +26,30 @@ class Room{
                                         //if true, the room will be visible by all users
     }
 
+    /**
+     * @description Set the visibility of the room.
+     * @param {boolean} bool - true if the room should be visible, false otherwise.
+     */
     set visible(bool){
         if(typeof bool !== "boolean") throw new Error("bool is not a boolean");
         this._is_visible = bool;
     }
 
+    /**
+     * @description Return true if the room is visible, false otherwise.
+     * @returns {boolean} true if the room is visible, false otherwise.
+     */
     get visible(){
         return this._is_visible;
     }
 
+    /**
+     * @description Add a user to the room.
+     * @param {CSocket} user - The user to add.
+     * @returns {boolean} true if the user has been added, false otherwise.
+     * @throws {Error} if the user is not a CSocket object.
+     * @returns {boolean} true if the user has been added, false otherwise.
+     */
     addUser(user){
         //add the user to the room if he is not in blacklist or if he is in whitelist
         //return true if the user has been added, false otherwise
@@ -33,10 +63,20 @@ class Room{
         }
     } 
 
+    /**
+     * @see Room#addUser
+     */
     join(user){
         return this.addUser(user);
     }
 
+    /**
+     * @description Remove a user from the room.
+     * @param {CSocket} user - The user to remove.
+     * @throws {Error} if the user is not a CSocket object.
+     * @throws {Error} if the user is not in the room.
+     * @returns {boolean} true if the user has been removed, false otherwise.
+     */
     removeUser(user){
         //remove the user from the room
         if(!user instanceof CSocket) throw new Error("user is not a CSocket Object");
@@ -44,20 +84,43 @@ class Room{
         this._users.delete(user);
     }
 
+    /**
+     * @description Return the name of the room.
+     * @returns {string} The name of the room.
+     * @readonly
+     */
     get name(){
         return this._name;
     }
 
+    /**
+     * @description Return the users in the room.
+     * @returns {Set<CSocket>} The users in the room.
+     * @readonly
+     */
     get users(){
         return this._users;
     }
 
+    /**
+     * @description force a user to leave the room.
+     * @param {CSocket} user - The user to kick.
+     * @throws {Error} if the user is not a CSocket object.
+     * @throws {Error} if the user is not in the room.
+     * @returns {boolean} true if the user has been removed, false otherwise.
+     */
     kick(user){
         //force a user to leave the room
         if(!user instanceof CSocket) throw new Error("user is not a CSocket Object");
         this._users.delete(user);
     }
 
+    /**
+     * @description Set the room to use a whitelist or a blacklist.
+     * @param {boolean} bool - true if the room should use a whitelist, false otherwise.
+     * @throws {Error} if bool is not a boolean.
+     * @description if the list mode is changed, the list will be cleared.
+     */
     set use_whitelist(bool){
         if(typeof bool !== "boolean") throw new Error("bool is not a boolean");
         if(this._use_as_whitelist === bool) return;
@@ -65,25 +128,56 @@ class Room{
         this._use_as_whitelist = bool;
     }
 
+    /**
+     * @description Return true if the room is using a whitelist, false otherwise.
+     * @returns {boolean} true if the room is using a whitelist, false otherwise.
+     * @readonly
+     */
     get use_whitelist(){
         return this._use_as_whitelist;
     }
 
+    /**
+     * @description Add a user to the whitelist.
+     * @param {CSocket} user - The user to add.
+     * @throws {Error} if the room is not using a whitelist.
+     * @throws {Error} if the user is not a CSocket object.
+     * @description if the user is already in the whitelist, nothing will happen.
+     */
     add_to_whitelist(user){
         if(!this._use_as_whitelist) throw new Error("this room is not using a whitelist");
         this.add_to_list(user);
     }
 
+    /**
+     * @description Add a user to the blacklist.
+     * @param {CSocket} user - The user to add.
+     * @throws {Error} if the room is not using a blacklist.
+     * @throws {Error} if the user is not a CSocket object.
+     * @description if the user is already in the blacklist, nothing will happen.
+     */
     add_to_blacklist(user){
         if(this._use_as_whitelist) throw new Error("this room is not using a blacklist");
         this.add_to_list(user);
     }
 
+    /**
+     * @description Add a user to the list.
+     * @param {CSocket} user - The user to add.
+     * @throws {Error} if the user is not a CSocket object.
+     * @description if the user is already in the list, nothing will happen.
+     */
     add_to_list(user){
         if(!user instanceof CSocket) throw new Error("user is not a CSocket Object");
         this._user_list.add(user);
     }
 
+    /**
+     * @description Tell if a user can join the room.
+     * @param {CSocket} user - The user to check.
+     * @throws {Error} if the user is not a CSocket object.
+     * @returns {boolean} true if the user can join the room, false otherwise.
+     */
     can_join(user){
         if(!user instanceof CSocket) throw new Error("user is not a CSocket Object");
         if(this._use_as_whitelist){
@@ -94,16 +188,42 @@ class Room{
         }
     }
 
+    /**
+     * @description Tell if a user can see the room.
+     * @param {CSocket} user - The user to check.
+     * @throws {Error} if the user is not a CSocket object.
+     * @returns {boolean} true if the user can see the room, false otherwise.
+     * @description if the room is visible, everyone can see it, otherwise only users that can join it can see it.
+     * @see Room#can_join
+     */
     can_see(user){
         if(!user instanceof CSocket) throw new Error("user is not a CSocket Object");
         return this._is_visible || this.can_join(user); //if the room is visible, everyone can see it, otherwise only users that can join it can see it
     }
 
+    /**
+     * @description Tell if a user is in the room.
+     * @param {CSocket} user - The user to check.
+     * @throws {Error} if the user is not a CSocket object.
+     * @returns {boolean} true if the user is in the room, false otherwise.
+     */
     isIn(user){
         if(!user instanceof CSocket) throw new Error("user is not a CSocket Object");
         return this._users.has(user);
     }
 
+    /**
+     * @description Emit an event to all the users in the room.
+     * @param {EVENT} event - The event to emit.
+     * @param {...any} args - The arguments to send with the event.
+     * @throws {Error} if the event is undefined.
+     * @throws {Error} if the event is not an EVENT object.
+     * @throws {Error} if the event cannot be initiated by the server.
+     * @throws {Error} if the number of arguments is invalid.
+     * @throws {Error} if the type of an argument is invalid.
+     * @see CSocket#emit
+     * @see Room#transmit
+     */
     emit(event, ...args){
         if(!event instanceof EVENT) throw new Error("event is not an EVENT Object");
         if(!event.server_to_client){ throw new Error("event " + event + " cannot be initiated by the server (if he's just transmitting it, use 'transmit' instead)"); }
@@ -118,6 +238,18 @@ class Room{
         }
     }
 
+    /**
+     * @description Transmit an sent by one of the users in the room to all the users in the room.
+     * @param {EVENT} event - The event to transmit.
+     * @param {...any} args - The arguments to send with the event.
+     * @throws {Error} if the event is undefined.
+     * @throws {Error} if the event is not an EVENT object.
+     * @throws {Error} if the number of arguments is invalid.
+     * @throws {Error} if the type of an argument is invalid.
+     * @see CSocket#transmit
+     * @see Room#emit
+     * @description this method is used to transmit an event that was sent by a user in the room to all the other users in the room; if the event is intitiated by the server, use {@link Room#emit} instead.
+     */
     transmit(event, ...args){
         if(!event instanceof EVENT) throw new Error("event is not an EVENT Object");
         //we are not checking if the event can be transmitted by the server because it's not the server that is transmitting it
@@ -132,6 +264,14 @@ class Room{
         }
     }
 
+    /**
+     * @description Register a new event listener for all the users in the room.
+     * @param {EVENT} event - The event to listen to.
+     * @param {function} callback - The callback function.
+     * @throws {Error} if the event is undefined.
+     * @throws {Error} if the event is not an EVENT object.
+     * @throws {Error} if the event cannot be initiated by the client.
+     */
     on(event, callback){
         if(!event instanceof EVENT) throw new Error("event is not an EVENT Object");
         if(!event.client_to_server){ throw new Error("event " + event + " cannot be initiated by the client"); }
@@ -144,13 +284,33 @@ class Room{
     }
 }
 
-
+/**
+ * @description This class represent a socket.
+ */
 class CSocket{  //this is server side socket
+    /**
+     * @description Create a new CSocket object.
+     * @param {Socket} socket - The socket.io socket object.
+     * @throws {Error} if the socket is undefined.
+     */
     constructor(socket){
         if(!socket) throw new Error("socket is undefined");
         this._socket = socket;
     }
 
+    /**
+     * @description Emit an event to the client. This event is initiated by the server. If the event is sent by a user, use {@link Socket.CSocket#transmit transmit} instead.
+     * @param {EVENT} event - The event to emit.
+     * @param {...any} args - The arguments to send with the event.
+     * @throws {Error} if the event is undefined.
+     * @throws {Error} if the event is not an EVENT object.
+     * @throws {Error} if the event cannot be initiated by the server.
+     * @throws {Error} if the number of arguments is invalid.
+     * @throws {Error} if the type of an argument is invalid.
+     * @see {@link ClientSocket.CSocket#on}
+     * @see {@link ClientSocket.CSocket#once}
+     * @see {@link Socket.CSocket#transmit transmit}
+     */
     emit(event, ...args){
         if(event == undefined) throw new Error("event is undefined");
         if(!event instanceof EVENT) throw new Error("event is not an EVENT Object");
@@ -164,6 +324,18 @@ class CSocket{  //this is server side socket
         this._socket.emit(String(event), ...args);
     }
 
+    /**
+     * @description Transmit an event  sent by a user to the client. This method is used to transmit an event that was sent by a user to the client; if the event is intitiated by the server, use {@link Socket.CSocket#emit emit} instead.
+     * @param {EVENT} event - The event to transmit.
+     * @param {...any} args - The arguments to send with the event.
+     * @throws {Error} if the event is undefined.
+     * @throws {Error} if the event is not an EVENT object.
+     * @throws {Error} if the number of arguments is invalid.
+     * @throws {Error} if the type of an argument is invalid.
+     * @see {@link ClientSocket.CSocket#on}
+     * @see {@link ClientSocket.CSocket#once}
+     * @see {@link Socket.CSocket#emit emit}
+     */
     transmit(event, ...args){
         if(event == undefined) throw new Error("event is undefined");
         if(!event instanceof EVENT) throw new Error("event is not an EVENT Object");
@@ -177,6 +349,18 @@ class CSocket{  //this is server side socket
         this._socket.emit(String(event), ...args);
     }
 
+    /**
+     * @description Register a new event listener. the callback will be called every time the event is received. For a one time event listener, use {@link Socket.CSocket#once once} instead.
+     * @param {EVENT} event - The event to listen to.
+     * @param {function} callback - The callback function.
+     * @throws {Error} if the event is undefined.
+     * @throws {Error} if the event is not an EVENT object.
+     * @throws {Error} if the event cannot be initiated by the client.
+     * @throws {Error} if the callback is not a function.
+     * @see {@link ClientSocket.CSocket#emit}
+     * @see {@link Socket.CSocket#once}
+     * 
+     */
     on(event, callback){
         if(event == undefined) throw new Error("event is undefined");
         if(!event instanceof EVENT) throw new Error("event is not an EVENT Object");
@@ -187,6 +371,17 @@ class CSocket{  //this is server side socket
         this._socket.on(String(event), callback);
     }
 
+    /**
+     * @description Register a new event listener that will be caught only once.
+     * @param {EVENT} event - The event to listen to.
+     * @param {function} callback - The callback function.
+     * @throws {Error} if the event is undefined.
+     * @throws {Error} if the event is not an EVENT object.
+     * @throws {Error} if the event cannot be initiated by the client.
+     * @throws {Error} if the callback is not a function.
+     * @see {@link Socket.CSocket#on}
+     * @see {@link ClientSocket.CSocket#emit}
+     */
     once(event, callback){
         if(event == undefined) throw new Error("event is undefined");
         if(!event instanceof EVENT) throw new Error("event is not an EVENT Object");
@@ -196,10 +391,20 @@ class CSocket{  //this is server side socket
         this._socket.once(String(event), callback);
     }
 
+    /**
+     * @description Disconnect the socket, closing the connection.
+     * @see CSocket#connect
+     */
     disconnect(){
         this._socket.disconnect();
     }
 
+    /**
+     * @description add the socket to a room.
+     * @param {Room} room - The room to join.
+     * @throws {Error} if the room is not a Room object.
+     * @throws {Error} if the room is not visible.
+     */
     join(room){
         if(!room instanceof Room) throw new Error("room is not a Room Object");
         if(room.addUser(this)){
@@ -210,16 +415,34 @@ class CSocket{  //this is server side socket
         }
     }
 
+    /**
+     * @description remove the socket from a room.
+     * @param {Room} room - The room to leave.
+     * @throws {Error} if the room is not a Room object.
+     */
     leave(room){
         room.removeUser(this);
     }
 
+    /**
+     * @returns {string} The socket id.
+     * @description this id is unique for each socket, and will be different for each connection of the same client (this can't be used to identify a client)
+     * @readonly
+     */
     get id(){
         return this._socket.id;
     }
 }
 
+/**
+ * @description This class represent a socket.io server.
+ */
 class CIO{
+    /**
+     * @description Create a new CIO object.
+     * @param {Server} io - The socket.io server object.
+     * @throws {Error} if io is undefined.
+     */
     constructor(io){
         if(!io) throw new Error("io is undefined");
         this._io = io;
@@ -227,10 +450,25 @@ class CIO{
         this._sockets = new Set();
     }
 
+    /**
+     * @description Create a {@link Socket.CIO CIO} object from an express server object.
+     * @param {Server} server The express server object.
+     * @returns {CIO} The CIO object.
+     * @static
+     */
     static from_server(server){
         return new CIO(new Server(server));
     }
 
+    /**
+     * @description register a new event listener for all sockets connected to the server.
+     * @param {EVENT} event The event to listen to.
+     * @param {function} callback The callback function.
+     * @throws {Error} if the event is undefined.
+     * @throws {Error} if the event is not an EVENT object.
+     * @throws {Error} if the event is not a connection event.
+     * @throws {Error} if the callback is not a function.
+     */
     on(event, callback){
         if(event == undefined) throw new Error("event is undefined");
         if(! event instanceof EVENT) throw new Error("event is not an EVENT Object");
@@ -243,6 +481,18 @@ class CIO{
         });
     }
 
+    /**
+     * @description emit an event to all the sockets connected to the server.
+     * @param {EVENT} event - The event to emit.
+     * @param {...any} args - The arguments to send with the event.
+     * @throws {Error} if the event is undefined.
+     * @throws {Error} if the event is not an EVENT object.
+     * @throws {Error} if the event cannot be initiated by the server.
+     * @throws {Error} if the number of arguments is invalid.
+     * @throws {Error} if the type of an argument is invalid.
+     * @see CSocket#emit
+     * @see CIO#transmit
+     */
     emit(event, ...args){
         if(event == undefined) throw new Error("event is undefined");
         if(!event instanceof EVENT) throw new Error("event is not an EVENT Object");
@@ -256,6 +506,17 @@ class CIO{
         this._io.emit(String(event), ...args);
     }
 
+    /**
+     * @description Transmit an event sent by a user to all the sockets connected to the server.
+     * @param {EVENT} event - The event to transmit.
+     * @param {...any} args - The arguments to send with the event.
+     * @throws {Error} if the event is undefined.
+     * @throws {Error} if the event is not an EVENT object.
+     * @throws {Error} if the number of arguments is invalid.
+     * @throws {Error} if the type of an argument is invalid.
+     * @see CSocket#transmit
+     * @see CIO#emit
+     */
     transmit(event, ...args){
         if(event == undefined) throw new Error("event is undefined");
         if(!event instanceof EVENT) throw new Error("event is not an EVENT Object");
