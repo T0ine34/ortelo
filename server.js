@@ -181,8 +181,7 @@ server.on("close", () => {
 // -------------------------------------------------------------------- SERVER START
 loadGames().then(() => {
     server.listen(settings.get("port"), () => {
-        console.log('Serveur démarré sur le port: ' + settings.get("port"));
+        console.log('http server opened, listening on *: ' + settings.get("port"));
         Logger.info('http server opened, listening on *:'+server.address().port);
     });
 });
-Logger.fine("Server started successfully");
