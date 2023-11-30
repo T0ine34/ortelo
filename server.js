@@ -29,21 +29,6 @@ Logger.debug("server initialized successfully");
 
 app.use(express.static(settings.get("public_dir")));
 
-
-app.get('/events', (req, res) => {
-    res.sendFile(__dirname +'/' + settings.get('paths.events'));
-});
-app.get('/games-info', (req, res) => {
-    const gameInfos = Object.values(gameLoader.gamesData).map(game => ({
-        name: game.name,
-        icon: game.iconData ? `data:image/png;base64,${game.iconData.toString('base64')}` : null
-    }));
-    res.json(gameInfos);
-});
-app.get('*', (req, res) => { //redirect every other request to 404 page
-    res.sendFile(__dirname + '/' + settings.get('paths.404'));
-});
-
 set_redirections();
 
 
@@ -70,12 +55,14 @@ function set_redirections(){
                 if(settings.has("paths." + path+".recursive") && settings.get("paths." + path+".recursive")){
                     //if the path is recursive, redirect all the subpaths to the same path
                     app.get("/"+path+"/*", (req, res) => {
+                        Logger.info("user " + req.ip + " requested " + req.path + " -> " + settings.get("paths." + path+".path") + req.path.substring(path.length+1));
                         res.sendFile(__dirname + '/' + settings.get("paths." + path+".path") + req.path.substring(path.length+1));
                     });
                     resume += "GET " + path + "/* -> " + settings.get("paths." + path+".path") + "*\n";
                 }
                 else{
                     app.get("/"+path, (req, res) => {
+                        Logger.info("user " + req.ip + " requested " + req.path + " -> " + settings.get("paths." + path+".path"));
                         res.sendFile(__dirname + '/' + settings.get("paths." + path+".path"));
                     });
                     resume += "GET " + path + " -> " + settings.get("paths." + path+".path") + "\n";
@@ -85,12 +72,14 @@ function set_redirections(){
                 if(settings.has("paths." + path+".recursive") && settings.get("paths." + path+".recursive")){
                     //if the path is recursive, redirect all the subpaths to the same path
                     app.post("/"+path+"/*", (req, res) => {
+                        Logger.info("user " + req.ip + " requested " + req.path + " -> " + settings.get("paths." + path+".path") + req.path.substring(path.length+1));
                         res.sendFile(__dirname + '/' + settings.get("paths." + path+".path") + req.path.substring(path.length+1));
                     });
                     resume += "POST " + path + "/* -> " + settings.get("paths." + path+".path") + "*\n";
                 }
                 else{
                     app.post("/"+path, (req, res) => {
+                        Logger.info("user " + req.ip + " requested " + req.path + " -> " + settings.get("paths." + path+".path"));
                         res.sendFile(__dirname + '/' + settings.get("paths." + path+".path"));
                     });
                     resume += "POST " + path + " -> " + settings.get("paths." + path+".path") + "\n";
