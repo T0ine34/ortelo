@@ -29,8 +29,6 @@ Logger.debug("server initialized successfully");
 
 app.use(express.static(settings.get("public_dir")));
 
-set_redirections();
-
 app.get('/games-info', (req, res) => {
     const gameInfos = Object.values(gameLoader.gamesData).map(game => ({
         name: game.name,
@@ -39,6 +37,7 @@ app.get('/games-info', (req, res) => {
     res.json(gameInfos);
 });
 
+set_redirections();
 
 
 let rooms = new Map();

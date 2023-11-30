@@ -152,7 +152,7 @@ function fetchGames() {
             games.forEach(game => {
                 const gameElement = document.createElement('div');
                 gameElement.innerHTML = `<h3>${game.name}</h3>
-                                         <img src="${game.icon}" alt="${game.name}">`;
+                                         <img src="${game.icon}" alt="${game.name}" onerror="this.src='/assets/images/default_game_icon.png'">`;
                 gamesListContainer.appendChild(gameElement);
             });
         })
