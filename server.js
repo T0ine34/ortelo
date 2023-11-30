@@ -31,6 +31,15 @@ app.use(express.static(settings.get("public_dir")));
 
 set_redirections();
 
+app.get('/games-info', (req, res) => {
+    const gameInfos = Object.values(gameLoader.gamesData).map(game => ({
+        name: game.name,
+        icon: game.iconData ? `data:image/png;base64,${game.iconData.toString('base64')}` : null
+    }));
+    res.json(gameInfos);
+});
+
+
 
 let rooms = new Map();
 let general = set_rooms(); //set default rooms, and get the main room name
