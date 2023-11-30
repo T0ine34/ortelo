@@ -47,6 +47,7 @@ class Logger {
 
     /**
      * @description The load function creates a new log file with the current date as name.
+     * @function
      */
     load(){
         if(!fs.existsSync(config.get("logs.dir"))) fs.mkdirSync(config.get("logs.dir")); //** Creates log folder if it does not exists. */
@@ -69,6 +70,7 @@ class Logger {
     /**
      * @description Info function outputs a message in the current log file as a non-important information.
      * @param {string} message is the message you want to log as an info. 
+     * @function
      */
     info(message) {
         if(!message) throw new Error("No message to log");
@@ -78,6 +80,7 @@ class Logger {
     /**
      * @description Fine function outputs a message to say something works as expected
      * @param {string} message is the message you want to log as a fine information.
+     * @function
      */
     fine(message) {
         if(!message) throw new Error("No message to log");
@@ -87,6 +90,7 @@ class Logger {
     /**
      * @description Warning function outputs a message to warn you that something may be wrong but doesn't stop the app from running
      * @param {string} message is the message you want to log as a warning
+     * @function
      */
     warning(message) {
         if(!message) throw new Error("No message to log");
@@ -96,6 +100,7 @@ class Logger {
     /**
      * @description Error function outputs a message when something is wrong and needs to be fixed quick.
      * @param {string} message is the message you want to log as an error.
+     * @function
      */
     error(message) {
         if(!message) throw new Error("No message to log");
@@ -105,6 +110,7 @@ class Logger {
     /**
      * @description Debug function outputs a message to help you debug your app. Only works if use_debug is set to true in config file.
      * @param {string} message is the message you want to log as a debug.
+     * @function
      */
     debug(message) {
         if(!this.use_debug) return;
@@ -116,6 +122,7 @@ class Logger {
     /**
      * @description The getTimeString function is used to get the current date and time as a string.
      * @returns a string representation of the current date
+     * @function
      */
     getTimeString() {
         let date = new Date();
@@ -125,6 +132,7 @@ class Logger {
 
     /**
      * @description Reads log directory, if number of files exceeds the specified amount in config.json, this function will delete the oldest ones
+     * @function
      */
     removeOldest() {
         fs.readdir(config.get("logs.dir"), (err, files) => {
