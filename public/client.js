@@ -26,7 +26,7 @@ csocket.on(EVENTS.CHAT.USER_JOINED, (timestamp, name) => {                      
     let item = document.createElement('li');
     item.textContent = name + " a rejoint le chat ! ";
     item.innerHTML += "&#128075;";
-    item.innerHTML += String(timestamp);
+    item.innerHTML += format_date(timestamp);
     messages.appendChild(item);
     window.scrollTo(0, document.body.scrollHeight);
 });
@@ -40,7 +40,7 @@ csocket.on(EVENTS.CHAT.USER_LEFT, (timestamp, username) => {                   /
     item.textContent = username + " a quitté le chat ! ";
     item.innerHTML += "&#128078;";
     let d = new Date(timestamp);
-    item.innerHTML += "<span class=\"timestamp\">"+d.getHours()+":"+d.getMinutes()+":"+d.getSeconds()+"</span>";
+    item.innerHTML += format_date(timestamp);
     messages.appendChild(item);
     window.scrollTo(0, document.body.scrollHeight);
 });
@@ -49,7 +49,7 @@ csocket.on(EVENTS.SYSTEM.ERROR, (timestamp, msg) => {                   //catchi
     let item = document.createElement('li');
     item.textContent = "Erreur : " + msg;
     let d = new Date(timestamp);
-    item.innerHTML += "<span class=\"timestamp\">"+d.getHours()+":"+d.getMinutes()+":"+d.getSeconds()+"</span>";
+    item.innerHTML += format_date(timestamp);
     messages.appendChild(item);
     window.scrollTo(0, document.body.scrollHeight);
 });
@@ -58,7 +58,7 @@ csocket.on(EVENTS.SYSTEM.WARNING, (timestamp, msg) => {                   //catc
     let item = document.createElement('li');
     item.textContent = "Warning : " + msg;
     let d = new Date(timestamp);
-    item.innerHTML += "<span class=\"timestamp\">"+d.getHours()+":"+d.getMinutes()+":"+d.getSeconds()+"</span>";
+    item.innerHTML += format_date(timestamp);
     messages.appendChild(item);
     window.scrollTo(0, document.body.scrollHeight);
 });
@@ -68,7 +68,7 @@ csocket.on(EVENTS.SYSTEM.BROADCAST, (timestamp, msg) => {              //catchin
     let item = document.createElement('li');
     item.textContent = "Broadcast : " + msg;
     let d = new Date(timestamp);
-    item.innerHTML += "<span class=\"timestamp\">"+d.getHours()+":"+d.getMinutes()+":"+d.getSeconds()+"</span>";
+    item.innerHTML += format_date(timestamp);
     messages.appendChild(item);
     window.scrollTo(0, document.body.scrollHeight);
 });
@@ -77,7 +77,7 @@ csocket.on(EVENTS.SYSTEM.INFO, (timestamp, msg) => {                   //catchin
     let item = document.createElement('li');
     item.textContent = "Info : " + msg;
     let d = new Date(timestamp);
-    item.innerHTML += "<span class=\"timestamp\">"+d.getHours()+":"+d.getMinutes()+":"+d.getSeconds()+"</span>";
+    item.innerHTML += format_date(timestamp);
     messages.appendChild(item);
     window.scrollTo(0, document.body.scrollHeight);
 });
@@ -132,12 +132,24 @@ form.addEventListener('submit', function(e) {                   //this is trigge
     }
 });
 
+function format_number(number, min_length){
+    let str = number.toString();
+    while(str.length < min_length){
+        str = "0" + str;
+    }
+    return str;
+}
+
+function format_date(timestamp){
+    let d = new Date(timestamp);
+    return "<span class=\"date\">"+format_number(d.getHours(), 2)+":"+format_number(d.getMinutes(), 2)+":"+format_number(d.getSeconds(), 2)+"</span>";
+}
+
 
 let receive_message = (timestamp, username, msg) => {
     let item = document.createElement('li');
     item.textContent = username + " : " + msg;
-    let d = new Date(timestamp);
-    item.innerHTML += "<span class=\"timestamp\">"+d.getHours()+":"+d.getMinutes()+":"+d.getSeconds()+"</span>";
+    item.innerHTML += format_date(timestamp);
     messages.appendChild(item);
     item.scrollIntoView();
 }
