@@ -18,6 +18,12 @@
                     "max_length" : null,
                     "required" : true
                 },
+                "createTablesPath" : {
+                    "type" : "string",
+                    "min_length" : 1,
+                    "max_length" : null,
+                    "required" : true
+                },
                 "type" : {
                     "type" : "string",
                     "min_length" : 1,
