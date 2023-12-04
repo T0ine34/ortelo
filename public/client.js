@@ -15,7 +15,7 @@ else{
         username = prompt("Enter your username (can not be longer than 16 characters)");
     }
 }
-cookies.set("username", username, 1); //save the username for 1 day
+cookies.set("username", username, 1); //save the username for 1 hour
 console.info("username set to " + username +" for 1 hour");
 
 let csocket = new CSocket(io());
