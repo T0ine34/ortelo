@@ -18,13 +18,8 @@ class Game {
 
     async init() {
         try {
-<<<<<<< HEAD
-            const gameFolderPrefix = this._name + '/';
-            const indexPath =  gameFolderPrefix + 'index.json';
-=======
             const indexPath = 'index.json';
-
->>>>>>> 686ba7b5727975edca93e8e62e9e9329835b155e
+            
             if (!this._gameFiles[indexPath]) {
                 throw new Error(indexPath + ' not found in game files; avaliable files are : ' + Object.keys(this._gameFiles).join(', '));
             }
@@ -41,14 +36,10 @@ class Game {
             this._serverData = this._gameFiles[jsonData.server]?.toString('utf8');
 
             // Gérer l'icône
-<<<<<<< HEAD
-            let iconPath =  gameFolderPrefix + 'images/' + jsonData.images.icon;
-=======
             if (!jsonData.images || !jsonData.images.icon) {
                 throw new Error("Icon not referenced in index.json");
             }
             let iconPath = 'images/' + jsonData.images.icon;
->>>>>>> 686ba7b5727975edca93e8e62e9e9329835b155e
             if (this._gameFiles[iconPath]) {
                 this._iconData = this._gameFiles[iconPath];
             } else {
