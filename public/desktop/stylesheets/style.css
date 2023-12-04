@@ -7,10 +7,6 @@
     }
 }
 
-.chat-toggler{
-    display: none;
-}
-
 .chat{
     width: 30%;
     position: fixed;
