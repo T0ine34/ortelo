@@ -3,8 +3,9 @@
 const http                            = require('http');
 const express= require('express');
 const { Server } = require("socket.io");
-const settings             = require('./server_modules/settings/main.js');
-const Logger                = require('./server_modules/logs/logger');
+const settings                          = require('./server_modules/settings/main.js');
+const Logger                            = require('./server_modules/logs/logger');
+const Database                          = require('./server_modules/database/database.js');
 const { parseCMD }                      = require('./server_modules/cmd/main.js');
 const { User }                          = require('./server_modules/user/main.js');
 const { EVENTS, Room, CIO, CSocket }    = require('./server_modules/events/main.js');
