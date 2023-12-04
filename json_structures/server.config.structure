@@ -153,7 +153,13 @@
         },
         "default_path" : {
             "type" : "string",
-            "min_length" : 3,
+            "min_length" : null,
+            "max_length" : null,
+            "required" : false
+        },
+        "api_path" : {
+            "type" : "string",
+            "min_length" : null,
             "max_length" : null,
             "required" : false
         }

@@ -38,10 +38,12 @@ class Logger {
             Logger._instance = this;
             this.use_debug = config.get("logs.useDebug");
             this.load();
+            this.debug("Debug mode enabled")
             setInterval(() => { //execute it at a regular interval set in server.config
                 this.load();
             }, config.get("logs.refreshTimeSec") * 1000);
         }
+        this.debug("Refreshing log file every " + config.get("logs.refreshTimeSec") + " seconds");
         return Logger._instance;
     }
 
