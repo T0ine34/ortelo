@@ -11,10 +11,10 @@
 </head>
 <body>
     <div class="container-fluid" id="app_container">
-        <div class="row">
+        <div class="banner">
             <img class="app_banner" src="./assets/images/ortelo_banner.png" alt="App Banner">
         </div>
-        <div class="row d-flex align-items-center justify-content-center h-100">
+        <div class="banner d-flex align-items-center justify-content-center h-100">
             <div class="col-12 col-md-6">
                 <div id="login_section">
                     <h2>Connexion</h2>
@@ -40,8 +40,31 @@
                 <div id="signup_section" style="display: none;">
                     <h2>Création de compte</h2>
                     <form id="signup_form">
-                        
-                        <!-- Vos champs de création de compte ici -->
+                        <div class="form-group">
+                            <label for="username">Nom d'utilisateur</label>
+                            <input type="text" class="form-control" id="signup_username" name="signup_username" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="email">Adresse e-mail</label>
+                            <input type="email" class="form-control" id="email" name="email" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="password">Mot de passe</label>
+                            <div class="input-group">
+                                <input type="password" class="form-control" id="signup_password" name="signup_password" required>
+                                <div class="input-group-append">
+                                    <button type="button" class="btn btn-outline-secondary" id="show_signup_password">Afficher</button>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="confirm_password">Confirmer le mot de passe</label>
+                                <div class="input-group">
+                                    <input type="password" class="form-control" id="confirm_password" name="confirm_password" required>
+                                    <div class="input-group-append">
+                                        <button type="button" class="btn btn-outline-secondary" id="show_confirm_password">Afficher</button>
+                                    </div>
+                        </div>
                         <button type="submit">Créer un compte</button>
                     </form>
                     <button type="button" onclick="showLogin()">Retour à la connexion</button>
@@ -59,26 +82,51 @@
         </div>
     </div>
 
-    <script src="./modules/cookies/main.js"></script> 
-    <script>  
+    <script>
+        // Fonction pour afficher le formulaire de connexion
         function showLogin() {
             document.getElementById("login_section").style.display = "block";
             document.getElementById("signup_section").style.display = "none";
             document.getElementById("forgot_password_section").style.display = "none";
         }
 
+        // Fonction pour afficher le formulaire de création de compte
         function showSignup() {
             document.getElementById("login_section").style.display = "none";
             document.getElementById("signup_section").style.display = "block";
             document.getElementById("forgot_password_section").style.display = "none";
         }
 
+        // Fonction pour afficher le formulaire de réinitialisation de mot de passe
         function showForgotPassword() {
             document.getElementById("login_section").style.display = "none";
             document.getElementById("signup_section").style.display = "none";
             document.getElementById("forgot_password_section").style.display = "block";
         }
+
+        // Fonction pour afficher ou masquer le mot de passe lors de la création de compte
+        document.getElementById("show_signup_password").addEventListener('click', function () {
+            const passwordInput = document.getElementById('signup_password');
+            if (passwordInput.type === 'password') {
+                passwordInput.type = 'text';
+                this.textContent = 'Masquer';
+            } else {
+                passwordInput.type = 'password';
+                this.textContent = 'Afficher';
+            }
+        });
+
+        document.getElementById("show_confirm_password").addEventListener('click', function () {
+        const confirmPasswordInput = document.getElementById('confirm_password');
+        if (confirmPasswordInput.type === 'password') {
+            confirmPasswordInput.type = 'text';
+            this.textContent = 'Masquer';
+        } else {
+            confirmPasswordInput.type = 'password';
+            this.textContent = 'Afficher';
+        }
+});
+
     </script>
-    
 </body>
 </html>
