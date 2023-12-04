@@ -5,8 +5,10 @@
  * @author Antoine Buirey
  */
 
+logger                  = require("../logs/logger.js");
 const { EVENTS, EVENT } = require("./events.js");
 const { Server }        = require("socket.io");
+
 
 
 /**
@@ -24,6 +26,7 @@ class Room{
         this._use_as_whitelist = false; //if true, the _user_list will be used as a whitelist instead of a blacklist
         this._is_visible = true;        //if false, the room will not be visible by users that cannot join it
                                         //if true, the room will be visible by all users
+        logger.debug("room " + name + " created");
     }
 
     /**
@@ -33,6 +36,7 @@ class Room{
     set visible(bool){
         if(typeof bool !== "boolean") throw new Error("bool is not a boolean");
         this._is_visible = bool;
+        logger.debug("room " + this._name + " visibility set to " + bool);
     }
 
     /**
@@ -57,6 +61,7 @@ class Room{
         if(this.can_join(user)){
             this._users.add(user);
             return true;
+            logger.debug("user " + user.id + " added to room " + this._name);
         }
         else{
             return false;
@@ -82,6 +87,7 @@ class Room{
         if(!user instanceof CSocket) throw new Error("user is not a CSocket Object");
         if(!this._users.has(user)) throw new Error("user is not in the room");
         this._users.delete(user);
+        logger.debug("user " + user.id + " removed from room " + this._name);
     }
 
     /**
@@ -113,6 +119,7 @@ class Room{
         //force a user to leave the room
         if(!user instanceof CSocket) throw new Error("user is not a CSocket Object");
         this._users.delete(user);
+        logger.debug("user " + user.id + " kicked from room " + this._name);
     }
 
     /**
@@ -126,6 +133,7 @@ class Room{
         if(this._use_as_whitelist === bool) return;
         this._user_list.clear();
         this._use_as_whitelist = bool;
+        logger.debug("room " + this._name + " now using " + (bool ? "whitelist" : "blacklist"));
     }
 
     /**
@@ -170,6 +178,7 @@ class Room{
     add_to_list(user){
         if(!user instanceof CSocket) throw new Error("user is not a CSocket Object");
         this._user_list.add(user);
+        logger.debug("user " + user.id + " added to " + (this._use_as_whitelist ? "whitelist" : "blacklist") + " of room " + this._name);
     }
 
     /**
@@ -233,6 +242,7 @@ class Room{
             if(typeof args[i] !== event.payload[i].type) throw new Error("invalid type for argument " + i + ", expected " + event.payload[i].type + " got " + typeof args[i]);
         }
 
+        logger.debug("emitting event " + event + " to " + this._users.size + " users in room " + this._name);
         for(let user of this._users){
             user.emit(event, ...args);
         }
@@ -259,6 +269,7 @@ class Room{
             if(typeof args[i] !== event.payload[i].type) throw new Error("invalid type for argument " + i + ", expected " + event.payload[i].type + " got " + typeof args[i]);
         }
 
+        logger.debug("transmitting event " + event + " to " + this._users.size + " users in room " + this._name);
         for(let user of this._users){
             user.transmit(event, ...args);
         }
@@ -278,6 +289,7 @@ class Room{
 
         if(typeof callback !== "function") throw new Error("callback is not a function");
 
+        logger.debug("registering event " + event + " for " + this._users.size + " users in room " + this._name);
         for(let user of this._users){
             user.on(event, callback);
         }
@@ -322,6 +334,7 @@ class CSocket{  //this is server side socket
         }
 
         this._socket.emit(String(event), ...args);
+        logger.debug("emitting event " + event + " to user " + this._socket.id);
     }
 
     /**
@@ -347,6 +360,7 @@ class CSocket{  //this is server side socket
         }
 
         this._socket.emit(String(event), ...args);
+        logger.debug("transmitting event " + event + " to user " + this._socket.id);
     }
 
     /**
@@ -369,6 +383,7 @@ class CSocket{  //this is server side socket
         if(typeof callback !== "function") throw new Error("callback is not a function");
         
         this._socket.on(String(event), callback);
+        logger.debug("registering event " + event + " for user " + this._socket.id);
     }
 
     /**
@@ -389,6 +404,7 @@ class CSocket{  //this is server side socket
 
         if(typeof callback !== "function") throw new Error("callback is not a function");
         this._socket.once(String(event), callback);
+        logger.debug("registering event " + event + " for user " + this._socket.id + " (only one catch)");
     }
 
     /**
@@ -397,6 +413,7 @@ class CSocket{  //this is server side socket
      */
     disconnect(){
         this._socket.disconnect();
+        logger.debug("disconnecting user " + this._socket.id);
     }
 
     /**
@@ -474,6 +491,9 @@ class CIO{
         if(! event instanceof EVENT) throw new Error("event is not an EVENT Object");
         if(!event === EVENTS.INTERNAL.CONNECTION && !event === EVENTS.INTERNAL.CONNECT) throw new Error("event is not a connection event");
         if(typeof callback !== "function") throw new Error("callback is not a function");
+
+        logger.debug("registering event " + event + " for " + this._sockets.size + " users");
+
         this._io.on(event, (socket) => {
             let csocket = new CSocket(socket);
             this._sockets.add(csocket);
@@ -503,6 +523,8 @@ class CIO{
             if(typeof args[i] !== event.payload[i].type) throw new Error("invalid type for argument " + i + ", expected " + event.payload[i].type + " got " + typeof args[i]);
         }
 
+        logger.debug("emitting event " + event + " to " + this._sockets.size + " users");
+
         this._io.emit(String(event), ...args);
     }
 
@@ -526,6 +548,8 @@ class CIO{
         for(let i = 0; i < args.length; i++){
             if(typeof args[i] !== event.payload[i].type) throw new Error("invalid type for argument " + i + ", expected " + event.payload[i].type + " got " + typeof args[i]);
         }
+
+        logger.debug("transmitting event " + event + " to " + this._sockets.size + " users");
 
         this._io.emit(String(event), ...args);
     }

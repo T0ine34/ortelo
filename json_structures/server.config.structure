@@ -18,10 +18,22 @@
                     "max_length" : null,
                     "required" : true
                 },
+                "createTablesPath" : {
+                    "type" : "string",
+                    "min_length" : 1,
+                    "max_length" : null,
+                    "required" : true
+                },
                 "type" : {
                     "type" : "string",
                     "min_length" : 1,
                     "max_length" : null,
+                    "required" : true
+                },
+                "bcryptRounds" : {
+                    "type" : "int",
+                    "min" : 1,
+                    "max" : 15,
                     "required" : true
                 }
             }
@@ -141,7 +153,13 @@
         },
         "default_path" : {
             "type" : "string",
-            "min_length" : 3,
+            "min_length" : null,
+            "max_length" : null,
+            "required" : false
+        },
+        "api_path" : {
+            "type" : "string",
+            "min_length" : null,
             "max_length" : null,
             "required" : false
         }

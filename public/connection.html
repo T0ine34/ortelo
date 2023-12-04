@@ -7,7 +7,7 @@
     <link rel="icon" type="image/x-icon" href="./assets/images/ortelo_logo.png">
     <link rel="stylesheet" href="./bootstrap/css/bootstrap.min.css">
     <link rel="stylesheet" href="./assets/stylesheets/style.css">
-    <link rel="stylesheet" href="./assets/stylesheets/login.css"> 
+    <link rel="stylesheet" href="./assets/stylesheets/login.css">
 </head>
 <body>
     <div class="container-fluid" id="app_container">
@@ -16,7 +16,7 @@
         </div>
         <div class="row d-flex align-items-center justify-content-center h-100">
             <div class="col-12 col-md-6">
-                <div id="login_container">
+                <div id="login_section">
                     <h2>Connexion</h2>
                     <form id="login_form">
                         <div class="form-group">
@@ -33,13 +33,52 @@
                         </div>
                         <button type="submit" class="btn btn-login">Se connecter</button>
                     </form>
-                    <div class="options-right">
-                        <a href="#" class="forgot-password">Mot de passe oublié ?</a>                    </div>
+                    <button type="button" onclick="showSignup()">Créer un compte</button>
+                    <button type="button" onclick="showForgotPassword()">Mot de passe oublié ?</button>
+                </div>
+
+                <div id="signup_section" style="display: none;">
+                    <h2>Création de compte</h2>
+                    <form id="signup_form">
+                        
+                        <!-- Vos champs de création de compte ici -->
+                        <button type="submit">Créer un compte</button>
+                    </form>
+                    <button type="button" onclick="showLogin()">Retour à la connexion</button>
+                </div>
+
+                <div id="forgot_password_section" style="display: none;">
+                    <h2>Mot de passe oublié</h2>
+                    <form id="forgot_password_form">
+                        <!-- Vos champs de réinitialisation de mot de passe ici -->
+                        <button type="submit">Réinitialiser le mot de passe</button>
+                    </form>
+                    <button type="button" onclick="showLogin()">Retour à la connexion</button>
                 </div>
             </div>
         </div>
     </div>
-</body>
 
-<script>  </script>
+    <script src="./modules/cookies/main.js"></script> 
+    <script>  
+        function showLogin() {
+            document.getElementById("login_section").style.display = "block";
+            document.getElementById("signup_section").style.display = "none";
+            document.getElementById("forgot_password_section").style.display = "none";
+        }
+
+        function showSignup() {
+            document.getElementById("login_section").style.display = "none";
+            document.getElementById("signup_section").style.display = "block";
+            document.getElementById("forgot_password_section").style.display = "none";
+        }
+
+        function showForgotPassword() {
+            document.getElementById("login_section").style.display = "none";
+            document.getElementById("signup_section").style.display = "none";
+            document.getElementById("forgot_password_section").style.display = "block";
+        }
+    </script>
+    
+</body>
 </html>
