@@ -1,73 +1,95 @@
-<!DOCTYPE html>
-<html>
+
+  <!DOCTYPE html>
+  <html>
   <head>
-    <title>Ortelo</title>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="icon" type="image/x-icon" href="./assets/images/ortelo_logo.png">
-    <link rel="stylesheet" href="./bootstrap/css/bootstrap.min.css">
-    <link rel="stylesheet" href="./assets/stylesheets/style.css">
-</head>
-
-<body>
-    <div class="container-fluid" id="app_container">
-        
-        <div class="row">    
-            <img class="app_banner" src="./assets/images/ortelo_banner.png" alt="App Banner"> </h1>
-        </div>
-        <div class="row littlenav">
-            <div class="col-3 bg-blue"> Social </div>
-            <div class="col bg-blue"> Jeux </div>
-        </div>
-
-         <!--<div class="row">
-            
-            <div id="bottom_container">
-                <nav>
-                  <ul class="bottom_navbar">
-                    <li> <button> <img id="profile_bottom" src="./assets/images/profile.png"> </button> </li>
-                  </ul>
-                </nav>
-            </div>   
-            
-        </div> -->
-    
-
-        <div class="row d-flex align-items-stretch h-100">
-
-            <div id="chat_container" class="col-3">
-                
-                <h3> Discussion générale </h3>
-                <ul id="messages" class="overflow-auto"></ul>
-
-                <form id="message_form">
-
-                    <div class="form-group align-self-end">
-
-                        <input type="text" class="input-group-text" id="send_message" autocomplete="off" />
-                        <button class="form-control btn btn-primary">Envoyer</button>
-
-                    </div>
-
-                </form>
-
-            </div>
-            
-            <div class="col-9" id="games_container">
-                
-            </div>
-    
-
-        </div>
-
-    </div>
-
-    
-
-    
+      <title>Ortelo</title>
+      <meta charset="UTF-8">
+      <meta name="viewport" content="width=device-width, initial-scale=1.0">
+      <link rel="icon" type="image/x-icon" href="./assets/images/ortelo_logo.png">
+      <link rel="stylesheet" href="./bootstrap/css/bootstrap.min.css">
+      <link rel="stylesheet" href="./assets/stylesheets/style.css">
+      <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.15.4/css/all.css">
+  
+  </head>
+  <body>
+      <div class="container-fluid" id="app_container">
+          <div class="row">    
+              <img class="app_banner" src="./assets/images/ortelo_banner.png" alt="App Banner">
+          </div>
+  
+          <div class="row littlenav">
+              <div class="col-3 bg-blue"> Social </div>
+              <div class="col-9 bg-blue"> Jeux </div>
+          </div>
+  
+          <div class="row d-flex align-items-stretch h-100">
+  
+              <div id="chat_container" class="col-3">
+                  <h3> Discussion générale </h3>
+                  <div id="messages" class="overflow-auto"></div>
+                  <form id="message_form">
+                      <div class="form-group">
+                          <input type="text" class="form-control" id="send_message" autocomplete="off" placeholder="Tapez votre message ici">
+                          <button type="submit" class="btn btn-primary mt-2">Envoyer</button>
+                      </div>
+                  </form>
+              </div>
+              
+              <div class="col-9" id="games_container" style ="position:initial;">
+                  <!-- Début du carrousel -->
+                  <div id="gameCarousel" class="carousel slide" data-ride="carousel">
+                      <!-- Indicateurs -->
+                      <ol class="carousel-indicators">
+                          <li data-target="#gameCarousel" data-slide-to="0" class="active"></li>
+                          <li data-target="#gameCarousel" data-slide-to="1"></li>
+                         
+                      </ol>
+                      
+                      <!-- Contenu du carrousel -->
+                      <div class="carousel-inner">
+                          <!-- Jeu 1 -->
+                          <div class="carousel-item active">
+                              <img src="./assets/images/Image3.jpg" class="d-block mx-auto" alt="Game 1" style="max-width: 100%; height: auto;">
+                              <div class="carousel-caption d-none d-md-block">
+                                  <h5>Titre du jeu 1</h5>
+                                  <p>Courte description du jeu 1.</p>
+                              </div>
+                          </div>
+                          
+                          <!-- Jeu 2 -->
+                          <div class="carousel-item">
+                              <img src="./assets/images/Image2.jpg" class="d-block mx-auto" alt="Game 2" style="max-width: 100%; height: auto;">
+                              <div class="carousel-caption d-none d-md-block">
+                                  <h5>Titre du jeu 2</h5>
+                                  <p>Courte description du jeu 2.</p>   
+                              </div>
+                          </div>
+                        
+                      </div>
+                      
+                      <!-- Contrôles Précédent/Suivant -->
+                      <a class="carousel-control-prev" style="color : black" href="#gameCarousel" role="button" data-slide="prev">
+                          <span class="carousel-control-prev-icon" aria-hidden="true">
+                              <i class="fas fa-arrow-left fa-2x"></i> <!-- Fa-2x pour augmenter la taille de l'icône -->
+                          </span>
+                          <span class="sr-only">Précédent</span>
+                      </a>
+                      <a class="carousel-control-next" style= "color : black " href="#gameCarousel" role="button" data-slide="next">
+                          <span class="carousel-control-next-icon" aria-hidden="true">
+                              <i class="fas fa-arrow-right fa-2x"></i> 
+                          </span>
+                          <span class="sr-only">Suivant</span>
+                      </a>
+                      
+                  </div>
+                  <!-- Fin du carrousel -->
+              </div>
+          </div>
+      </div>
+  
+      <script src="/socket.io/socket.io.js"></script>
+      <script src="client.js" type="module"></script>
+      <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+      <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.5.3/dist/js/bootstrap.bundle.min.js"></script>
   </body>
-  <script src="/socket.io/socket.io.js"></script>
-  <!--<script src="./modules/events/events.js"></script> -->
-  <!--<script src="./modules/events/main.js"></script> -->
-  <script src="client.js" type="module"></script>
   </html>
