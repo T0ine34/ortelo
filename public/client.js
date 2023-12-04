@@ -23,63 +23,69 @@ csocket.emit(EVENTS.MISC.USERNAME, Date.now(), username);                       
 fetchGames();
 
 csocket.on(EVENTS.CHAT.USER_JOINED, (timestamp, name) => {                                //catching the newUser event, triggered by the server when a new user joins the chat
-    let item = document.createElement('li');
-    item.textContent = name + " a rejoint le chat ! ";
-    item.innerHTML += "&#128075;";
-    item.innerHTML += String(timestamp);
-    messages.appendChild(item);
-    window.scrollTo(0, document.body.scrollHeight);
+    // let item = document.createElement('li');
+    // item.textContent = name + " a rejoint le chat ! ";
+    // item.innerHTML += "&#128075;";
+    // item.innerHTML += format_date(timestamp);
+    // messages.appendChild(item);
+    // window.scrollTo(0, document.body.scrollHeight);
+    receive_message(timestamp, name, "a rejoint le chat ! &#128075;"); //&#128075; = emoji "person raising hand"
 });
 
-csocket.on(EVENTS.CHAT.MESSAGE, (timestamp, username, msg) => {                   //catching the new_message event, triggered by the server when a user sends a message
-    receive_message(timestamp, username, msg);
+csocket.on(EVENTS.CHAT.MESSAGE, (timestamp, _username, msg) => {                   //catching the new_message event, triggered by the server when a user sends a message
+    receive_message(timestamp, _username, msg);
 });
 
-csocket.on(EVENTS.CHAT.USER_LEFT, (timestamp, username) => {                   //catching the new_message event, triggered by the server when a user sends a message
-    let item = document.createElement('li');
-    item.textContent = username + " a quitté le chat ! ";
-    item.innerHTML += "&#128078;";
-    let d = new Date(timestamp);
-    item.innerHTML += "<span class=\"timestamp\">"+d.getHours()+":"+d.getMinutes()+":"+d.getSeconds()+"</span>";
-    messages.appendChild(item);
-    window.scrollTo(0, document.body.scrollHeight);
+csocket.on(EVENTS.CHAT.USER_LEFT, (timestamp, _username) => {                   //catching the new_message event, triggered by the server when a user sends a message
+    // let item = document.createElement('li');
+    // item.textContent = username + " a quitté le chat ! ";
+    // item.innerHTML += "&#128078;";
+    // let d = new Date(timestamp);
+    // item.innerHTML += format_date(timestamp);
+    // messages.appendChild(item);
+    // window.scrollTo(0, document.body.scrollHeight);
+    receive_message(timestamp, _username, "a quitté le chat ! &#128078;"); //&#128078; = emoji "person leaving"
 });
 
 csocket.on(EVENTS.SYSTEM.ERROR, (timestamp, msg) => {                   //catching the new_message event, triggered by the server when a user sends a message
-    let item = document.createElement('li');
-    item.textContent = "Erreur : " + msg;
-    let d = new Date(timestamp);
-    item.innerHTML += "<span class=\"timestamp\">"+d.getHours()+":"+d.getMinutes()+":"+d.getSeconds()+"</span>";
-    messages.appendChild(item);
-    window.scrollTo(0, document.body.scrollHeight);
+    // let item = document.createElement('li');
+    // item.textContent = "Erreur : " + msg;
+    // let d = new Date(timestamp);
+    // item.innerHTML += format_date(timestamp);
+    // messages.appendChild(item);
+    // window.scrollTo(0, document.body.scrollHeight);
+    receive_message(timestamp, "Error", msg);
 });
 
 csocket.on(EVENTS.SYSTEM.WARNING, (timestamp, msg) => {                   //catching the new_message event, triggered by the server when a user sends a message
-    let item = document.createElement('li');
-    item.textContent = "Warning : " + msg;
-    let d = new Date(timestamp);
-    item.innerHTML += "<span class=\"timestamp\">"+d.getHours()+":"+d.getMinutes()+":"+d.getSeconds()+"</span>";
-    messages.appendChild(item);
-    window.scrollTo(0, document.body.scrollHeight);
+    // let item = document.createElement('li');
+    // item.textContent = "Warning : " + msg;
+    // let d = new Date(timestamp);
+    // item.innerHTML += format_date(timestamp);
+    // messages.appendChild(item);
+    // window.scrollTo(0, document.body.scrollHeight);
+    receive_message(timestamp, "Warning", msg);
 });
 
 
 csocket.on(EVENTS.SYSTEM.BROADCAST, (timestamp, msg) => {              //catching the new_message event, triggered by the server when a user sends a message
-    let item = document.createElement('li');
-    item.textContent = "Broadcast : " + msg;
-    let d = new Date(timestamp);
-    item.innerHTML += "<span class=\"timestamp\">"+d.getHours()+":"+d.getMinutes()+":"+d.getSeconds()+"</span>";
-    messages.appendChild(item);
-    window.scrollTo(0, document.body.scrollHeight);
+    // let item = document.createElement('li');
+    // item.textContent = "Broadcast : " + msg;
+    // let d = new Date(timestamp);
+    // item.innerHTML += format_date(timestamp);
+    // messages.appendChild(item);
+    // window.scrollTo(0, document.body.scrollHeight);
+    receive_message(timestamp, "General Information", msg);
 });
 
 csocket.on(EVENTS.SYSTEM.INFO, (timestamp, msg) => {                   //catching the new_message event, triggered by the server when a user sends a message
-    let item = document.createElement('li');
-    item.textContent = "Info : " + msg;
-    let d = new Date(timestamp);
-    item.innerHTML += "<span class=\"timestamp\">"+d.getHours()+":"+d.getMinutes()+":"+d.getSeconds()+"</span>";
-    messages.appendChild(item);
-    window.scrollTo(0, document.body.scrollHeight);
+    // let item = document.createElement('li');
+    // item.textContent = "Info : " + msg;
+    // let d = new Date(timestamp);
+    // item.innerHTML += format_date(timestamp);
+    // messages.appendChild(item);
+    // window.scrollTo(0, document.body.scrollHeight);
+    receive_message(timestamp, "Information", msg);
 });
 
 
@@ -132,14 +138,47 @@ form.addEventListener('submit', function(e) {                   //this is trigge
     }
 });
 
+function format_number(number, min_length){
+    let str = number.toString();
+    while(str.length < min_length){
+        str = "0" + str;
+    }
+    return str;
+}
+
+function format_date(timestamp){
+    let d = new Date(timestamp);
+    return format_number(d.getHours(), 2)+":"+format_number(d.getMinutes(), 2)+":"+format_number(d.getSeconds(), 2);
+}
+
+function format_message(timestamp, _username, msg){
+    let item = document.createElement('li');
+    let sender = document.createElement('span');
+    sender.textContent = _username;
+    sender.classList.add('username');
+    item.appendChild(sender);
+    let message = document.createElement('div');
+    message.textContent = msg;
+    message.classList.add('message');
+    item.appendChild(message);
+    let date = document.createElement('span');
+    date.textContent = format_date(timestamp);
+    date.classList.add('date');
+    item.appendChild(date);
+    item.classList.add('message_item');
+    if(_username == username){
+        item.classList.add('me');
+    }
+    else{
+        item.classList.add('other');
+    }
+    return item;
+}
 
 let receive_message = (timestamp, username, msg) => {
-    let item = document.createElement('li');
-    item.textContent = username + " : " + msg;
-    let d = new Date(timestamp);
-    item.innerHTML += "<span class=\"timestamp\">"+d.getHours()+":"+d.getMinutes()+":"+d.getSeconds()+"</span>";
+    let item = format_message(timestamp, username, msg);
     messages.appendChild(item);
-    item.scrollIntoView();
+    item.scrollIntoView(); 
 }
 
 function fetchGames() {
@@ -152,7 +191,7 @@ function fetchGames() {
             games.forEach(game => {
                 const gameElement = document.createElement('div');
                 gameElement.innerHTML = `<h3>${game.name}</h3>
-                                         <img src="${game.icon}" alt="${game.name}">`;
+                                         <img src="${game.icon}" alt="${game.name}" onerror="this.src='/assets/images/default_game_icon.png'">`;
                 gamesListContainer.appendChild(gameElement);
             });
         })

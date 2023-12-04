@@ -10,61 +10,29 @@
 </head>
 
 <body>
-    <div class="container-fluid" id="app_container">
-        
-        <div class="row">    
-            <img class="app_banner" src="./assets/images/ortelo_banner.png" alt="App Banner"> </h1>
-        </div>
-        <div class="row littlenav">
-            <div class="col-3 bg-blue"> Social </div>
-            <div class="col bg-blue"> Jeux </div>
-        </div>
-
-         <!--<div class="row">
-            
-            <div id="bottom_container">
-                <nav>
-                  <ul class="bottom_navbar">
-                    <li> <button> <img id="profile_bottom" src="./assets/images/profile.png"> </button> </li>
-                  </ul>
-                </nav>
-            </div>   
-            
-        </div> -->
-    
-
-        <div class="row d-flex align-items-stretch h-100">
-
-            <div id="chat_container" class="col-3">
-                
-                <h3> Discussion générale </h3>
-                <ul id="messages" class="overflow-auto"></ul>
-
-                <form id="message_form">
-
-                    <div class="form-group align-self-end">
-
-                        <input type="text" class="input-group-text" id="send_message" autocomplete="off" />
-                        <button class="form-control btn btn-primary">Envoyer</button>
-
-                    </div>
-
-                </form>
-
-            </div>
-            
-            <div class="col-9" id="games_container">
-                
-            </div>
-    
-
-        </div>
-
+    <div class="banner">
+        <img src="./assets/images/ortelo_banner.png" alt="App Banner"> </h1>
     </div>
 
-    
+    <div class="chat-toggler">
+        <img src="./assets/images/arrow.svg" class="arrow">
+    </div>
 
-    
+    <aside class="chat">
+        <h3 class="title"> Discussion générale </h3>
+        <ul id="messages" class="messages_list">
+            <!-- filled by javascript -->
+        </ul>
+        <form class="form" id="message_form">
+            <input type="text" id="send_message" autocomplete="off"/>
+            <button class="confirm">Envoyer</button>
+        </form>
+    </aside>
+
+    <section id="games_container">
+        <!-- filled by javascript -->
+    </section>
+
   </body>
   <script src="/socket.io/socket.io.js"></script>
   <!--<script src="./modules/events/events.js"></script> -->
