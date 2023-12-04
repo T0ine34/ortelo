@@ -1,6 +1,3 @@
-const fs = require('fs');
-const path = require('path');
-
 const Logger = require('../logs/logger');
 
 class Game {
@@ -8,7 +5,8 @@ class Game {
         this._gameFiles = gameFiles;
         this._name = gameName;
         this._starterFunction = null;
-        // Initialisation des variables pour stocker les contenus des fichiers
+
+        // Variables pour stocker les contenus des fichiers en mémoire
         this._iconData = null;
         this._htmlData = null;
         this._cssData = null;
@@ -18,38 +16,32 @@ class Game {
 
     async init() {
         try {
-            const indexPath = 'index.json';
-            
-            if (!this._gameFiles[indexPath]) {
-                throw new Error(indexPath + ' not found in game files; avaliable files are : ' + Object.keys(this._gameFiles).join(', '));
+            // Supposons que index.json est stocké en tant que chaîne JSON dans _gameFiles
+            if (!this._gameFiles[this._name+'/'+'index.json']) {
+                throw new Error('index.json not found in game files; available files are : ' + Object.keys(this._gameFiles).join(', '));
             }
+            const jsonData = JSON.parse(this._gameFiles[this._name+'/index.json']);
+            Logger.debug("Data loaded from index.json : " + JSON.stringify(jsonData), null, 2);
 
-            const jsonData = JSON.parse(this._gameFiles[indexPath].toString('utf8'));
-            Logger.debug("Data loaded from " + indexPath + " : " + JSON.stringify(jsonData), null, 2);
-            this._name = jsonData.name || "Unknown Name";
-            this._starterFunction = gameFolderPrefix + jsonData.starterfunction;
+            // Mise à jour des noms et des fonctions de démarrage à partir des données JSON
+            this._starterFunction = jsonData.starterfunction;
 
             // Stocker le contenu des fichiers en mémoire
-            this._htmlData = this._gameFiles[jsonData.html]?.toString('utf8');
-            this._cssData = this._gameFiles[jsonData.css]?.toString('utf8');
-            this._jsData = this._gameFiles[jsonData.mainscript]?.toString('utf8');
-            this._serverData = this._gameFiles[jsonData.server]?.toString('utf8');
-
-            // Gérer l'icône
-            if (!jsonData.images || !jsonData.images.icon) {
-                throw new Error("Icon not referenced in index.json");
-            }
-            let iconPath = 'images/' + jsonData.images.icon;
-            if (this._gameFiles[iconPath]) {
-                this._iconData = this._gameFiles[iconPath];
+            this._htmlData = jsonData.html ? this._gameFiles[this._name+'/'+jsonData.html] : null;
+            this._cssData = jsonData.css ? this._gameFiles[this._name+'/'+jsonData.css] : null;
+            this._jsData = jsonData.mainscript ? this._gameFiles[this._name+'/'+jsonData.mainscript] : null;
+            this._serverData = jsonData.server ? this._gameFiles[this._name+'/'+jsonData.server] : null;
+            // Gestion de l'icône
+            if (jsonData.images && jsonData.images.icon) {
+                let iconPath = jsonData.images.icon;
+                this._iconData = this._gameFiles[this._name+'/images/'+iconPath] || null;
             } else {
-                throw new Error("Icon not found");
+                throw new Error("Icon not referenced in index.json");
             }
         } catch (error) {
             Logger.warning("Cannot load game '" + this._name + "' : " + error.message);
         }
     }
-
     // Getters pour accéder aux données des fichiers
     get name() {
         return this._name;
