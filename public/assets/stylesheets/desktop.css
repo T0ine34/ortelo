@@ -1,0 +1,106 @@
+.banner{
+    width: 100%;
+    text-align: center;
+    height: 20%;
+    img{
+        height: 80%;
+    }
+}
+
+.chat-toggler{
+    display: none;
+}
+
+.chat{
+    width: 30%;
+    position: fixed;
+    height: 80%;
+    border: 1px solid black;
+
+    .title{
+        text-align: center;
+        font-size: 1.5em;
+        font-weight: bold;
+        margin-bottom: 0.5em;
+
+    }
+
+
+    .form{
+        width: 100%;
+        bottom: 0;
+        position: absolute;
+        padding: 0.5em;
+
+        #send_message{
+            height: 2em;
+            width: 80%;
+            margin-left: 10%;
+            border: 1px solid black;
+            border-radius: 0.8em;
+
+        }
+
+        .confirm{
+            height: 2em;
+            width: 80%;
+            margin-left: 10%;
+            border: 1px solid black;
+            border-radius: 0.8em;
+            background-color: rgba(84, 146, 246, 0.69);
+            color: white;
+        }
+    }
+
+    .messages_list{
+        width: 100%;
+        overflow-y: scroll;
+        height: calc(100% - 80px - 2em);
+        padding: 0.5em;
+        margin-bottom: 2em;
+        list-style: none;
+
+        .message_item{
+            max-width: 90%;
+            width: max-content;
+            min-width: 30%;
+            margin-bottom: 0.5em;
+            padding: 0.2em 0.5em 0.2em 0.5em;
+            border: 1px solid black;
+
+            &.me{
+                border-radius: 1em 1em 0 1em;
+                text-align: right;
+                margin-left: auto;
+
+            }
+            &.other{
+                border-radius: 1em 1em 1em 0;
+                text-align: left;
+                margin-right: auto;
+
+
+            }
+
+            .date{
+                font-size: 0.8em;
+                color: gray;
+                text-align: right;
+            }
+
+        }
+    
+    }
+}
+
+#games_container{
+    right: 0;
+    position: absolute;
+    width: 70%;
+    height: 80%;
+    text-align: center;
+    & img{
+        width: 25%;
+    }
+
+}
