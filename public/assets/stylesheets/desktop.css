@@ -1,7 +1,7 @@
 .banner{
     width: 100%;
     text-align: center;
-    height: 20%;
+    height: 100px;
     img{
         height: 80%;
     }
@@ -14,8 +14,12 @@
 .chat{
     width: 30%;
     position: fixed;
-    height: 80%;
-    border: 1px solid black;
+    border-right: 1px solid black;
+    border-top: 1px solid black;
+    height: calc(100% - 100px);
+    bottom: 0;
+    left: 0;
+
 
     .title{
         text-align: center;
@@ -42,6 +46,7 @@
         }
 
         .confirm{
+            margin-top : 0.5em;
             height: 2em;
             width: 80%;
             margin-left: 10%;
@@ -55,7 +60,7 @@
     .messages_list{
         width: 100%;
         overflow-y: scroll;
-        height: calc(100% - 80px - 2em);
+        height: calc(100% - 90px - 2em);
         padding: 0.5em;
         margin-bottom: 2em;
         list-style: none;

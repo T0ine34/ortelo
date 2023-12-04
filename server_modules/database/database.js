@@ -65,16 +65,8 @@ class Database {
         let salt = BCrypt.genSaltSync(config.get("database.bcryptRounds"));
         let key = this.#generateRandomKey(64);
         let hashedPassword = BCrypt.hashSync(CryptoJS.AES.encrypt(password, key).toString(), salt);
-        let exists = this._db.all(`SELECT playername FROM player WHERE playername='${name}'`, [], (err, rows) => {
-            if(err){
-                Logger.error(err.toString());
-                return true;
-            } 
-            if(rows.length > 0) return true;
-            else return false;
-        });
-        console.log(exists)
-        if(exists) return false;
+
+        if(this.getPlayer(name)) return false;
         else {
             this._db.exec(`INSERT INTO player (playername, password${emailAddress ? ", email" : ""}) VALUES ('${name}', '${hashedPassword}'${emailAddress ? `, '${emailAddress}'` : ""})`);
             return true;
@@ -82,34 +74,48 @@ class Database {
     }
 
     login(name, password) {
-        this._db.all(`SELECT * FROM player`, [], (err, rows) => {
-            if(err) Logger.error(err.toString());
-            rows.forEach( (row) => {
-                console.log(row);
-            })
-        })
-        let res = this._db.all(`SELECT password FROM player WHERE playername='${name}'`, [], (err, rows) => {
-            if(err) {
-                Logger.error(err.toString());
-                return false;
-            }
-            //if(rows.length <= 0) return false;
-            //else {
-                rows.forEach( (row) => {
-                    console.log(row);
-                })
-            //}
-        });
-
-        if(res == false) return false;
-        //console.log(res);
-        BCrypt.compare(password, res, function(err, result) {
+        
+        console.log(this.getPassword(name));
+        
+        /*BCrypt.compare(password, dbPassword, function(err, result) {
+            console.log(result)
             if (result) {
               console.log('Le mot de passe est correct.');
             } else {
               console.log('Le mot de passe est incorrect.');
             }
+        });*/
+    }
+
+
+    getPlayer(name) {
+        let exists = false;
+        this._db.all(`SELECT playername FROM player WHERE playername='${name}';`, [], (err, rows) => {
+            if(err){
+                Logger.error(err.toString());
+                exists = true;
+            } 
+            
+            if(rows.length > 0) exists = true;
+            else exists = false;
         });
+        return exists;
+    }
+
+    getPassword(playerName){
+        let password = "";
+        this._db.all(`SELECT password FROM player WHERE playername='${playerName}';`, [], (err, rows) => {
+            if(err){
+                Logger.error(err.toString());
+                return false;
+            } 
+            rows.forEach( (row) => {
+                password = row.password;
+                //console.log(password)
+            });
+        });
+        console.log(password);
+        return password;
     }
 
 
