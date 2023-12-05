@@ -35,10 +35,20 @@ Logger.debug("server initialized successfully");
 app.use(express.static(settings.get("public_dir")));
 
 app.get('/games-info', (req, res) => {
-    const gameInfos = Object.values(gameLoader.gamesData).map(game => ({
-        name: game.name,
-        icon: game.iconData ? `data:image/png;base64,${game.iconData.toString('base64')}` : null
-    }));
+    const fields = req.query.fields ? req.query.fields.split(',') : [];
+    const gameInfos = Object.values(gameLoader.gamesData).map(game => {
+        let info = {};
+        fields.forEach(field => {
+            if (field === 'icon' && game.iconData) {
+                info[field] = game.iconData ? `data:image/png;base64,${game.iconData.toString('base64')}` : null
+            } else if (field === 'name' && game.name) {
+                info[field] = game.name;
+            } else if (game[field]) {
+                info[field] = game[field];
+            }
+        });
+        return info;
+    });
     res.json(gameInfos);
 });
 
