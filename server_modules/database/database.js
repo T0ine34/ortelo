@@ -8,12 +8,12 @@ const BCrypt = require("bcrypt");
 /**
  * @module Database
  * @category Server
- * @description this module contains classes to interact with server's database
+ * @description This module contains classes to interact with server's database.
  * @author Lila Brandon
 */
 
 /**
- * @classdesc this class will perform actions on SQLITE database 
+ * @classdesc this class will perform actions on SQLITE database.
  * @author Lila Brandon
  */
 class Database {
@@ -27,6 +27,11 @@ class Database {
         return Database._instance;
     }
 
+    /**
+     * @author Lila Brandon
+     * @description Base function for database module. <br>
+     * Creates a new database file if there isn't one already.
+     */
     #load() {
         Logger.fine("Loading database...")
         this._db = new sqlite3.Database(config.get("database.path"), sqlite3.OPEN_READWRITE | sqlite3.OPEN_CREATE, (err) => {
@@ -44,8 +49,8 @@ class Database {
 
     /**
      * @author Lila BRANDON
-     * @function
-     * @description Executes the SQL script to create database structure
+     * @description This will look for the SQL script used .
+     * to create all tables in case the database file doesn't exsist already.
      */
     #createTables() {
         let createTables = fs.readFileSync(config.get("database.createTablesPath"), 'utf8');
@@ -56,76 +61,137 @@ class Database {
 
     /**
      * @author Lila BRANDON
-     * @param {string} name is the player's name
-     * @param {string} password is the player's password (uncrypted)
-     * @param {string} emailAddress is the player's email address, is not a must
-     * @returns wether the player has been created successfully or not
+     * @description Creates a player inside database. <br>The given password will be hashed before being inserted into the database.
+     * @param {string} name is the player's name.
+     * @param {string} password is the player's password (uncrypted).
+     * @param {string} emailAddress is the player's email address, is not a must.
+     * @returns wether the player has been created successfully or not.
      */
     createPlayer(name, password, emailAddress){
         let salt = BCrypt.genSaltSync(config.get("database.bcryptRounds"));
-        let key = this.#generateRandomKey(64);
-        let hashedPassword = BCrypt.hashSync(CryptoJS.AES.encrypt(password, key).toString(), salt);
+        //let key = this.#generateRandomKey(64);
+        //let hashedPassword = BCrypt.hashSync(CryptoJS.AES.encrypt(password, key).toString(), salt);
+        let hashedPassword = BCrypt.hashSync(password, salt);
 
-        if(this.getPlayer(name)) return false;
-        else {
-            this._db.exec(`INSERT INTO player (playername, password${emailAddress ? ", email" : ""}) VALUES ('${name}', '${hashedPassword}'${emailAddress ? `, '${emailAddress}'` : ""})`);
-            return true;
-        }
-    }
-
-    login(name, password) {
-        
-        console.log(this.getPassword(name));
-        
-        /*BCrypt.compare(password, dbPassword, function(err, result) {
-            console.log(result)
-            if (result) {
-              console.log('Le mot de passe est correct.');
+        this.getPlayer(name, (exists) => {
+            if(exists) {
+                return false;
             } else {
-              console.log('Le mot de passe est incorrect.');
+                this._db.exec(`INSERT INTO player (playername, password${emailAddress ? ", email" : ""}, online) VALUES ('${name}', '${hashedPassword}'${emailAddress ? `, '${emailAddress}'` : ""}, 1)`);
+                return true;
             }
-        });*/
+        });
     }
 
 
-    getPlayer(name) {
-        let exists = false;
+    /**
+     * @author Lila BRANDON
+     * @description Checks if given password matches player's password.
+     * @param  {string} name Player's name.
+     * @param  {string} password Player's password.
+     * @param  {function} callback The function using returned boolean value for further use.
+     * @return {boolean} True/False depending on logging in being successful or not.
+     */
+    login(name, password, callback) {
+        this.getPassword(name, (dbPassword) => {
+            this.comparePassword(password, dbPassword, (compareResult) => {    
+                callback(compareResult);
+            });
+        });
+    }
+
+    /**
+     * @author Lila BRANDON
+     * @description Fetches all players registered in database.
+     * @param {function} callback The function using returned array of players' names for further use.
+     * @return {Array} An array of players names.
+     */
+    listOnlinePlayers(callback) {
+        this._db.all(`SELECT playername FROM player WHERE online='1' ORDER BY playername;`, [], (err, rows) => {
+            if(err) {
+                Logger.error(`Can not fetch all online players : ${err}`);
+                return [];
+            } else {
+                let playerNames = [];
+                rows.forEach( (row) => { playerNames.push(row.playername); });
+                callback(playerNames);
+            }
+        });
+    }
+
+    /**
+     * @author Lila BRANDON
+     * @description Checks wether a player exists in the database or not.
+     * @param {string} name Player's name.
+     * @param {function} callback Function using returned boolean value for further use.
+     * @return {boolean} True if player already exists, false otherwise.
+     */
+    getPlayer(name, callback) {
         this._db.all(`SELECT playername FROM player WHERE playername='${name}';`, [], (err, rows) => {
             if(err){
                 Logger.error(err.toString());
-                exists = true;
+                callback(true);
             } 
-            
-            if(rows.length > 0) exists = true;
-            else exists = false;
+            if(rows.length > 0) callback(true);
+            else callback(false);
         });
-        return exists;
+        callback(true);
     }
 
-    getPassword(playerName){
-        let password = "";
-        this._db.all(`SELECT password FROM player WHERE playername='${playerName}';`, [], (err, rows) => {
-            if(err){
+    /**
+     * @author Lila BRANDON
+     * @description Gets player's (hashed) password from database .
+     * @param {string} playerName Player's name.
+     * @param {function} callback Function using returned password for further use.
+     * @return {string} Player's hashed password.
+     */
+    getPassword(playerName, callback){
+        this._db.get(`SELECT password FROM player WHERE playername='${playerName}';`, [], (err, row) => {
+            if (err) {
                 Logger.error(err.toString());
-                return false;
-            } 
-            rows.forEach( (row) => {
-                password = row.password;
-                //console.log(password)
-            });
+                callback(false);
+            } else {
+                let password = row ? row.password : null;
+                callback(password);
+            }
         });
-        console.log(password);
-        return password;
+    }
+
+    /**
+     * @author Lila BRANDON
+     * @description Compares clear string with player's hashed password to know if they match.
+     * @param {string} password Player's password (clear).
+     * @param {string} hashedPassword Player's password (hashed).
+     * @param {function} callback Function using returned boolean for further use.
+     * @return {boolean} True if the hashed password matches given clear password, false otherwise.
+     */
+    comparePassword(password, hashedPassword, callback) {
+        BCrypt.compare(password, hashedPassword, function(err, result) {
+            if (err) {
+                Logger.error("Can't compare passwords : " + err);
+                callback(false);
+            } else {
+                callback(result);
+            }
+        });
     }
 
 
-
+    /**
+     * @author Lila BRANDON
+     * @description Closes database connection.
+     */
     close() {
         Logger.info("Closing database");
         this._db.close();
     }
 
-
+    /**
+     * @author Lila BRANDON
+     * @description Generates a random key for AES encryption algorithm.
+     * @param {int} length Length of the key to generate.
+     * @returns {string} The generated key.
+     */
     #generateRandomKey(length) {
         const characters = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
         let key = '';
