@@ -211,7 +211,7 @@ function fetchGames() {
             carouselIndicators.innerHTML = ''; // Erase the existing indicators
 
             games.forEach((game, index) => {
-                // Créer un nouvel élément de carrousel pour chaque jeu
+                // Create a new element for each game
                 const carouselItem = document.createElement('div');
                 carouselItem.className = `carousel-item ${index === 0 ? 'active' : ''}`;
                 carouselItem.innerHTML = `
@@ -224,7 +224,7 @@ function fetchGames() {
 
                 carouselInner.appendChild(carouselItem);
 
-                // Ajouter un indicateur pour chaque jeu
+                // Add an indicator for each game
                 const indicator = document.createElement('li');
                 indicator.setAttribute('data-target', '#gameCarousel');
                 indicator.setAttribute('data-slide-to', index.toString());
