@@ -32,7 +32,7 @@ Logger.debug("server initialized successfully");
 
 // -------------------------------------------------------------------- SERVER CONFIGURATION
 
-app.use(express.static(settings.get("public_dir")));
+//app.use(express.static(settings.get("public_dir")));
 
 app.get('/games-info', (req, res) => {
     const gameInfos = Object.values(gameLoader.gamesData).map(game => ({
@@ -54,6 +54,29 @@ async function loadGames() {
     await gameLoader.loadAllGames();
 }
 
+/**
+ * @description Build the url to redirect to, depending on the device<br/>
+ * the input url is like /home or /404, and the output url is like /mobile/home or /desktop/404
+ * @param   {string} baseurl 
+ * @param   {any} req
+ * @returns {string} the url to redirect to
+ */
+function build_url(baseurl, req){
+    let foldername = baseurl.split('/')[0]
+    let output = "";
+    if(foldername in fs.readdirSync(__dirname + '/' + settings.get("public_common_dir"))){
+        output = settings.get("public_common_url") + '/' + baseurl
+    }
+    else if(req.headers.device.type.toUpperCase() == "PHONE"){
+        output = settings.get("public_mobile_url") + '/' + baseurl
+    }
+    else{
+        output = settings.get("public_desktop_url") + '/' + baseurl
+    }
+    
+    Logger.info("creating url for " + baseurl + " : " + output);
+}
+
 function set_redirections(){
 
     Logger.info("Setting up redirections");
@@ -68,15 +91,15 @@ function set_redirections(){
                 if(settings.has("paths." + path+".recursive") && settings.get("paths." + path+".recursive")){
                     //if the path is recursive, redirect all the subpaths to the same path
                     app.get("/"+path+"/*", (req, res) => {
-                        Logger.info("user " + req.ip + " requested " + req.path + " -> " + settings.get("paths." + path+".path") + req.path.substring(path.length+1));
-                        res.sendFile(__dirname + '/' + settings.get("paths." + path+".path") + req.path.substring(path.length+1));
+                        let url = build_url(settings.get("paths." + path+".path") + req.path.substring(path.length+1), req);
+                        res.sendFile(url);
                     });
                     resume += "GET " + path + "/* -> " + settings.get("paths." + path+".path") + "*\n";
                 }
                 else{
                     app.get("/"+path, (req, res) => {
-                        Logger.info("user " + req.ip + " requested " + req.path + " -> " + settings.get("paths." + path+".path"));
-                        res.sendFile(__dirname + '/' + settings.get("paths." + path+".path"));
+                        let url = build_url(settings.get("paths." + path+".path"), req);
+                        res.sendFile(url);
                     });
                     resume += "GET " + path + " -> " + settings.get("paths." + path+".path") + "\n";
                 }
@@ -85,15 +108,15 @@ function set_redirections(){
                 if(settings.has("paths." + path+".recursive") && settings.get("paths." + path+".recursive")){
                     //if the path is recursive, redirect all the subpaths to the same path
                     app.post("/"+path+"/*", (req, res) => {
-                        Logger.info("user " + req.ip + " requested " + req.path + " -> " + settings.get("paths." + path+".path") + req.path.substring(path.length+1));
-                        res.sendFile(__dirname + '/' + settings.get("paths." + path+".path") + req.path.substring(path.length+1));
+                        let url = build_url(settings.get("paths." + path+".path") + req.path.substring(path.length+1), req);
+                        res.sendFile(url);
                     });
                     resume += "POST " + path + "/* -> " + settings.get("paths." + path+".path") + "*\n";
                 }
                 else{
                     app.post("/"+path, (req, res) => {
-                        Logger.info("user " + req.ip + " requested " + req.path + " -> " + settings.get("paths." + path+".path"));
-                        res.sendFile(__dirname + '/' + settings.get("paths." + path+".path"));
+                        let url = build_url(settings.get("paths." + path+".path"), req);
+                        res.sendFile(url);
                     });
                     resume += "POST " + path + " -> " + settings.get("paths." + path+".path") + "\n";
                 }

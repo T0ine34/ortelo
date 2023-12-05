@@ -44,6 +44,24 @@
             "max_length" : null,
             "required" : true
         },
+        "public_common_dir" : {
+            "type" : "string",
+            "min_length" : 1,
+            "max_length" : null,
+            "required" : true
+        },
+        "public_desktop_dir" : {
+            "type" : "string",
+            "min_length" : 1,
+            "max_length" : null,
+            "required" : true
+        },
+        "public_mobile_dir" : {
+            "type" : "string",
+            "min_length" : 1,
+            "max_length" : null,
+            "required" : true
+        },
         "logs": {
             "type" : "dict",
             "required" : true,
@@ -134,7 +152,7 @@
                 "content" : {
                     "path" : {
                         "type" : "string",
-                        "min_length" : 3,
+                        "min_length" : null,
                         "max_length" : null,
                         "required" : true
                     },
@@ -151,13 +169,7 @@
                 }
             }
         },
-        "default_path" : {
-            "type" : "string",
-            "min_length" : null,
-            "max_length" : null,
-            "required" : false
-        },
-        "api_path" : {
+        "default_page" : {
             "type" : "string",
             "min_length" : null,
             "max_length" : null,
