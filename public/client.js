@@ -202,7 +202,7 @@ let receive_message = (timestamp, username, msg) => {
 
 
 function fetchGames() {
-    fetch('/games-info?fields=name,icon')
+    fetch('/games-info?x=name,icon')
         .then(response => response.json())
         .then(games => {
             const carouselInner = document.querySelector('#gameCarousel .carousel-inner');
@@ -213,12 +213,12 @@ function fetchGames() {
             games.forEach((game, index) => {
                 // Create a new element for each game
                 const carouselItem = document.createElement('div');
+                carouselItem.addEventListener('click', () => PlayGame(game.name));  
                 carouselItem.className = `carousel-item ${index === 0 ? 'active' : ''}`;
                 carouselItem.innerHTML = `
                     <img src="${game.icon}" class="d-block mx-auto" alt="${game.name}" style="max-width: 100%; height: auto;">
                     <div class="carousel-caption d-none d-md-block">
                         <h5>${game.name}</h5>
-                        <p>Courte description du jeu.</p>   
                     </div>
                 `;
 
@@ -226,7 +226,7 @@ function fetchGames() {
 
                 // Add an indicator for each game
                 const indicator = document.createElement('li');
-                indicator.setAttribute('data-target', '#gameCarousel');
+                 indicator.setAttribute('data-target', '#gameCarousel');
                 indicator.setAttribute('data-slide-to', index.toString());
                 if(index === 0) indicator.className = 'active';
                 carouselIndicators.appendChild(indicator);
@@ -235,4 +235,8 @@ function fetchGames() {
         .catch(error => {
             console.error('Erreur lors du chargement des jeux:', error);
         });
+}
+function PlayGame(name) {
+    const container = document.getElementById('games_container');
+    container.innerHTML = '';
 }

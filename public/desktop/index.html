@@ -1,5 +1,4 @@
-
-  <!DOCTYPE html>
+<!DOCTYPE html>
   <html>
   <head>
       <title>Ortelo</title>
@@ -12,11 +11,13 @@
   
   </head>
   <body>
+    <div class="container-fluid">
         <div class="banner">    
             <img src="../assets/images/ortelo_banner.png" alt="App Banner"/>
         </div>
-    
-        <aside class="chat">
+
+        <div class="row">
+        <aside class="col-md-3 chat">
             <h3 class="title"> Discussion générale </h3>
             <ul id="messages" class="messages_list">
                 <!-- filled by javascript -->
@@ -27,7 +28,7 @@
             </form>
         </aside>
               
-        <div class="col-9" id="games_container" style="position:initial;">
+        <div class="col-md-9" id="games_container" style="position:initial;">
             <div id="gameCarousel" class="carousel slide" data-ride="carousel">
                 <!-- Indicators -->
                 <ol class="carousel-indicators">
