@@ -1,0 +1,95 @@
+
+  <!DOCTYPE html>
+  <html>
+  <head>
+      <title>Ortelo</title>
+      <meta charset="UTF-8">
+      <meta name="viewport" content="width=device-width, initial-scale=1.0">
+      <link rel="icon" type="image/x-icon" href="../assets/images/ortelo_logo.png">
+      <link rel="stylesheet" href="../bootstrap/css/bootstrap.min.css">
+      <link rel="stylesheet" href="./stylesheets/style.css">
+      <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.15.4/css/all.css">
+  
+  </head>
+  <body>
+        <div class="banner">    
+            <img src="../assets/images/ortelo_banner.png" alt="App Banner"/>
+        </div>
+    
+        <aside class="chat">
+            <h3 class="title"> Discussion générale </h3>
+            <ul id="messages" class="messages_list">
+                <!-- filled by javascript -->
+            </ul>
+            <form class="form" id="message_form">
+                <input type="text" id="send_message" autocomplete="off"/>
+                <button class="confirm">Envoyer</button>
+            </form>
+        </aside>
+              
+              <div class="col-9" id="games_container" style ="position:initial;">
+                  <!-- Carrousel begins -->
+                  <div id="gameCarousel" class="carousel slide" data-ride="carousel">
+                      <!-- Indicators -->
+                      <ol class="carousel-indicators">
+                          <li data-target="#gameCarousel" data-slide-to="0" class="active"></li>
+                          <li data-target="#gameCarousel" data-slide-to="1"></li>
+                         
+                      </ol>
+                      
+                      <!-- Content of the carrousel -->
+                      <div class="carousel-inner">
+                          <!-- Game 1 -->
+                          <div class="carousel-item active">
+                              <img src="../assets/images/Image3.jpg" class="d-block mx-auto" alt="Game 1" style="max-width: 100%; height: auto;">
+                              <div class="carousel-caption d-none d-md-block">
+                                  <h5>Titre du jeu 1</h5>
+                                  <p>Courte description du jeu 1.</p>
+                              </div>
+                          </div>
+                          
+                          <!-- Game 2 -->
+                          <div class="carousel-item">
+                              <img src="../assets/images/Image2.jpg" class="d-block mx-auto" alt="Game 2" style="max-width: 100%; height: auto;">
+                              <div class="carousel-caption d-none d-md-block">
+                                  <h5>Titre du jeu 2</h5>
+                                  <p>Courte description du jeu 2.</p>   
+                              </div>
+                          </div>
+                        
+                      </div>
+                      
+                      <!-- Previous/Next Controls -->
+                      <a class="carousel-control-prev" style="color : black" href="#gameCarousel" role="button" data-slide="prev">
+                          <span class="carousel-control-prev-icon" aria-hidden="true">
+                              <i class="fas fa-arrow-left fa-2x"></i> <!-- Fa-2x to increase the size of the icon -->
+                          </span>
+                          <span class="sr-only">Précédent</span>
+                      </a>
+                      <a class="carousel-control-next" style= "color : black " href="#gameCarousel" role="button" data-slide="next">
+                          <span class="carousel-control-next-icon" aria-hidden="true">
+                              <i class="fas fa-arrow-right fa-2x"></i> 
+                          </span>
+                          <span class="sr-only">Suivant</span>
+                      </a>
+                      
+                  </div>
+                  <!-- End of the carrousel -->
+              </div>
+          </div>
+      </div>
+  
+      <script src="/socket.io/socket.io.js"></script>
+      <script src="../client.js" type="module"></script>
+      <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+      <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.5.3/dist/js/bootstrap.bundle.min.js"></script>
+  </body>
+  </html>
+
+  </body>
+  <script src="/socket.io/socket.io.js"></script>
+  <!--<script src="./modules/events/events.js"></script> -->
+  <!--<script src="./modules/events/main.js"></script> -->
+  <script src="../client.js" type="module"></script>
+  </html>
+

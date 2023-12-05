@@ -12,6 +12,10 @@ const { EVENTS, Room, CIO, CSocket }    = require('./server_modules/events/main.
 const { GameLoader }                    = require('./server_modules/loader/loader.js');
 const { is_json, is_json_matching }     = require('./server_modules/json_checker/main.js');
 const fs = require('fs');
+const database = require('./server_modules/database/database.js');
+
+
+//database.createPlayer("toto", "toto", "toto@gmail");
 
 // -------------------------------------------------------------------- SERVER INITIALIZATION
 Logger.debug("intitializing express app");
