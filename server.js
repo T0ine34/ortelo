@@ -26,7 +26,7 @@ Logger.debug("server initialized successfully");
 
 // -------------------------------------------------------------------- SERVER CONFIGURATION
 
-//app.use(express.static(settings.get("public_dir")));
+app.use(express.static(settings.get("public_common_dir")));
 
 app.get('/games-info', (req, res) => {
     const gamesData = gameLoader.gamesData;
@@ -77,6 +77,29 @@ async function loadGames() {
     await gameLoader.loadAllGames();
 }
 
+function getPlatform(rawHeaders){
+    let platform = "unknown";
+    if(rawHeaders.includes("Android")){
+        platform = "Android";
+    }
+    else if(rawHeaders.includes("iPhone")){
+        platform = "iPhone";
+    }
+    else if(rawHeaders.includes("iPad")){
+        platform = "iPad";
+    }
+    else if(rawHeaders.includes("Windows")){
+        platform = "Windows";
+    }
+    else if(rawHeaders.includes("Macintosh")){
+        platform = "Macintosh";
+    }
+    else if(rawHeaders.includes("Linux")){
+        platform = "Linux";
+    }
+    return platform;
+}
+
 /**
  * @description Build the url to redirect to, depending on the device<br/>
  * the input url is like /home or /404, and the output url is like /mobile/home or /desktop/404
@@ -90,7 +113,7 @@ function build_url(baseurl, req){
     if(foldername in fs.readdirSync(__dirname + '/' + settings.get("public_common_dir"))){
         output = settings.get("public_common_url") + '/' + baseurl
     }
-    else if(req.headers.device.type.toUpperCase() == "PHONE"){
+    else if(getPlatform(req.rawHeaders) == "Android" || getPlatform(req.rawHeaders) == "iPhone" || getPlatform(req.rawHeaders) == "iPad"){
         output = settings.get("public_mobile_url") + '/' + baseurl
     }
     else{
@@ -98,6 +121,7 @@ function build_url(baseurl, req){
     }
     
     Logger.info("creating url for " + baseurl + " : " + output);
+    return output;
 }
 
 function set_redirections(){
@@ -122,6 +146,7 @@ function set_redirections(){
                 else{
                     app.get("/"+path, (req, res) => {
                         let url = build_url(settings.get("paths." + path+".path"), req);
+                        console.log(url);
                         res.sendFile(url);
                     });
                     resume += "GET " + path + " -> " + settings.get("paths." + path+".path") + "\n";
