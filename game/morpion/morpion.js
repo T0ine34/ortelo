@@ -35,7 +35,6 @@ class Morpion {
 
     checkForWin() {
         const winningCombinations = [
-
             [[0, 0], [0, 1], [0, 2]],
             [[1, 0], [1, 1], [1, 2]],
             [[2, 0], [2, 1], [2, 2]],
@@ -49,20 +48,20 @@ class Morpion {
         ];
 
         for (const [a, b, c] of winningCombinations) {
-            if (this.board[a[0]][a[1]] &&
+            if (this.board[a[0]][a[1]] !== "" &&
                 this.board[a[0]][a[1]] === this.board[b[0]][b[1]] &&
                 this.board[a[0]][a[1]] === this.board[c[0]][c[1]]) {
                 this.isGameOver = true;
                 this.winner = this.currentPlayer;
-                break;
+                return;
             }
         }
-
         if (this.board.flat().every(cell => cell !== "")) {
             this.isGameOver = true;
             this.winner = 'D';
         }
     }
+
 
     getGameState() {
         return {
