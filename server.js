@@ -26,7 +26,7 @@ Logger.debug("server initialized successfully");
 
 // -------------------------------------------------------------------- SERVER CONFIGURATION
 
-app.use(express.static(settings.get("public_common_dir")));
+app.use(express.static(settings.get("public_dir")));
 
 app.get('/games-info', (req, res) => {
     const gamesData = gameLoader.gamesData;
@@ -79,25 +79,29 @@ async function loadGames() {
 
 function getPlatform(rawHeaders){
     let platform = "unknown";
-    if(rawHeaders.includes("Android")){
+    if(rawHeaders.includes('"Android"')){
         platform = "Android";
     }
-    else if(rawHeaders.includes("iPhone")){
+    else if(rawHeaders.includes('"iPhone"')){
         platform = "iPhone";
     }
-    else if(rawHeaders.includes("iPad")){
+    else if(rawHeaders.includes('"iPad"')){
         platform = "iPad";
     }
-    else if(rawHeaders.includes("Windows")){
+    else if(rawHeaders.includes('"Windows"')){
         platform = "Windows";
     }
-    else if(rawHeaders.includes("Macintosh")){
+    else if(rawHeaders.includes('"Macintosh"')){
         platform = "Macintosh";
     }
-    else if(rawHeaders.includes("Linux")){
+    else if(rawHeaders.includes('"Linux"')){
         platform = "Linux";
     }
     return platform;
+}
+
+function is_mobile(rawHeaders){
+    return getPlatform(rawHeaders) == "Android" || getPlatform(rawHeaders) == "iPhone" || getPlatform(rawHeaders) == "iPad";
 }
 
 /**
@@ -110,17 +114,22 @@ function getPlatform(rawHeaders){
 function build_url(baseurl, req){
     let foldername = baseurl.split('/')[0]
     let output = "";
-    if(foldername in fs.readdirSync(__dirname + '/' + settings.get("public_common_dir"))){
-        output = settings.get("public_common_url") + '/' + baseurl
+
+    let common_folder_content = fs.readdirSync(__dirname + '/' + settings.get("public_common_dir"));
+
+    if(!baseurl.startsWith('/')){
+        baseurl = '/' + baseurl;
     }
-    else if(getPlatform(req.rawHeaders) == "Android" || getPlatform(req.rawHeaders) == "iPhone" || getPlatform(req.rawHeaders) == "iPad"){
-        output = settings.get("public_mobile_url") + '/' + baseurl
+
+    if(common_folder_content.includes(baseurl.split('/')[1])){
+        output = settings.get("public_common_dir") + baseurl
+    }
+    else if(is_mobile(req.rawHeaders)){
+        output = settings.get("public_mobile_dir") + baseurl
     }
     else{
-        output = settings.get("public_desktop_url") + '/' + baseurl
+        output = settings.get("public_desktop_dir") +  baseurl
     }
-    
-    Logger.info("creating url for " + baseurl + " : " + output);
     return output;
 }
 
@@ -139,32 +148,35 @@ function set_redirections(){
                     //if the path is recursive, redirect all the subpaths to the same path
                     app.get("/"+path+"/*", (req, res) => {
                         let url = build_url(settings.get("paths." + path+".path") + req.path.substring(path.length+1), req);
-                        res.sendFile(url);
+                        let abs_url = __dirname + '/' + url;
+                        res.sendFile(abs_url);
                     });
                     resume += "GET " + path + "/* -> " + settings.get("paths." + path+".path") + "*\n";
                 }
                 else{
                     app.get("/"+path, (req, res) => {
                         let url = build_url(settings.get("paths." + path+".path"), req);
-                        console.log(url);
-                        res.sendFile(url);
+                        let abs_url = __dirname + '/' + url;
+                        res.sendFile(abs_url);
                     });
                     resume += "GET " + path + " -> " + settings.get("paths." + path+".path") + "\n";
-                }
+                } 
                 break;
             case "POST":
                 if(settings.has("paths." + path+".recursive") && settings.get("paths." + path+".recursive")){
                     //if the path is recursive, redirect all the subpaths to the same path
                     app.post("/"+path+"/*", (req, res) => {
                         let url = build_url(settings.get("paths." + path+".path") + req.path.substring(path.length+1), req);
-                        res.sendFile(url);
+                        let abs_url = __dirname + '/' + url;
+                        res.sendFile(abs_url);
                     });
                     resume += "POST " + path + "/* -> " + settings.get("paths." + path+".path") + "*\n";
                 }
                 else{
                     app.post("/"+path, (req, res) => {
                         let url = build_url(settings.get("paths." + path+".path"), req);
-                        res.sendFile(url);
+                        let abs_url = __dirname + '/' + url;
+                        res.sendFile(abs_url);
                     });
                     resume += "POST " + path + " -> " + settings.get("paths." + path+".path") + "\n";
                 }
