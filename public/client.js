@@ -181,7 +181,7 @@ let receive_message = (timestamp, username, msg) => {
     item.scrollIntoView(); 
 }
 
-function fetchGames() {
+/*function fetchGames () {
     fetch('/games-info')
         .then(response => response.json())
         .then(games => {
@@ -197,5 +197,71 @@ function fetchGames() {
         })
         .catch(error => {
             console.error('Erreur lors du chargement des jeux:', error);
+        });
+}*/
+
+
+function fetchGames() {
+    fetch('/games-info?x=name,icon')
+        .then(response => response.json())
+        .then(games => {
+            const carouselInner = document.querySelector('#gameCarousel .carousel-inner');
+            const carouselIndicators = document.querySelector('#gameCarousel .carousel-indicators');
+            carouselInner.innerHTML = ''; // Erase the existing content
+            carouselIndicators.innerHTML = ''; // Erase the existing indicators
+
+            games.forEach((game, index) => {
+                // Create a new element for each game
+                const carouselItem = document.createElement('div');
+                carouselItem.addEventListener('click', () => PlayGame(game.name));
+                carouselItem.className = `carousel-item ${index === 0 ? 'active' : ''}`;
+                carouselItem.innerHTML = `
+                    <img src="${game.icon}" class="d-block mx-auto" alt="${game.name}" style="max-width: 100%; height: auto;">
+                    <div class="carousel-caption d-none d-md-block">
+                        <h5>${game.name}</h5>
+                    </div>
+                `;
+
+                carouselInner.appendChild(carouselItem);
+
+                // Add an indicator for each game
+                const indicator = document.createElement('li');
+                 indicator.setAttribute('data-target', '#gameCarousel');
+                indicator.setAttribute('data-slide-to', index.toString());
+                if(index === 0) indicator.className = 'active';
+                carouselIndicators.appendChild(indicator);
+            });
+        })
+        .catch(error => {
+            console.error('Erreur lors du chargement des jeux:', error);
+        });
+}
+function PlayGame(name) {
+    fetch(`/games-info?${name}=html,css,js`)
+        .then(response => response.json())
+        .then(game => {
+            const container = document.getElementById('games_container');
+            if (game.html) {
+                const htmlString = new TextDecoder('utf-8').decode(new Uint8Array(game.html.data));
+                const parser = new DOMParser();
+                const doc = parser.parseFromString(htmlString, 'text/html');
+                doc.querySelectorAll('link[href], script[src]').forEach(el => el.remove());
+                container.innerHTML = doc.body.innerHTML;
+            }
+
+            if (game.css) {
+                const cssStyle = document.createElement('style');
+                cssStyle.innerHTML = new TextDecoder('utf-8').decode(new Uint8Array(game.css.data));
+                container.appendChild(cssStyle);
+            }
+
+            if (game.js) {
+                const scriptTag = document.createElement('script');
+                scriptTag.textContent = new TextDecoder('utf-8').decode(new Uint8Array(game.js.data));
+                container.appendChild(scriptTag);
+            }
+        })
+        .catch(error => {
+            console.error(`Erreur lors du chargement du ${name}:`, error);
         });
 }

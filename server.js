@@ -2,20 +2,14 @@
 
 const http                            = require('http');
 const express= require('express');
-const { Server } = require("socket.io");
 const settings                          = require('./server_modules/settings/main.js');
 const Logger                            = require('./server_modules/logs/logger');
 const Database                          = require('./server_modules/database/database.js');
 const { parseCMD }                      = require('./server_modules/cmd/main.js');
 const { User }                          = require('./server_modules/user/main.js');
-const { EVENTS, Room, CIO, CSocket }    = require('./server_modules/events/main.js');
+const { EVENTS, Room, CIO }             = require('./server_modules/events/main.js');
 const { GameLoader }                    = require('./server_modules/loader/loader.js');
-const { is_json, is_json_matching }     = require('./server_modules/json_checker/main.js');
 const fs = require('fs');
-const database = require('./server_modules/database/database.js');
-
-
-//database.createPlayer("toto", "toto", "toto@gmail");
 
 // -------------------------------------------------------------------- SERVER INITIALIZATION
 Logger.debug("intitializing express app");
@@ -35,12 +29,41 @@ Logger.debug("server initialized successfully");
 //app.use(express.static(settings.get("public_dir")));
 
 app.get('/games-info', (req, res) => {
-    const gameInfos = Object.values(gameLoader.gamesData).map(game => ({
-        name: game.name,
-        icon: game.iconData ? `data:image/png;base64,${game.iconData.toString('base64')}` : null
-    }));
+    const gamesData = gameLoader.gamesData;
+    const fields = req.query.x ? req.query.x.split(',') : null;
+    const specificGameKey = Object.keys(req.query).find(key => key !== 'x' && gamesData[key]);
+    const specificGameData = specificGameKey ? gamesData[specificGameKey] : null;
+
+    let gameInfos = [];
+
+    if (fields) {
+        gameInfos = Object.values(gamesData).map(game => getGameInfo(game, fields));
+    } else if (specificGameData) {
+        const requestedFields = req.query[specificGameKey] ? req.query[specificGameKey].split(',') : [];
+        return res.json(getGameInfo(specificGameData, requestedFields));
+    } else if (specificGameKey) {
+        return res.json({});
+    }
     res.json(gameInfos);
 });
+
+function getGameInfo(game, fields) {
+    let info = {};
+    fields.forEach(field => {
+        if (field === 'icon' && game.iconData) {
+            info[field] = `data:image/png;base64,${game.iconData.toString('base64')}`;
+        } else if (field === 'name' && game.name) {
+            info[field] = game.name;
+        } else if (field === 'html' && game.htmlData) {
+            info[field] = game.htmlData;
+        } else if (field === 'css' && game.cssData) {
+            info[field] = game.cssData;
+        } else if (field === 'js' && game.jsData) {
+            info[field] = game.jsData;
+        }
+    });
+    return info;
+}
 
 set_redirections();
 

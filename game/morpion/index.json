@@ -1,0 +1,12 @@
+{
+    "name": "Morpion",
+    "version": "0.0.1",
+    "description": "Play Morpion",
+    "mainscript": "main.js",
+    "html": "index.html",
+    "css": "style.css",
+    "starterfunction" : "initializeMorpionSocket",
+    "images":{
+        "icon":"morpion.png"
+    }
+}
