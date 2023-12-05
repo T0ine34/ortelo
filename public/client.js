@@ -181,7 +181,7 @@ let receive_message = (timestamp, username, msg) => {
     item.scrollIntoView(); 
 }
 
-function fetchGames() {
+/*function fetchGames () {
     fetch('/games-info')
         .then(response => response.json())
         .then(games => {
@@ -193,6 +193,43 @@ function fetchGames() {
                 gameElement.innerHTML = `<h3>${game.name}</h3>
                                          <img src="${game.icon}" alt="${game.name}" onerror="this.src='/assets/images/default_game_icon.png'">`;
                 gamesListContainer.appendChild(gameElement);
+            });
+        })
+        .catch(error => {
+            console.error('Erreur lors du chargement des jeux:', error);
+        });
+}*/
+
+
+function fetchGames() {
+    fetch('/games-info?fields=name,icon')
+        .then(response => response.json())
+        .then(games => {
+            const carouselInner = document.querySelector('#gameCarousel .carousel-inner');
+            const carouselIndicators = document.querySelector('#gameCarousel .carousel-indicators');
+            carouselInner.innerHTML = ''; // Erase the existing content
+            carouselIndicators.innerHTML = ''; // Erase the existing indicators
+
+            games.forEach((game, index) => {
+                // Créer un nouvel élément de carrousel pour chaque jeu
+                const carouselItem = document.createElement('div');
+                carouselItem.className = `carousel-item ${index === 0 ? 'active' : ''}`;
+                carouselItem.innerHTML = `
+                    <img src="${game.icon}" class="d-block mx-auto" alt="${game.name}" style="max-width: 100%; height: auto;">
+                    <div class="carousel-caption d-none d-md-block">
+                        <h5>${game.name}</h5>
+                        <p>Courte description du jeu.</p>   
+                    </div>
+                `;
+
+                carouselInner.appendChild(carouselItem);
+
+                // Ajouter un indicateur pour chaque jeu
+                const indicator = document.createElement('li');
+                indicator.setAttribute('data-target', '#gameCarousel');
+                indicator.setAttribute('data-slide-to', index.toString());
+                if(index === 0) indicator.className = 'active';
+                carouselIndicators.appendChild(indicator);
             });
         })
         .catch(error => {
