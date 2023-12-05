@@ -36,7 +36,7 @@ class GameLoader {
             let zipFilePath = path.join(this._pathToGames, zipFileName);
             let data = fs.readFileSync(zipFilePath);
             let zip = await this._jsZip.loadAsync(data);
-            let gameName = zipFileName.split('.')[0];
+            let gameName = zipFileName.split('.')[0].toLowerCase();
             let gameFiles = {};
 
             await Promise.all(Object.keys(zip.files).map(async fileName => {
