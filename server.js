@@ -35,20 +35,21 @@ Logger.debug("server initialized successfully");
 app.use(express.static(settings.get("public_dir")));
 
 app.get('/games-info', (req, res) => {
+    const gamesData = gameLoader.gamesData;
     const fields = req.query.x ? req.query.x.split(',') : null;
-    const specificGameKey = Object.keys(req.query).find(key => key !== 'x' && gameLoader.gamesData[key]);
-    const specificGameData = specificGameKey ? gameLoader.gamesData[specificGameKey] : null;
+    const specificGameKey = Object.keys(req.query).find(key => key !== 'x' && gamesData[key]);
+    const specificGameData = specificGameKey ? gamesData[specificGameKey] : null;
 
     let gameInfos = [];
 
     if (fields) {
-        // Traitement pour tous les jeux
-        gameInfos = Object.values(gameLoader.gamesData).map(game => getGameInfo(game, fields));
+        gameInfos = Object.values(gamesData).map(game => getGameInfo(game, fields));
     } else if (specificGameData) {
-        // Traitement pour un jeu spécifique
-        gameInfos = [getGameInfo(specificGameData, Object.keys(req.query[specificGameKey].split(',')))];
+        const requestedFields = req.query[specificGameKey] ? req.query[specificGameKey].split(',') : [];
+        return res.json(getGameInfo(specificGameData, requestedFields));
+    } else if (specificGameKey) {
+        return res.json({});
     }
-
     res.json(gameInfos);
 });
 

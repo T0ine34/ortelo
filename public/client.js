@@ -213,7 +213,7 @@ function fetchGames() {
             games.forEach((game, index) => {
                 // Create a new element for each game
                 const carouselItem = document.createElement('div');
-                carouselItem.addEventListener('click', () => PlayGame(game.name));  
+                carouselItem.addEventListener('click', () => PlayGame(game.name));
                 carouselItem.className = `carousel-item ${index === 0 ? 'active' : ''}`;
                 carouselItem.innerHTML = `
                     <img src="${game.icon}" class="d-block mx-auto" alt="${game.name}" style="max-width: 100%; height: auto;">
@@ -237,6 +237,31 @@ function fetchGames() {
         });
 }
 function PlayGame(name) {
-    const container = document.getElementById('games_container');
-    container.innerHTML = '';
+    fetch(`/games-info?${name}=html,css,js`)
+        .then(response => response.json())
+        .then(game => {
+            const container = document.getElementById('games_container');
+            if (game.html) {
+                const htmlString = new TextDecoder('utf-8').decode(new Uint8Array(game.html.data));
+                const parser = new DOMParser();
+                const doc = parser.parseFromString(htmlString, 'text/html');
+                doc.querySelectorAll('link[href], script[src]').forEach(el => el.remove());
+                container.innerHTML = doc.body.innerHTML;
+            }
+
+            if (game.css) {
+                const cssStyle = document.createElement('style');
+                cssStyle.innerHTML = new TextDecoder('utf-8').decode(new Uint8Array(game.css.data));
+                container.appendChild(cssStyle);
+            }
+
+            if (game.js) {
+                const scriptTag = document.createElement('script');
+                scriptTag.textContent = new TextDecoder('utf-8').decode(new Uint8Array(game.js.data));
+                container.appendChild(scriptTag);
+            }
+        })
+        .catch(error => {
+            console.error(`Erreur lors du chargement du ${name}:`, error);
+        });
 }
