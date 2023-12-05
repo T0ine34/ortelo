@@ -35,22 +35,40 @@ Logger.debug("server initialized successfully");
 app.use(express.static(settings.get("public_dir")));
 
 app.get('/games-info', (req, res) => {
-    const fields = req.query.fields ? req.query.fields.split(',') : [];
-    const gameInfos = Object.values(gameLoader.gamesData).map(game => {
-        let info = {};
-        fields.forEach(field => {
-            if (field === 'icon' && game.iconData) {
-                info[field] = game.iconData ? `data:image/png;base64,${game.iconData.toString('base64')}` : null
-            } else if (field === 'name' && game.name) {
-                info[field] = game.name;
-            } else if (game[field]) {
-                info[field] = game[field];
-            }
-        });
-        return info;
-    });
+    const fields = req.query.x ? req.query.x.split(',') : null;
+    const specificGameKey = Object.keys(req.query).find(key => key !== 'x' && gameLoader.gamesData[key]);
+    const specificGameData = specificGameKey ? gameLoader.gamesData[specificGameKey] : null;
+
+    let gameInfos = [];
+
+    if (fields) {
+        // Traitement pour tous les jeux
+        gameInfos = Object.values(gameLoader.gamesData).map(game => getGameInfo(game, fields));
+    } else if (specificGameData) {
+        // Traitement pour un jeu spécifique
+        gameInfos = [getGameInfo(specificGameData, Object.keys(req.query[specificGameKey].split(',')))];
+    }
+
     res.json(gameInfos);
 });
+
+function getGameInfo(game, fields) {
+    let info = {};
+    fields.forEach(field => {
+        if (field === 'icon' && game.iconData) {
+            info[field] = `data:image/png;base64,${game.iconData.toString('base64')}`;
+        } else if (field === 'name' && game.name) {
+            info[field] = game.name;
+        } else if (field === 'html' && game.htmlData) {
+            info[field] = game.htmlData;
+        } else if (field === 'css' && game.cssData) {
+            info[field] = game.cssData;
+        } else if (field === 'js' && game.jsData) {
+            info[field] = game.jsData;
+        }
+    });
+    return info;
+}
 
 set_redirections();
 

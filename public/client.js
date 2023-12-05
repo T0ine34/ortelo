@@ -236,3 +236,7 @@ function fetchGames() {
             console.error('Erreur lors du chargement des jeux:', error);
         });
 }
+function PlayGame(name) {
+    const container = document.getElementById('games_container');
+    container.innerHTML = '';
+}
