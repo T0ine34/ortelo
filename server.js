@@ -26,7 +26,7 @@ Logger.debug("server initialized successfully");
 
 // -------------------------------------------------------------------- SERVER CONFIGURATION
 
-app.use(express.static(settings.get("public_dir")));
+//app.use(express.static(settings.get("public_dir")));
 
 app.get('/games-info', (req, res) => {
     const gamesData = gameLoader.gamesData;
@@ -67,6 +67,11 @@ function getGameInfo(game, fields) {
 
 set_redirections();
 
+// app.get('/*',(req, res) => {
+//     let abs_url = __dirname + '/' + build_url(req.path, req);
+//     res.sendFile(abs_url);
+// });
+
 
 let rooms = new Map();
 let general = set_rooms(); //set default rooms, and get the main room name
@@ -104,6 +109,10 @@ function is_mobile(rawHeaders){
     return getPlatform(rawHeaders) == "Android" || getPlatform(rawHeaders) == "iPhone" || getPlatform(rawHeaders) == "iPad";
 }
 
+function is_desktop(rawHeaders){
+    return getPlatform(rawHeaders) == "Windows" || getPlatform(rawHeaders) == "Macintosh" || getPlatform(rawHeaders) == "Linux";
+}
+
 /**
  * @description Build the url to redirect to, depending on the device<br/>
  * the input url is like /home or /404, and the output url is like /mobile/home or /desktop/404
@@ -111,98 +120,72 @@ function is_mobile(rawHeaders){
  * @param   {any} req
  * @returns {string} the url to redirect to
  */
-function build_url(baseurl, req){
-    let foldername = baseurl.split('/')[0]
-    let output = "";
-
-    let common_folder_content = fs.readdirSync(__dirname + '/' + settings.get("public_common_dir"));
-
-    if(!baseurl.startsWith('/')){
-        baseurl = '/' + baseurl;
+function get_platform_folder(rawHeaders){
+    if(is_mobile(rawHeaders)){
+        return settings.get("public_mobile_dir");
     }
-
-    if(common_folder_content.includes(baseurl.split('/')[1])){
-        output = settings.get("public_common_dir") + baseurl
-    }
-    else if(is_mobile(req.rawHeaders)){
-        output = settings.get("public_mobile_dir") + baseurl
+    else if(is_desktop(rawHeaders)){
+        return settings.get("public_desktop_dir");
     }
     else{
-        output = settings.get("public_desktop_dir") +  baseurl
+        throw new Error("unknown platform" + getPlatform(rawHeaders));
     }
-    return output;
+}
+
+function is_common_ressource(url){
+    let common_ressources = fs.readdirSync(settings.get("public_common_dir"));
+    let foldername = url.split("/")[1];
+    return common_ressources.includes(foldername);
+}
+
+function build_url(req){
+    let url = req.path;
+    if(is_common_ressource(url)){
+        return settings.get("public_common_dir") + url;
+    }
+    else{
+        return get_platform_folder(req.rawHeaders) + url;
+    }
+}
+
+function is_special_url(url, method){
+    return settings.has("paths." + method) && url in settings.get("paths." + method);
+}
+
+function get_special_url(url, method){
+    return settings.get("paths." + method+'.'+url+'.path');
+}
+
+function get_404_url(rawHeaders){
+    return get_platform_folder(rawHeaders) + '/' + settings.get("default_page");
 }
 
 function set_redirections(){
-
-    Logger.info("Setting up redirections");
-
-    let resume = "redirected path :\n";
-
-    let excluded_paths = [];
-    for(let path in settings.get("paths")){
-        excluded_paths.push("/"+path);
-        switch(settings.get("paths." + path+".mode")){
-            case "GET":
-                if(settings.has("paths." + path+".recursive") && settings.get("paths." + path+".recursive")){
-                    //if the path is recursive, redirect all the subpaths to the same path
-                    app.get("/"+path+"/*", (req, res) => {
-                        let url = build_url(settings.get("paths." + path+".path") + req.path.substring(path.length+1), req);
-                        let abs_url = __dirname + '/' + url;
-                        res.sendFile(abs_url);
-                    });
-                    resume += "GET " + path + "/* -> " + settings.get("paths." + path+".path") + "*\n";
+    app.get('*',(req, res) => { //catch all GET requests
+        if(is_special_url(req.path, "GET")){
+            let url = get_special_url(req.path, "GET");
+            res.sendFile(__dirname+ '/' + url, (err) => {
+                if(err){
+                    res.status(404).sendFile(__dirname+ '/' + get_404_url(req.rawHeaders));
+                }else{
+                    Logger.debug("a special url was requested : " + req.path + " -> " + url);
                 }
-                else{
-                    app.get("/"+path, (req, res) => {
-                        let url = build_url(settings.get("paths." + path+".path"), req);
-                        let abs_url = __dirname + '/' + url;
-                        res.sendFile(abs_url);
-                    });
-                    resume += "GET " + path + " -> " + settings.get("paths." + path+".path") + "\n";
-                } 
-                break;
-            case "POST":
-                if(settings.has("paths." + path+".recursive") && settings.get("paths." + path+".recursive")){
-                    //if the path is recursive, redirect all the subpaths to the same path
-                    app.post("/"+path+"/*", (req, res) => {
-                        let url = build_url(settings.get("paths." + path+".path") + req.path.substring(path.length+1), req);
-                        let abs_url = __dirname + '/' + url;
-                        res.sendFile(abs_url);
-                    });
-                    resume += "POST " + path + "/* -> " + settings.get("paths." + path+".path") + "*\n";
-                }
-                else{
-                    app.post("/"+path, (req, res) => {
-                        let url = build_url(settings.get("paths." + path+".path"), req);
-                        let abs_url = __dirname + '/' + url;
-                        res.sendFile(abs_url);
-                    });
-                    resume += "POST " + path + " -> " + settings.get("paths." + path+".path") + "\n";
-                }
-                break;
-            default:
-                Logger.warning("\tunknown mode for path " + path + " : " + settings.get("paths." + path+".mode")+"; ignoring");
+            });
         }
-    }
+        else{
+            let url = build_url(req);
 
-    if(settings.has("default_path")){
-        //redirect everything except the excluded paths to the default path
-        app.use('*', (req, res, next) => {
-            if(excluded_paths.includes(req.path)){
-                next();
-            }
-            else{
-                res.status(404).sendFile(__dirname + '/' + settings.get("default_path"));
-            }
-        });
-        resume += "* -> " + settings.get("default_path") + "\n";
-    }
-    else{
-        Logger.warning("\tNo default path specified, a 404 error will be returned for every path except the explitly redirected ones");
-    }
-    Logger.fine("Redirections set up successfully");
-    Logger.info(resume.substring(0, resume.length-1)); //removing the last \n
+            res.sendFile(__dirname+ '/' + url, (err) => {
+                if(err){
+                    res.status(404).sendFile(__dirname+ '/' + get_404_url(req.rawHeaders));
+                }
+                else{
+                    Logger.debug("a common url was requested : " + req.path + " -> " + url);
+                }
+
+            });
+        }
+    });
 }
 
 function set_rooms(){

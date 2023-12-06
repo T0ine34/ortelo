@@ -142,29 +142,51 @@
             "required" : true
         },
         "paths" : {
-            "type" : "undefined_dict",
+            "type" : "dict",
             "required" : true,
-            "min_length" : 0,
-            "max_length" : null,
-            "content_template" : {
-                "type" : "dict",
-                "required" : true,
-                "content" : {
-                    "path" : {
-                        "type" : "string",
-                        "min_length" : null,
-                        "max_length" : null,
-                        "required" : true
-                    },
-                    "mode" : {
-                        "type" : "string",
-                        "min_length" : 2,
-                        "max_length" : null,
+            "content" : {
+                "GET" : {
+                    "type" : "undefined_dict",
+                    "required" : true,
+                    "min_length" : 0,
+                    "max_length" : null,
+                    "content_template" : {
+                        "type" : "dict",
                         "required" : true,
-                        "values" : [
-                            "GET",
-                            "POST"
-                        ]
+                        "content" : {
+                            "path" : {
+                                "type" : "string",
+                                "min_length" : null,
+                                "max_length" : null,
+                                "required" : true
+                            },
+                            "use_subdir" : {
+                                "type" : "boolean",
+                                "required" : true
+                            }
+                        }
+                    }
+                },
+                "POST" : {
+                    "type" : "undefined_dict",
+                    "required" : true,
+                    "min_length" : 0,
+                    "max_length" : null,
+                    "content_template" : {
+                        "type" : "dict",
+                        "required" : true,
+                        "content" : {
+                            "path" : {
+                                "type" : "string",
+                                "min_length" : null,
+                                "max_length" : null,
+                                "required" : true
+                            },
+                            "use_subdir" : {
+                                "type" : "boolean",
+                                "required" : true
+                            }
+                        }
                     }
                 }
             }
