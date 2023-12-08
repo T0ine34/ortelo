@@ -1,15 +1,15 @@
 // -------------------------------------------------------------------- REQUIRED MODULES
 
-const http                            = require('http');
-const express= require('express');
-const settings                          = require('./server_modules/settings/main.js');
-const Logger                            = require('./server_modules/logs/logger');
-const Database                          = require('./server_modules/database/database.js');
-const { parseCMD }                      = require('./server_modules/cmd/main.js');
-const { User }                          = require('./server_modules/user/main.js');
-const { EVENTS, Room, CIO }             = require('./server_modules/events/main.js');
-const { GameLoader }                    = require('./server_modules/loader/loader.js');
-const fs = require('fs');
+const http                                                        = require('http');
+const express                                                     = require('express');
+const settings                                                    = require('./server_modules/settings/main.js');
+const Logger                                                      = require('./server_modules/logs/logger');
+const Database                                                    = require('./server_modules/database/database.js');
+const { parseCMD }                                                = require('./server_modules/cmd/main.js');
+const { User }                                                    = require('./server_modules/user/main.js');
+const { EVENTS, Room, CIO }                                       = require('./server_modules/events/main.js');
+const { GameLoader }                                              = require('./server_modules/loader/loader.js');
+const { get_404_url, is_special_url, get_special_url, build_url } = require('./server_modules/redirection/main.js');
 
 // -------------------------------------------------------------------- SERVER INITIALIZATION
 Logger.debug("intitializing express app");
@@ -82,84 +82,13 @@ async function loadGames() {
     await gameLoader.loadAllGames();
 }
 
-function getPlatform(rawHeaders){
-    let platform = "unknown";
-    if(rawHeaders.includes('"Android"')){
-        platform = "Android";
-    }
-    else if(rawHeaders.includes('"iPhone"')){
-        platform = "iPhone";
-    }
-    else if(rawHeaders.includes('"iPad"')){
-        platform = "iPad";
-    }
-    else if(rawHeaders.includes('"Windows"')){
-        platform = "Windows";
-    }
-    else if(rawHeaders.includes('"Macintosh"')){
-        platform = "Macintosh";
-    }
-    else if(rawHeaders.includes('"Linux"')){
-        platform = "Linux";
-    }
-    return platform;
-}
-
-function is_mobile(rawHeaders){
-    return getPlatform(rawHeaders) == "Android" || getPlatform(rawHeaders) == "iPhone" || getPlatform(rawHeaders) == "iPad";
-}
-
-function is_desktop(rawHeaders){
-    return getPlatform(rawHeaders) == "Windows" || getPlatform(rawHeaders) == "Macintosh" || getPlatform(rawHeaders) == "Linux";
-}
-
 /**
- * @description Build the url to redirect to, depending on the device<br/>
- * the input url is like /home or /404, and the output url is like /mobile/home or /desktop/404
- * @param   {string} baseurl 
- * @param   {any} req
- * @returns {string} the url to redirect to
+ * @description sets all redirections of the server, incuding special urls
+ * @see {@link is_special_url}
+ * @see {@link get_special_url}
+ * @see {@link build_url}
+ * @see {@link get_404_url}
  */
-function get_platform_folder(rawHeaders){
-    if(is_mobile(rawHeaders)){
-        return settings.get("public_mobile_dir");
-    }
-    else if(is_desktop(rawHeaders)){
-        return settings.get("public_desktop_dir");
-    }
-    else{
-        throw new Error("unknown platform" + getPlatform(rawHeaders));
-    }
-}
-
-function is_common_ressource(url){
-    let common_ressources = fs.readdirSync(settings.get("public_common_dir"));
-    let foldername = url.split("/")[1];
-    return common_ressources.includes(foldername);
-}
-
-function build_url(req){
-    let url = req.path;
-    if(is_common_ressource(url)){
-        return settings.get("public_common_dir") + url;
-    }
-    else{
-        return get_platform_folder(req.rawHeaders) + url;
-    }
-}
-
-function is_special_url(url, method){
-    return settings.has("paths." + method) && url in settings.get("paths." + method);
-}
-
-function get_special_url(url, method){
-    return settings.get("paths." + method+'.'+url+'.path');
-}
-
-function get_404_url(rawHeaders){
-    return get_platform_folder(rawHeaders) + '/' + settings.get("default_page");
-}
-
 function set_redirections(){
     app.get('*',(req, res) => { //catch all GET requests
         if(is_special_url(req.path, "GET")){
