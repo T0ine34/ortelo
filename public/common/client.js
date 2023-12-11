@@ -23,12 +23,6 @@ csocket.emit(EVENTS.MISC.USERNAME, Date.now(), username);                       
 fetchGames();
 
 csocket.on(EVENTS.CHAT.USER_JOINED, (timestamp, name) => {                                //catching the newUser event, triggered by the server when a new user joins the chat
-    // let item = document.createElement('li');
-    // item.textContent = name + " a rejoint le chat ! ";
-    // item.innerHTML += "&#128075;";
-    // item.innerHTML += format_date(timestamp);
-    // messages.appendChild(item);
-    // window.scrollTo(0, document.body.scrollHeight);
     receive_message(timestamp, name, "a rejoint le chat ! &#128075;"); //&#128075; = emoji "person raising hand"
 });
 
@@ -37,54 +31,23 @@ csocket.on(EVENTS.CHAT.MESSAGE, (timestamp, _username, msg) => {                
 });
 
 csocket.on(EVENTS.CHAT.USER_LEFT, (timestamp, _username) => {                   //catching the new_message event, triggered by the server when a user sends a message
-    // let item = document.createElement('li');
-    // item.textContent = username + " a quitté le chat ! ";
-    // item.innerHTML += "&#128078;";
-    // let d = new Date(timestamp);
-    // item.innerHTML += format_date(timestamp);
-    // messages.appendChild(item);
-    // window.scrollTo(0, document.body.scrollHeight);
     receive_message(timestamp, _username, "a quitté le chat ! &#128078;"); //&#128078; = emoji "person leaving"
 });
 
 csocket.on(EVENTS.SYSTEM.ERROR, (timestamp, msg) => {                   //catching the new_message event, triggered by the server when a user sends a message
-    // let item = document.createElement('li');
-    // item.textContent = "Erreur : " + msg;
-    // let d = new Date(timestamp);
-    // item.innerHTML += format_date(timestamp);
-    // messages.appendChild(item);
-    // window.scrollTo(0, document.body.scrollHeight);
     receive_message(timestamp, "Error", msg);
 });
 
 csocket.on(EVENTS.SYSTEM.WARNING, (timestamp, msg) => {                   //catching the new_message event, triggered by the server when a user sends a message
-    // let item = document.createElement('li');
-    // item.textContent = "Warning : " + msg;
-    // let d = new Date(timestamp);
-    // item.innerHTML += format_date(timestamp);
-    // messages.appendChild(item);
-    // window.scrollTo(0, document.body.scrollHeight);
     receive_message(timestamp, "Warning", msg);
 });
 
 
 csocket.on(EVENTS.SYSTEM.BROADCAST, (timestamp, msg) => {              //catching the new_message event, triggered by the server when a user sends a message
-    // let item = document.createElement('li');
-    // item.textContent = "Broadcast : " + msg;
-    // let d = new Date(timestamp);
-    // item.innerHTML += format_date(timestamp);
-    // messages.appendChild(item);
-    // window.scrollTo(0, document.body.scrollHeight);
     receive_message(timestamp, "General Information", msg);
 });
 
 csocket.on(EVENTS.SYSTEM.INFO, (timestamp, msg) => {                   //catching the new_message event, triggered by the server when a user sends a message
-    // let item = document.createElement('li');
-    // item.textContent = "Info : " + msg;
-    // let d = new Date(timestamp);
-    // item.innerHTML += format_date(timestamp);
-    // messages.appendChild(item);
-    // window.scrollTo(0, document.body.scrollHeight);
     receive_message(timestamp, "Information", msg);
 });
 
@@ -180,25 +143,6 @@ let receive_message = (timestamp, username, msg) => {
     messages.appendChild(item);
     item.scrollIntoView(); 
 }
-
-/*function fetchGames () {
-    fetch('/games-info')
-        .then(response => response.json())
-        .then(games => {
-            const gamesListContainer = document.getElementById('games_container');
-            gamesListContainer.innerHTML = '';
-
-            games.forEach(game => {
-                const gameElement = document.createElement('div');
-                gameElement.innerHTML = `<h3>${game.name}</h3>
-                                         <img src="${game.icon}" alt="${game.name}" onerror="this.src='/assets/images/default_game_icon.png'">`;
-                gamesListContainer.appendChild(gameElement);
-            });
-        })
-        .catch(error => {
-            console.error('Erreur lors du chargement des jeux:', error);
-        });
-}*/
 
 
 function fetchGames() {
