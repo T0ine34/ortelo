@@ -9,7 +9,7 @@ const { parseCMD }                                                = require('./s
 const { User }                                                    = require('./server_modules/user/main.js');
 const { EVENTS, Room, CIO }                                       = require('./server_modules/events/main.js');
 const { GameLoader }                                              = require('./server_modules/loader/loader.js');
-const { get_404_url, is_special_url, get_special_url, build_url } = require('./server_modules/redirection/main.js');
+const { get_404_url, is_special_url, get_special_url, build_url, getPlatform } = require('./server_modules/redirection/main.js');
 
 // -------------------------------------------------------------------- SERVER INITIALIZATION
 Logger.debug("intitializing express app");
@@ -91,6 +91,7 @@ async function loadGames() {
  */
 function set_redirections(){
     app.get('*',(req, res) => { //catch all GET requests
+        logger.debug("a "+getPlatform(req.rawHeaders)+" user requested " + req.path);
         if(is_special_url(req.path, "GET")){
             let url = get_special_url(req.path, "GET");
             res.sendFile(__dirname+ '/' + url, (err) => {

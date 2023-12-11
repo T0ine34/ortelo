@@ -1,11 +1,23 @@
 settings = require('../settings/main.js');
 const fs = require('fs');
+logger = require('../logs/logger.js');
 
 /**
  * @description Contain functions to manage redirections of the server
  * @module Redirection
  * @category Server
  */
+
+function getUserAgent(rawHeaders){
+    let userAgent = "";
+    for(let i = 0; i < rawHeaders.length; i++){
+        if(rawHeaders[i] == "User-Agent"){
+            userAgent = rawHeaders[i+1];
+            break;
+        }
+    }
+    return userAgent;
+}
 
 /**
  * @description returns the platform of the client
@@ -16,25 +28,33 @@ const fs = require('fs');
  * @see {@link is_desktop}
  */
 function getPlatform(rawHeaders){
+
+    let userAgent = getUserAgent(rawHeaders);
+
     let platform = "unknown";
-    if(rawHeaders.includes('"Android"')){
+    if(userAgent.includes("Android")){
         platform = "Android";
     }
-    else if(rawHeaders.includes('"iPhone"')){
+    else if(userAgent.includes("iPhone")){ //TODO: check on apple devices
         platform = "iPhone";
     }
-    else if(rawHeaders.includes('"iPad"')){
+    else if(userAgent.includes("iPad")){   //TODO: check on apple devices
         platform = "iPad";
     }
-    else if(rawHeaders.includes('"Windows"')){
+    else if(userAgent.includes("Windows")){
         platform = "Windows";
     }
-    else if(rawHeaders.includes('"Macintosh"')){
+    else if(userAgent.includes("Macintosh")){ //TODO: check on apple devices
         platform = "Macintosh";
     }
-    else if(rawHeaders.includes('"Linux"')){
+    else if(userAgent.includes("Linux")){
         platform = "Linux";
     }
+    else{
+        logger.error("unknown platform : " + userAgent);
+        throw new Error("unknown platform : " + userAgent);
+    }
+    
     return platform;
 }
 
@@ -72,7 +92,8 @@ function get_platform_folder(rawHeaders){
         return settings.get("public_desktop_dir");
     }
     else{
-        throw new Error("unknown platform" + getPlatform(rawHeaders));
+        logger.error("unknown platform : " + getPlatform(rawHeaders));
+        throw new Error("unknown platform : " + getPlatform(rawHeaders));
     }
 }
 
