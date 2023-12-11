@@ -54,7 +54,7 @@ csocket.on(EVENTS.SYSTEM.INFO, (timestamp, msg) => {                   //catchin
 
 let form = document.querySelector('#message_form');
 let messages = document.querySelector('#messages');
-let input = document.querySelector('#send_message');
+let input = document.querySelector('#sendMessage');
 
 let history = [];
 let history_index = 0;
@@ -89,7 +89,7 @@ input.addEventListener('keydown', function(e) {
 form.addEventListener('submit', function(e) {                   //this is triggered when the user click on "Send"
     e.preventDefault();
     if (input.value){
-        csocket.emit(EVENTS.CHAT.MESSAGE, Date.now(), username, input.value);     //sending the send_message event to the server, with the username and the message as parameters
+        csocket.emit(EVENTS.CHAT.MESSAGE, Date.now(), username, input.value);     //sending the sendMessage event to the server, with the username and the message as parameters
         history.push(input.value);
         history_index = history.length;
 
@@ -149,31 +149,21 @@ function fetchGames() {
     fetch('/games-info?x=name,icon')
         .then(response => response.json())
         .then(games => {
-            const carouselInner = document.querySelector('#gameCarousel .carousel-inner');
-            const carouselIndicators = document.querySelector('#gameCarousel .carousel-indicators');
-            carouselInner.innerHTML = ''; // Erase the existing content
-            carouselIndicators.innerHTML = ''; // Erase the existing indicators
+            let gameContainer = document.querySelector('.gamesContainer');
+            gameContainer.innerHTML = ''; // Erase the existing indicators
 
             games.forEach((game, index) => {
-                // Create a new element for each game
-                const carouselItem = document.createElement('div');
-                carouselItem.addEventListener('click', () => PlayGame(game.name));
-                carouselItem.className = `carousel-item ${index === 0 ? 'active' : ''}`;
-                carouselItem.innerHTML = `
-                    <img src="${game.icon}" class="d-block mx-auto" alt="${game.name}" style="max-width: 100%; height: auto;">
-                    <div class="carousel-caption d-none d-md-block">
-                        <h5>${game.name}</h5>
-                    </div>
-                `;
+                for(let i = 0; i < 50; i++){
+                    // Create a new element for each game
+                    let Item = document.createElement('div');
+                    Item.addEventListener('click', () => PlayGame(game.name));
+                    Item.classList.add('GameItem');
+                    Item.innerHTML = `
+                        <img src="${game.icon}" alt="${game.name}">
+                        <h5>${game.name}</h5>`;
 
-                carouselInner.appendChild(carouselItem);
-
-                // Add an indicator for each game
-                const indicator = document.createElement('li');
-                 indicator.setAttribute('data-target', '#gameCarousel');
-                indicator.setAttribute('data-slide-to', index.toString());
-                if(index === 0) indicator.className = 'active';
-                carouselIndicators.appendChild(indicator);
+                    gameContainer.appendChild(Item);
+                }
             });
         })
         .catch(error => {
@@ -184,7 +174,7 @@ function PlayGame(name) {
     fetch(`/games-info?${name}=html,css,js`)
         .then(response => response.json())
         .then(game => {
-            const container = document.getElementById('games_container');
+            const container = document.querySelector('.gamesContainer');
             if (game.html) {
                 const htmlString = new TextDecoder('utf-8').decode(new Uint8Array(game.html.data));
                 const parser = new DOMParser();
