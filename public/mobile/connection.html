@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Ortelo - Connexion</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" type="image/x-icon" href="assets/images/ortelo_logo.png">
+    <link rel="stylesheet" href="bootstrap/css/bootstrap.min.css">
+    <link rel="stylesheet" href="stylesheets/style.css">
+    <link rel="stylesheet" href="stylesheets/login.css">
+</head>
+<body>
+    <div class="container-fluid" id="app_container">
+        <div class="banner">
+            <img class="app_banner" src="assets/images/ortelo_banner.png" alt="App Banner">
+        </div>
+        <div class="banner d-flex align-items-center justify-content-center h-100">
+            <div class="col-12 col-md-6">
+                <div id="login_section">
+                    <h2>Connexion</h2>
+                    <form id="login_form">
+                        <div class="form-group">
+                            <label for="username">Nom d'utilisateur</label>
+                            <input type="text" class="form-control" id="username" name="username" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="password">Mot de passe</label>
+                            <input type="password" class="form-control" id="password" name="password" required>
+                        </div>
+                        <div class="form-group form-check">
+                            <input type="checkbox" class="form-check-input" id="remember_me" name="remember_me">
+                            <label class="form-check-label" for="remember_me">Rester connecté</label>
+                        </div>
+                        <button type="submit" class="btn btn-login">Se connecter</button>
+                    </form>
+                    <button type="button" onclick="showSignup()">Créer un compte</button>
+                    <button type="button" onclick="showForgotPassword()">Mot de passe oublié ?</button>
+                </div>
+
+                <div id="signup_section" style="display: none;">
+                    <h2>Création de compte</h2>
+                    <form id="signup_form">
+                        
+
+                        <button type="submit">Créer un compte</button>
+                    </form>
+                    <button type="button" onclick="showLogin()">Retour à la connexion</button>
+                </div>
+
+                <div id="forgot_password_section" style="display: none;">
+                    <h2>Mot de passe oublié</h2>
+                    <form id="forgot_password_form">
+                        
+                        <button type="submit">Réinitialiser le mot de passe</button>
+                    </form>
+                    <button type="button" onclick="showLogin()">Retour à la connexion</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Fonction pour afficher le formulaire de connexion
+        function showLogin() {
+            document.getElementById("login_section").style.display = "block";
+            document.getElementById("signup_section").style.display = "none";
+            document.getElementById("forgot_password_section").style.display = "none";
+        }
+
+        // Fonction pour afficher le formulaire de création de compte
+        function showSignup() {
+            document.getElementById("login_section").style.display = "none";
+            document.getElementById("signup_section").style.display = "block";
+            document.getElementById("forgot_password_section").style.display = "none";
+        }
+
+        // Fonction pour afficher le formulaire de réinitialisation de mot de passe
+        function showForgotPassword() {
+            document.getElementById("login_section").style.display = "none";
+            document.getElementById("signup_section").style.display = "none";
+            document.getElementById("forgot_password_section").style.display = "block";
+        }
+
+        // Fonction pour afficher ou masquer le mot de passe lors de la création de compte
+        document.getElementById("show_signup_password").addEventListener('click', function () {
+            const passwordInput = document.getElementById('signup_password');
+            if (passwordInput.type === 'password') {
+                passwordInput.type = 'text';
+                this.textContent = 'Masquer';
+            } else {
+                passwordInput.type = 'password';
+                this.textContent = 'Afficher';
+            }
+        });
+
+        document.getElementById("show_confirm_password").addEventListener('click', function () {
+        const confirmPasswordInput = document.getElementById('confirm_password');
+        if (confirmPasswordInput.type === 'password') {
+            confirmPasswordInput.type = 'text';
+            this.textContent = 'Masquer';
+        } else {
+            confirmPasswordInput.type = 'password';
+            this.textContent = 'Afficher';
+        }
+});
+
+    </script>
+</body>
+</html>
