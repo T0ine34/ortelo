@@ -2,6 +2,7 @@ const fs = require('fs');
 const JSZip = require('jszip');
 const path = require('path');
 const { Game } = require('./game');
+setttings = require('../settings/main.js');
 
 /**
  * @module Loader
@@ -16,7 +17,7 @@ const { Game } = require('./game');
  */
 class GameLoader {
 
-    constructor(pathToGames="./public/games/") {
+    constructor(pathToGames="./"+settings.get("public_common_dir")+"/games/") {
         this._pathToGames = pathToGames;
         this._jsZip = new JSZip();
         this._gamesData = {};

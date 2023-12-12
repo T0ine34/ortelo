@@ -1,3 +1,6 @@
+const { set } = require('../settings/main');
+
+settings = require('../settings/main.js');
 
 /**
  * @description Contains the events that can be sent between the client and the server.
@@ -123,6 +126,6 @@ class EVENT{
 let EVENTS = null;
 
 //we are in the server
-EVENTS = new EVENTS_NAMESPACE(require('../../public/assets/ressources/events.json'));
+EVENTS = new EVENTS_NAMESPACE(require("../../"+settings.get("public_common_dir") + "/assets/ressources/events.json"));
 Object.freeze(EVENTS);
 module.exports = { EVENTS, EVENT, EVENTS_NAMESPACE };

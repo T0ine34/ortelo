@@ -6,7 +6,7 @@
  * if(onMobile()){
  *    // Do something
  * }
- * @private internal use only
+ * @private
  */
 function onMobile(){
     let check = false;
@@ -17,7 +17,7 @@ function onMobile(){
 /**
  * Redirect to a page
  * @param {string} url the url to redirect to
- * @private internal use only
+ * @private
  */
 function _redirect(url){
     window.location.replace(url);

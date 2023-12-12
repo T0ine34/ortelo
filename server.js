@@ -1,16 +1,18 @@
 // -------------------------------------------------------------------- REQUIRED MODULES
 
-const http                            = require('http');
-const express= require('express');
-const settings                          = require('./server_modules/settings/main.js');
-const Logger                            = require('./server_modules/logs/logger');
-const Database                          = require('./server_modules/database/database.js');
-const { parseCMD }                      = require('./server_modules/cmd/main.js');
-const { User }                          = require('./server_modules/user/main.js');
-const { EVENTS, Room, CIO }             = require('./server_modules/events/main.js');
-const { GameLoader }                    = require('./server_modules/loader/loader.js');
+
 const fs = require('fs');
 const { TextDecoder } = require('util');
+const http                                                        = require('http');
+const express                                                     = require('express');
+const settings                                                    = require('./server_modules/settings/main.js');
+const Logger                                                      = require('./server_modules/logs/logger');
+const Database                                                    = require('./server_modules/database/database.js');
+const { parseCMD }                                                = require('./server_modules/cmd/main.js');
+const { User }                                                    = require('./server_modules/user/main.js');
+const { EVENTS, Room, CIO }                                       = require('./server_modules/events/main.js');
+const { GameLoader }                                              = require('./server_modules/loader/loader.js');
+const { get_404_url, is_special_url, get_special_url, build_url, getPlatform } = require('./server_modules/redirection/main.js');
 
 // -------------------------------------------------------------------- SERVER INITIALIZATION
 Logger.debug("intitializing express app");
@@ -95,6 +97,11 @@ function getGameInfo(game, fields) {
 
 set_redirections();
 
+// app.get('/*',(req, res) => {
+//     let abs_url = __dirname + '/' + build_url(req.path, req);
+//     res.sendFile(abs_url);
+// });
+
 
 let rooms = new Map();
 let general = set_rooms(); //set default rooms, and get the main room name
@@ -106,94 +113,39 @@ async function loadGames() {
 }
 
 /**
- * @description Build the url to redirect to, depending on the device<br/>
- * the input url is like /home or /404, and the output url is like /mobile/home or /desktop/404
- * @param   {string} baseurl 
- * @param   {any} req
- * @returns {string} the url to redirect to
+ * @description sets all redirections of the server, incuding special urls
+ * @see {@link is_special_url}
+ * @see {@link get_special_url}
+ * @see {@link build_url}
+ * @see {@link get_404_url}
  */
-function build_url(baseurl, req){
-    let foldername = baseurl.split('/')[0]
-    let output = "";
-    if(foldername in fs.readdirSync(__dirname + '/' + settings.get("public_common_dir"))){
-        output = settings.get("public_common_url") + '/' + baseurl
-    }
-    else if(req.headers.device.type.toUpperCase() == "PHONE"){
-        output = settings.get("public_mobile_url") + '/' + baseurl
-    }
-    else{
-        output = settings.get("public_desktop_url") + '/' + baseurl
-    }
-    
-    Logger.info("creating url for " + baseurl + " : " + output);
-}
-
 function set_redirections(){
-
-    Logger.info("Setting up redirections");
-
-    let resume = "redirected path :\n";
-
-    let excluded_paths = [];
-    for(let path in settings.get("paths")){
-        excluded_paths.push("/"+path);
-        switch(settings.get("paths." + path+".mode")){
-            case "GET":
-                if(settings.has("paths." + path+".recursive") && settings.get("paths." + path+".recursive")){
-                    //if the path is recursive, redirect all the subpaths to the same path
-                    app.get("/"+path+"/*", (req, res) => {
-                        let url = build_url(settings.get("paths." + path+".path") + req.path.substring(path.length+1), req);
-                        res.sendFile(url);
-                    });
-                    resume += "GET " + path + "/* -> " + settings.get("paths." + path+".path") + "*\n";
+    app.get('*',(req, res) => { //catch all GET requests
+        logger.debug("a "+getPlatform(req.rawHeaders)+" user requested " + req.path);
+        if(is_special_url(req.path, "GET")){
+            let url = get_special_url(req.path, "GET");
+            res.sendFile(__dirname+ '/' + url, (err) => {
+                if(err){
+                    res.status(404).sendFile(__dirname+ '/' + get_404_url(req.rawHeaders));
+                }else{
+                    Logger.debug("a special url was requested : " + req.path + " -> " + url);
                 }
-                else{
-                    app.get("/"+path, (req, res) => {
-                        let url = build_url(settings.get("paths." + path+".path"), req);
-                        res.sendFile(url);
-                    });
-                    resume += "GET " + path + " -> " + settings.get("paths." + path+".path") + "\n";
-                }
-                break;
-            case "POST":
-                if(settings.has("paths." + path+".recursive") && settings.get("paths." + path+".recursive")){
-                    //if the path is recursive, redirect all the subpaths to the same path
-                    app.post("/"+path+"/*", (req, res) => {
-                        let url = build_url(settings.get("paths." + path+".path") + req.path.substring(path.length+1), req);
-                        res.sendFile(url);
-                    });
-                    resume += "POST " + path + "/* -> " + settings.get("paths." + path+".path") + "*\n";
-                }
-                else{
-                    app.post("/"+path, (req, res) => {
-                        let url = build_url(settings.get("paths." + path+".path"), req);
-                        res.sendFile(url);
-                    });
-                    resume += "POST " + path + " -> " + settings.get("paths." + path+".path") + "\n";
-                }
-                break;
-            default:
-                Logger.warning("\tunknown mode for path " + path + " : " + settings.get("paths." + path+".mode")+"; ignoring");
+            });
         }
-    }
+        else{
+            let url = build_url(req);
 
-    if(settings.has("default_path")){
-        //redirect everything except the excluded paths to the default path
-        app.use('*', (req, res, next) => {
-            if(excluded_paths.includes(req.path)){
-                next();
-            }
-            else{
-                res.status(404).sendFile(__dirname + '/' + settings.get("default_path"));
-            }
-        });
-        resume += "* -> " + settings.get("default_path") + "\n";
-    }
-    else{
-        Logger.warning("\tNo default path specified, a 404 error will be returned for every path except the explitly redirected ones");
-    }
-    Logger.fine("Redirections set up successfully");
-    Logger.info(resume.substring(0, resume.length-1)); //removing the last \n
+            res.sendFile(__dirname+ '/' + url, (err) => {
+                if(err){
+                    res.status(404).sendFile(__dirname+ '/' + get_404_url(req.rawHeaders));
+                }
+                else{
+                    Logger.debug("a common url was requested : " + req.path + " -> " + url);
+                }
+
+            });
+        }
+    });
 }
 
 function set_rooms(){
