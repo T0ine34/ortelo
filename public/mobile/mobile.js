@@ -1,34 +1,31 @@
-
-// Fonction pour afficher le formulaire de réinitialisation de mot de passe
+// Function to display the password reset form
 function showForgotPassword() {
-    // Récupérer la section de mot de passe oublié
+    
     const forgotPasswordSection = document.querySelector("#forgot_password_form");
 
-    // Afficher ou masquer la section en fonction de son état actuel
+    // Show or hide the section based on its current state
     if (forgotPasswordSection.style.display === "block") {
-        // Si la section est déjà affichée, la masquer
+    
         forgotPasswordSection.style.display = "none";
     } else {
-        // Sinon, l'afficher
+      
         forgotPasswordSection.style.display = "block";
         document.querySelector("#login_section").style.display = "none";
         document.querySelector("#signup_section").style.display = "none";
     }
 }
 
-
+// Function to send the password reset email
 function sendResetEmail() {
-    // Récupérer la valeur de l'adresse e-mail
+    // Get the value of the email address
     const emailInput = document.querySelector('#forgot_email').value;
 
-    // Afficher la confirmation
+    // Display the confirmation message
     const confirmationMessage = document.createElement('p');
-    confirmationMessage.textContent = `Un e-mail de réinitialisation a été envoyé à ${emailInput}. Veuillez vérifier votre boîte de réception.`;
+    confirmationMessage.textContent = `A password reset email has been sent to ${emailInput}. Please check your inbox.`;
 
-    // Ajouter le message de confirmation à la section de mot de passe oublié
+    // Add the confirmation message to the password reset section
     const forgotPasswordSection = document.querySelector("#forgot_password_form");
     forgotPasswordSection.innerHTML = '';
     forgotPasswordSection.appendChild(confirmationMessage);
 }
-
-

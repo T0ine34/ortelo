@@ -85,28 +85,28 @@
     </div>
 
     <script>
-        // Fonction pour afficher le formulaire de connexion
+        // Function to display the login form
         function showLogin() {
             document.querySelector("#login_section").style.display = "block";
             document.querySelector("#signup_section").style.display = "none";
             document.querySelector("#forgot_password_section").style.display = "none";
         }
 
-        // Fonction pour afficher le formulaire de création de compte
+        // Function to display the account creation form
         function showSignup() {
             document.querySelector("#login_section").style.display = "none";
             document.querySelector("#signup_section").style.display = "block";
             document.querySelector("#forgot_password_section").style.display = "none";
         }
 
-        // Fonction pour afficher le formulaire de réinitialisation de mot de passe
+        // Function to display the password reset form
         function showForgotPassword() {
             document.querySelector("#login_section").style.display = "none";
             document.querySelector("#signup_section").style.display = "none";
             document.querySelector("#forgot_password_section").style.display = "block";
         }
 
-        // Fonction pour afficher ou masquer le mot de passe lors de la création de compte
+        // Function to show or hide the password when creating an account
         document.querySelector("#show_signup_password").addEventListener('click', function () {
             const passwordInput = document.querySelector('#signup_password');
             if (passwordInput.type === 'password') {
@@ -128,7 +128,7 @@
             this.textContent = 'Afficher';}
         });
 
-        // Fonction pour afficher ou masquer le champ de confirmation du mot de passe lors de la création de compte
+        // Function to show or hide the password confirmation field when creating an account
         document.querySelector("#show_confirm_password").addEventListener('click', function () {
             const confirmPasswordInput = document.querySelector('#confirm_password');
             if (confirmPasswordInput.type === 'password') {

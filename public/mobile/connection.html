@@ -9,7 +9,7 @@
     <link rel="stylesheet" href="stylesheets/style.css">
     <link rel="stylesheet" href="stylesheets/login.css">
 </head>
-<body>
+<body>a
     <div class="container-fluid" id="app_container">
         <div class="banner">
             <img class="app_banner" src="assets/images/ortelo_banner.png" alt="App Banner">
@@ -18,8 +18,7 @@
             <div class="col-12 col-md-6">
                 <div id="login_section">
                     <h2>Connexion</h2>
-                    <form id="login_form">
-                        <div class="form-group">
+                    <form id="login_form" method="POST" action="/login">
                             <label for="username">Nom d'utilisateur</label>
                             <input type="text" class="form-control" id="username" name="username" required>
                         </div>
@@ -79,42 +78,35 @@
                 <div id="forgot_password_section" style="display: none;">
                     <h2>Mot de passe oublié</h2>
                     <form id="forgot_password_form">
-                        <div class="form-group">
-                            <label for="forgot_email">Adresse e-mail</label>
-                            <input type="email" class="form-control" id="forgot_email" name="forgot_email" required>
-                        </div>
-                        <button type="button" onclick="sendResetEmail()">Envoyer la réinitialisation</button>
                     </form>
                     <button type="button" onclick="showLogin()">Retour à la connexion</button>
                 </div>
-
-            </div>
         </div>
     </div>
 
     <script>
-        // Fonction pour afficher le formulaire de connexion
+        // Function to display the login form
         function showLogin() {
             document.querySelector("#login_section").style.display = "block";
             document.querySelector("#signup_section").style.display = "none";
             document.querySelector("#forgot_password_section").style.display = "none";
         }
 
-        // Fonction pour afficher le formulaire de création de compte
+        // Function to display the account creation form
         function showSignup() {
             document.querySelector("#login_section").style.display = "none";
             document.querySelector("#signup_section").style.display = "block";
             document.querySelector("#forgot_password_section").style.display = "none";
         }
 
-        // Fonction pour afficher le formulaire de réinitialisation de mot de passe
+        // Function to display the password reset form
         function showForgotPassword() {
             document.querySelector("#login_section").style.display = "none";
             document.querySelector("#signup_section").style.display = "none";
             document.querySelector("#forgot_password_section").style.display = "block";
         }
 
-        // Fonction pour afficher ou masquer le mot de passe lors de la création de compte
+        // Function to show or hide the password when creating an account
         document.querySelector("#show_signup_password").addEventListener('click', function () {
             const passwordInput = document.querySelector('#signup_password');
             if (passwordInput.type === 'password') {
@@ -136,7 +128,7 @@
             this.textContent = 'Afficher';}
         });
 
-        // Fonction pour afficher ou masquer le champ de confirmation du mot de passe lors de la création de compte
+        // Function to show or hide the password confirmation field when creating an account
         document.querySelector("#show_confirm_password").addEventListener('click', function () {
             const confirmPasswordInput = document.querySelector('#confirm_password');
             if (confirmPasswordInput.type === 'password') {
