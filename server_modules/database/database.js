@@ -4,6 +4,7 @@ const config  = require('../settings/main.js');
 const Logger  = require('../logs/logger');
 const CryptoJS = require('crypto-js');
 const BCrypt = require("bcrypt");
+const GameRooms = require("../gameRooms/main.js")
 
 /**
  * @module Database
@@ -39,7 +40,7 @@ class Database {
                 Logger.error("Can not create or open database");
                 return;
             } else if (err) {
-                Logger.error(`Can not create or open database : ${err}`);
+                Logger.error(`Can not create or open database : ${err.toString()}`);
             }
         });
         Logger.fine(`Database opened successfully ${config.get("database.path")}`);
@@ -73,7 +74,7 @@ class Database {
         //let hashedPassword = BCrypt.hashSync(CryptoJS.AES.encrypt(password, key).toString(), salt);
         let hashedPassword = BCrypt.hashSync(password, salt);
 
-        this.getPlayer(name, (exists) => {
+        this.doPlayerExists(name, (exists) => {
             if(exists) {
                 return false;
             } else {
@@ -81,6 +82,21 @@ class Database {
                 return true;
             }
         });
+        Logger.fine(`Successfully created ${name}'s account`);
+    }
+
+    /**
+     * @author Lila BRANDON
+     * @description Creates a new room for a game then adds it to database.
+     * @param {string} gameName Name of the game to create a room for.
+     * @param {string} gameOwner Name of the player who creates this room.
+     * @param {string} nbPlayers Number of players playing in this game.
+     */
+    createGameRoom(gameName, gameOwner, nbPlayers) {
+        this.getPlayerId(gameOwner, (id) => {
+            let url = GameRooms.genURL(gameName);
+            //TODO ADD GAMEROOM TO DATABASE
+        })
     }
 
 
@@ -103,13 +119,13 @@ class Database {
     /**
      * @author Lila BRANDON
      * @description Fetches all players registered in database.
-     * @param {function} callback The function using returned array of players' names for further use.
+     * @param  {function} callback The function using returned array of players' names for further use.
      * @return {Array} An array of players names.
      */
     listOnlinePlayers(callback) {
         this._db.all(`SELECT playername FROM player WHERE online='1' ORDER BY playername;`, [], (err, rows) => {
             if(err) {
-                Logger.error(`Can not fetch all online players : ${err}`);
+                Logger.error(`Can not fetch all online players : ${err.toString()}`);
                 return [];
             } else {
                 let playerNames = [];
@@ -122,14 +138,14 @@ class Database {
     /**
      * @author Lila BRANDON
      * @description Checks wether a player exists in the database or not.
-     * @param {string} name Player's name.
-     * @param {function} callback Function using returned boolean value for further use.
+     * @param  {string} name Player's name.
+     * @param  {function} callback Function using returned boolean value for further use.
      * @return {boolean} True if player already exists, false otherwise.
      */
-    getPlayer(name, callback) {
+    doPlayerExists(name, callback) {
         this._db.all(`SELECT playername FROM player WHERE playername='${name}';`, [], (err, rows) => {
             if(err){
-                Logger.error(err.toString());
+                Logger.error(`Can not retrieve wether the player ${name} exists or no : ${err.toString()}`);
                 callback(true);
             } 
             if(rows.length > 0) callback(true);
@@ -140,15 +156,51 @@ class Database {
 
     /**
      * @author Lila BRANDON
+     * @description Checks wether a gameroom already exists with the specified URL.
+     * @param  {string} url The url to check if it exists.
+     * @param  {function} callback Function using returned boolean value for further use.
+     * @return {boolean} True if the url already exists, false otherwise.
+     */
+    doGameURLExists(url, callback) {
+        this._db.get(`SELECT gameurl FROM game WHERE gameurl='${url}';`, [], (err, row) => {
+            if(err) {
+                Logger.error(`Can not retrieve wether the url '${url}' already exists or no : ${err.toString()}`);
+                callback(true);
+            }
+            if(row) callback(true);
+            else callback(false);
+        });
+    }
+
+    /**
+     * @author Lila BRANDON
+     * @description Gets the id of player with the specified name.
+     * @param  {string} name The name of the player to retrieve it's id.
+     * @param  {function} callback Function using returned id for further use.
+     * @return {int} The id of the player with the specified name.
+     */
+    getPlayerId(name, callback) {
+        this._db.get(`SELECT playerid FROM player WHERE playername='${name}';`, [], (err, row) => {
+            if(err) {
+                Logger.error(`Can not retrieve ${name}'s playerid : ${err.toString()}`);
+                callback("null");
+            }
+            if(row) callback(row.playerid);
+            else callback("null");
+        })
+    }
+
+    /**
+     * @author Lila BRANDON
      * @description Gets player's (hashed) password from database .
-     * @param {string} playerName Player's name.
-     * @param {function} callback Function using returned password for further use.
+     * @param  {string} playerName Player's name.
+     * @param  {function} callback Function using returned password for further use.
      * @return {string} Player's hashed password.
      */
     getPassword(playerName, callback){
         this._db.get(`SELECT password FROM player WHERE playername='${playerName}';`, [], (err, row) => {
             if (err) {
-                Logger.error(err.toString());
+                Logger.error(`Can not retrieve ${playerName}'s password : ${err.toString()}`);
                 callback(false);
             } else {
                 let password = row ? row.password : null;
@@ -160,15 +212,15 @@ class Database {
     /**
      * @author Lila BRANDON
      * @description Compares clear string with player's hashed password to know if they match.
-     * @param {string} password Player's password (clear).
-     * @param {string} hashedPassword Player's password (hashed).
-     * @param {function} callback Function using returned boolean for further use.
+     * @param  {string} password Player's password (clear).
+     * @param  {string} hashedPassword Player's password (hashed).
+     * @param  {function} callback Function using returned boolean for further use.
      * @return {boolean} True if the hashed password matches given clear password, false otherwise.
      */
     comparePassword(password, hashedPassword, callback) {
         BCrypt.compare(password, hashedPassword, function(err, result) {
             if (err) {
-                Logger.error("Can't compare passwords : " + err);
+                Logger.error(`Can't compare passwords :  + ${err.toString()}`);
                 callback(false);
             } else {
                 callback(result);
