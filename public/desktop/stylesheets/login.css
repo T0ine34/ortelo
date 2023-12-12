@@ -46,3 +46,7 @@
 .divider {
     margin: 0 10px;
 }
+
+#forgot_password_section {
+    display: none;
+}
