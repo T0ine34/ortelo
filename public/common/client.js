@@ -153,17 +153,15 @@ function fetchGames() {
             gameContainer.innerHTML = ''; // Erase the existing indicators
 
             games.forEach((game, index) => {
-                for(let i = 0; i < 50; i++){
-                    // Create a new element for each game
-                    let Item = document.createElement('div');
-                    Item.addEventListener('click', () => PlayGame(game.name));
-                    Item.classList.add('GameItem');
-                    Item.innerHTML = `
-                        <img src="${game.icon}" alt="${game.name}">
-                        <h5>${game.name}</h5>`;
+                // Create a new element for each game
+                let Item = document.createElement('div');
+                Item.addEventListener('click', () => PlayGame(game.name));
+                Item.classList.add('GameItem');
+                Item.innerHTML = `
+                    <img src="${game.icon}" alt="${game.name}">
+                    <h5>${game.name}</h5>`;
 
-                    gameContainer.appendChild(Item);
-                }
+                gameContainer.appendChild(Item);
             });
         })
         .catch(error => {
