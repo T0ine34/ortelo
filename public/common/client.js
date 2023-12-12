@@ -185,8 +185,9 @@ function PlayGame(name) {
 
             if (game.css) {
                 const cssStyle = document.createElement('style');
-                cssStyle.innerHTML = new TextDecoder('utf-8').decode(new Uint8Array(game.css.data));
-                container.appendChild(cssStyle);
+                const cssData = new TextDecoder('utf-8').decode(new Uint8Array(game.css.data));
+                cssStyle.innerHTML = `.x ${cssData}`;
+                document.head.appendChild(cssStyle);
             }
 
             if (game.js) {
@@ -194,6 +195,7 @@ function PlayGame(name) {
                 scriptTag.textContent = new TextDecoder('utf-8').decode(new Uint8Array(game.js.data));
                 container.appendChild(scriptTag);
             }
+            fetch(`/game-start/${name}`)
         })
         .catch(error => {
             console.error(`Erreur lors du chargement du ${name}:`, error);
