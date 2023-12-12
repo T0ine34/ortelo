@@ -18,8 +18,7 @@
             <div class="col-12 col-md-6">
                 <div id="login_section">
                     <h2>Connexion</h2>
-                    <form id="login_form">
-                        <div class="form-group">
+                    <form id="login_form" method="POST" action="/login">
                             <label for="username">Nom d'utilisateur</label>
                             <input type="text" class="form-control" id="username" name="username" required>
                         </div>
@@ -79,11 +78,6 @@
                 <div id="forgot_password_section" style="display: none;">
                     <h2>Mot de passe oublié</h2>
                     <form id="forgot_password_form">
-                        <div class="form-group">
-                            <label for="forgot_email">Adresse e-mail</label>
-                            <input type="email" class="form-control" id="forgot_email" name="forgot_email" required>
-                        </div>
-                        <button type="button" onclick="sendResetEmail()">Envoyer la réinitialisation</button>
                     </form>
                     <button type="button" onclick="showLogin()">Retour à la connexion</button>
                 </div>
