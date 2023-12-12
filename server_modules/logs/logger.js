@@ -147,15 +147,16 @@ class Logger {
             if(files.length > config.get("logs.maxFiles")) {
                 this.info("Removing old logs from logs directory");
                 const filesToRemove = files.slice(0, files.length - config.get("logs.maxFiles"));
-
+                
                 filesToRemove.forEach(file => {
                     const filePath = path.join(config.get("logs.dir"), file);
 
                     fs.unlink(filePath, err => {
                         if (err) {
-                            this.warning(`Could not remove file ${file} : ${err.message}`);
+                            this.warning(`Could not remove file ${file}: ${err.message}`);
                             return;
-                        } else this.fine(`Removed log file ${file}`);
+                        }
+                        this.fine(`Removed log file ${file}`);
                     });
                 });
             } else {
