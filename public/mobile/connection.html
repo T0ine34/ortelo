@@ -79,10 +79,15 @@
                 <div id="forgot_password_section" style="display: none;">
                     <h2>Mot de passe oublié</h2>
                     <form id="forgot_password_form">
-                        <!-- Champs pour la réinitialisation du mot de passe -->
+                        <div class="form-group">
+                            <label for="forgot_email">Adresse e-mail</label>
+                            <input type="email" class="form-control" id="forgot_email" name="forgot_email" required>
+                        </div>
+                        <button type="button" onclick="sendResetEmail()">Envoyer la réinitialisation</button>
                     </form>
                     <button type="button" onclick="showLogin()">Retour à la connexion</button>
                 </div>
+
             </div>
         </div>
     </div>
