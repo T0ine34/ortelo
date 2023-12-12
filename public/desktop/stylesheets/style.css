@@ -101,6 +101,7 @@
 
 .gamesContainer{
     right: 0;
+    top: 10%;
     position: absolute;
     width: 70%;
     text-align: center;
@@ -108,8 +109,8 @@
     display: flex;
     flex-wrap: wrap;
     justify-content: center;
-    overflow-y: scroll;
-    height: calc(100% - 100px);
+    overflow-y:auto;
+    height: 90%;
     & .GameItem{
         width: 20em;
         height: min-content;
