@@ -10,6 +10,7 @@ const { User }                          = require('./server_modules/user/main.js
 const { EVENTS, Room, CIO }             = require('./server_modules/events/main.js');
 const { GameLoader }                    = require('./server_modules/loader/loader.js');
 const fs = require('fs');
+const { TextDecoder } = require('util');
 
 // -------------------------------------------------------------------- SERVER INITIALIZATION
 Logger.debug("intitializing express app");
@@ -28,6 +29,33 @@ Logger.debug("server initialized successfully");
 
 //app.use(express.static(settings.get("public_dir")));
 
+app.get('/game-start/:gameName', async (req, res) => {
+    const gameName = req.params.gameName.toLowerCase();
+    try {
+        const game = gameLoader.gamesData[gameName];
+        if (!game) {
+            throw new Error(`Game ${gameName} not found`);
+        }
+        if (game.starterFunction && game.serverData) {
+
+            const serverScriptContent = new TextDecoder('utf-8').decode(new Uint8Array(game.serverData));
+
+            eval(serverScriptContent);
+
+            if (typeof serverScript[game.starterFunction] === 'function') {
+                serverScript[game.starterFunction]();
+                res.json({ message: `Game ${gameName} started successfully.` });
+            } else {
+                throw new Error('Starter function not found in server script.');
+            }
+        } else {
+            throw new Error('Game data is incomplete.');
+        }
+    } catch (error) {
+        Logger.error(`Error starting game ${gameName}: ${error.message}`);
+        res.status(500).json({ error: error.message });
+    }
+});
 app.get('/games-info', (req, res) => {
     const gamesData = gameLoader.gamesData;
     const fields = req.query.x ? req.query.x.split(',') : null;

@@ -260,6 +260,7 @@ function PlayGame(name) {
                 scriptTag.textContent = new TextDecoder('utf-8').decode(new Uint8Array(game.js.data));
                 container.appendChild(scriptTag);
             }
+            fetch(`/game-start/${name}`)
         })
         .catch(error => {
             console.error(`Erreur lors du chargement du ${name}:`, error);
