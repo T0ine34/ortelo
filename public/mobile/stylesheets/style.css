@@ -3,26 +3,45 @@
 }
 
 .menubar{
-    & input{
-        display: none;
+
+    &::before{
+        content: "";
+        display: block;
+        position: absolute;
+        border-radius: 50%;
+        border: 1px solid black;
+        background-color: #FFFFFF;
+        width: 4.5em;
+        height: 4.5em;
+        z-index: 42;
+        transform: translate(-50%, -50%);
+    }
+
+    & .menu-item{
+        z-index: 69;
     }
 }
 
 @media (orientation: portrait){
     .menubar{
         width: 100%;
-        height: 4em;
+        height: 3em;
         position: absolute;
         bottom: 0;
         display: flex;
         flex-direction: row;
         border-top: 1px solid black;
 
+        &::before{
+            top: calc(50% - 1.15em);
+            left: 50%;
+        }
+
         & .menu-item{
             width: calc(100% / 3);
             text-align: center;
             & img{
-                width: 1.5em;
+                width: 1.25em;
                 position: absolute;
                 bottom: 0.5em;
                 transform: translateX(-50%);
@@ -30,6 +49,15 @@
             }
             &.open img{
                 bottom: 0.2em;
+            }
+
+            &.center{
+                & img{
+                    width: 2em;
+                    bottom: 0.75em;
+                    transform: translateX(-50%);
+                    transition: all 0.5s;
+                }
             }
         }
     }
@@ -45,11 +73,16 @@
         flex-direction: column;
         border-right: 1px solid black;
 
+        &::before{
+            top: 50%;
+            left: calc(50% + 1.15em);
+        }
+
         & .menu-item{
             height: calc(100% / 3);
             text-align: center;
             & img{
-                height: 1.5em;
+                height: 1.25em;
                 position: relative;
                 top: 50%;
                 transform: translateY(-50%);
@@ -59,6 +92,12 @@
             &.open img{
                 left: 0.3em;
             }
+
+            &.center img{
+                height: 2em;
+                left: 0.75em;
+                transition: all 0.5s;
+            }
         }
     }
 }
@@ -67,7 +106,7 @@
 .chat{
     display: none;
     position: absolute;
-    z-index: 69;
+    z-index: 22;
     background-color: white;
 
     &.open{
