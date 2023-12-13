@@ -2,18 +2,6 @@
     font-size: 1.15em;
 }
 
-
-/* .banner{
-    width: calc( 100% - 3em - 2em);
-    max-height: 10%;
-    text-align: center;
-    position: absolute;
-    right: 0;
-    & img{
-        height: 100%;
-    }
-} */
-
 .menubar{
     & input{
         display: none;
@@ -23,7 +11,7 @@
 @media (orientation: portrait){
     .menubar{
         width: 100%;
-        height: 10%;
+        height: 4em;
         position: absolute;
         bottom: 0;
         display: flex;
@@ -34,10 +22,9 @@
             width: calc(100% / 3);
             text-align: center;
             & img{
-                /* put in at the bottom of the parent */
+                width: 1.5em;
                 position: absolute;
                 bottom: 0.5em;
-                width: 1.5em;
                 transform: translateX(-50%);
                 transition: all 0.5s;
             }
@@ -50,7 +37,7 @@
 
 @media (orientation: landscape){
     .menubar{
-        width: 10%;
+        width: 3em;
         height: 100%;
         position: absolute;
         left: 0;
@@ -62,11 +49,10 @@
             height: calc(100% / 3);
             text-align: center;
             & img{
-                /* put in at the bottom of the parent */
+                height: 1.5em;
                 position: relative;
                 top: 50%;
                 transform: translateY(-50%);
-                height: 1.5em;
                 left: 0em;
                 transition: all 0.5s;
             }
@@ -89,27 +75,26 @@
     }
 
     .title{
+        margin-bottom: 0.5em;
         text-align: center;
         font-size: 1.5em;
         font-weight: bold;
-        margin-bottom: 0.5em;
-
     }
     .form{
         width: 100%;
         position: absolute;
+        display: flex;
         bottom: 0;
         padding: 0.5em;
         font-size: 1em;
-        display: flex;
 
         .textInput{
             height: 2em;
             width: calc( 95% - 2em);
-            margin-left: 2.5%;
+            padding: 0em 0.5em;
             border: 1px solid black;
             border-radius: 0.8em;
-            padding: 0em 0.5em;
+            margin-left: 2.5%;
         }
 
         .confirm{
@@ -117,47 +102,43 @@
             width: 2em;
             border: 1px solid black;
             border-radius: 0.8em;
+            margin-left: 0.5em;
             background-color: rgba(84, 146, 246, 0.69);
             color: white;
             cursor: pointer;
-            margin-left: 0.5em;
             & img{
                 width: 1em;
-                
             }
         }
     }
 
     .messages_list{
         width: calc(100% - 1em);
+        height: calc(100% - 90px - 3em);
         overflow-y: scroll;
         overflow-x: hidden;
-        height: calc(100% - 90px - 3em);
         padding: 0.5em;
         list-style: none;
-        
         font-size: 0.5em;
 
         .message_item{
             max-width: 90%;
             width: max-content;
             min-width: 30%;
-            margin-bottom: 0.5em;
             padding: 0.2em 0.5em 0.2em 0.5em;
             border: 1px solid black;
+            margin-bottom: 0.5em;
 
             &.me{
                 border-radius: 1em 1em 0 1em;
-                text-align: right;
                 margin-left: auto;
-
+                text-align: right;
             }
+
             &.other{
                 border-radius: 1em 1em 1em 0;
-                text-align: left;
                 margin-right: auto;
-
-
+                text-align: left;
             }
 
             .date{
@@ -173,7 +154,7 @@
 
 @media (orientation: portrait){
     .chat{
-        height: 90%;
+        height: calc(100% - 4em);
         width: 100%;
         top: 0;
     }
@@ -182,7 +163,7 @@
 
 @media (orientation: landscape){
     .chat{
-        width: 90%;
+        width: calc(100% - 3em);
         height: 100%;
         right: 0;
     }
@@ -192,30 +173,24 @@
 .gamesContainer{
     text-align: center;
     position: absolute;
-    
-    & img{
-        width: 90%;
-    }
-
     & .GameItem{
+        padding: 0.5em;
+        border: 1px solid black;
+        border-radius: 1em;
+        margin: 1em;
+        margin-left: 10%;
+        cursor: pointer;
         & img{
             width: 90%;
             border-radius: 1em;
         }
-        border-radius: 1em;
-        margin: 1em;
-        border: 1px solid black;
-        padding: 0.5em;
-        cursor: pointer;
-        
-        margin-left: 10%;
     }
 }
 
 @media (orientation: portrait){
     .gamesContainer{
         width: 100%;
-        height: 90%;
+        height: calc(100% - 4em);
         overflow-y: scroll;
         & .GameItem{
             width:80%;
@@ -226,7 +201,7 @@
 @media (orientation: landscape){
     /* put 2 GameItem side by side, as much rows as needed */
     .gamesContainer{
-        width: 90%;
+        width: calc(100% - 3em);
         height: 100%;
         right: 0;
         overflow-y: scroll;
