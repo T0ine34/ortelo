@@ -2,45 +2,249 @@
     font-size: 1.15em;
 }
 
+.menubar{
 
-.banner{
-    width: 100%;
-    text-align: center;
-    height: 20%;
-    & img{
+    &::before{
+        content: "";
+        display: block;
+        position: absolute;
+        border-radius: 50%;
+        border: 1px solid black;
+        background-color: #FFFFFF;
+        width: 4.5em;
+        height: 4.5em;
+        z-index: 42;
+        transform: translate(-50%, -50%);
+    }
+
+    & .menu-item{
+        z-index: 69;
+    }
+}
+
+@media (orientation: portrait){
+    .menubar{
         width: 100%;
-        max-width: 500px;
+        height: 3em;
+        position: absolute;
+        bottom: 0;
+        display: flex;
+        flex-direction: row;
+        border-top: 1px solid black;
+
+        &::before{
+            top: calc(50% - 1.15em);
+            left: 50%;
+        }
+
+        & .menu-item{
+            width: calc(100% / 3);
+            text-align: center;
+            & img{
+                width: 1.25em;
+                position: absolute;
+                bottom: 0.5em;
+                transform: translateX(-50%);
+                transition: all 0.5s;
+            }
+            &.open img{
+                bottom: 0.75em;
+            }
+
+            &.center{
+                & img{
+                    width: 2em;
+                    bottom: 0.75em;
+                }
+            }
+        }
     }
 }
 
-.content404{
-    text-align: center;
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
+@media (orientation: landscape){
+    .menubar{
+        width: 3em;
+        height: 100%;
+        position: absolute;
+        left: 0;
+        display: flex;
+        flex-direction: column;
+        border-right: 1px solid black;
 
-    & img{
-        width: 50%;
+        &::before{
+            top: 50%;
+            left: calc(50% + 1.15em);
+        }
+
+        & .menu-item{
+            height: calc(100% / 3);
+            text-align: center;
+            & img{
+                height: 1.25em;
+                position: relative;
+                top: 50%;
+                transform: translateY(-50%);
+                left: 0em;
+                transition: all 0.5s;
+            }
+            &.open img{
+                left: 0.3em;
+            }
+
+            &.center img{
+                height: 2em;
+                left: 0.75em;
+            }
+        }
     }
 }
+
 
 .chat{
     display: none;
-    position: fixed;
-    bottom: 0;
+    position: absolute;
+    z-index: 22;
+    background-color: white;
+
+    &.open{
+        display: block;
+    }
+
+    .title{
+        margin-bottom: 0.5em;
+        text-align: center;
+        font-size: 1.5em;
+        font-weight: bold;
+    }
+    .form{
+        width: 100%;
+        position: absolute;
+        display: flex;
+        bottom: 0;
+        padding: 0.5em;
+        font-size: 1em;
+
+        .textInput{
+            height: 2em;
+            width: calc( 95% - 2em);
+            padding: 0em 0.5em;
+            border: 1px solid black;
+            border-radius: 0.8em;
+            margin-left: 2.5%;
+        }
+
+        .confirm{
+            height: 2em;
+            width: 2em;
+            border: 1px solid black;
+            border-radius: 0.8em;
+            margin-left: 0.5em;
+            background-color: rgba(84, 146, 246, 0.69);
+            color: white;
+            cursor: pointer;
+            & img{
+                width: 1em;
+            }
+        }
+    }
+
+    .messages_list{
+        width: calc(100% - 1em);
+        height: calc(100% - 90px - 3em);
+        overflow-y: scroll;
+        overflow-x: hidden;
+        padding: 0.5em;
+        list-style: none;
+        font-size: 0.5em;
+
+        .message_item{
+            max-width: 90%;
+            width: max-content;
+            min-width: 30%;
+            padding: 0.2em 0.5em 0.2em 0.5em;
+            border: 1px solid black;
+            margin-bottom: 0.5em;
+
+            &.me{
+                border-radius: 1em 1em 0 1em;
+                margin-left: auto;
+                text-align: right;
+            }
+
+            &.other{
+                border-radius: 1em 1em 1em 0;
+                margin-right: auto;
+                text-align: left;
+            }
+
+            .date{
+                font-size: 0.8em;
+                color: gray;
+                text-align: right;
+            }
+
+        }
+    
+    }
 }
 
-#games_container{
-    text-align: center;
-    & img{
-        width: 90%;
+@media (orientation: portrait){
+    .chat{
+        height: calc(100% - 4em);
+        width: 100%;
+        top: 0;
     }
-    margin-left:30%;
-    & ol{
-        list-style: none;
-        counter-reset: item;
-        padding: 0;
-        margin: 0;
+
+}
+
+@media (orientation: landscape){
+    .chat{
+        width: calc(100% - 3em);
+        height: 100%;
+        right: 0;
+    }
+}
+
+
+.gamesContainer{
+    text-align: center;
+    position: absolute;
+    & .GameItem{
+        padding: 0.5em;
+        border: 1px solid black;
+        border-radius: 1em;
+        margin: 1em;
+        margin-left: 10%;
+        cursor: pointer;
+        & img{
+            width: 90%;
+            border-radius: 1em;
+        }
+    }
+}
+
+@media (orientation: portrait){
+    .gamesContainer{
+        width: 100%;
+        height: calc(100% - 4em);
+        overflow-y: scroll;
+        & .GameItem{
+            width:80%;
+        }
+    }
+}
+
+@media (orientation: landscape){
+    /* put 2 GameItem side by side, as much rows as needed */
+    .gamesContainer{
+        width: calc(100% - 3em);
+        height: 100%;
+        right: 0;
+        overflow-y: scroll;
+
+        & .GameItem{
+            width: 35%;
+            display: inline-block;
+        }
     }
 }

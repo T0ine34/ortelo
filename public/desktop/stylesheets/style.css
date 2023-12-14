@@ -1,5 +1,5 @@
 .banner{
-    width: 100%;
+    width: 25%;
     text-align: center;
     height: 100px;
     img{
@@ -101,16 +101,16 @@
 
 .gamesContainer{
     right: 0;
+    top: 10%;
     position: absolute;
     width: 70%;
-    height: 80%;
     text-align: center;
     margin-left:30%;
     display: flex;
     flex-wrap: wrap;
     justify-content: center;
-    overflow-y: scroll;
-    height: calc(100% - 100px);
+    overflow-y:auto;
+    height: 90%;
     & .GameItem{
         width: 20em;
         height: min-content;

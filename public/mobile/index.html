@@ -1,71 +1,68 @@
 <!DOCTYPE html>
-  <html>
-  <head>
-      <title>Ortelo</title>
-      <meta charset="UTF-8">
-      <meta name="viewport" content="width=device-width, initial-scale=1.0">
-      <link rel="icon" type="image/x-icon" href="assets/images/ortelo_logo.png">
-      <link rel="stylesheet" href="bootstrap/css/bootstrap.min.css">
-      <link rel="stylesheet" href="stylesheets/style.css">
-      <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.15.4/css/all.css">
-  
-  </head>
-  <body>
-    <div class="container-fluid">
-        <div class="banner">    
-            <img src="assets/images/ortelo_banner.png" alt="App Banner"/>
-        </div>
+<html>
 
-        <div class="row">
-        <aside class="col-md-3 chat">
+<head>
+    <title>Ortelo</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" type="image/x-icon" href="assets/images/ortelo_logo.png">
+    <link rel="stylesheet" href="bootstrap/css/bootstrap.min.css">
+    <link rel="stylesheet" href="stylesheets/style.css">
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.15.4/css/all.css">
+
+</head>
+
+<body>
+    <div>
+        <!-- <div class="banner">
+            <img src="assets/images/ortelo_banner.png" alt="App Banner" />
+        </div> -->
+
+        <aside class="chat">
             <h3 class="title"> Discussion générale </h3>
             <ul id="messages" class="messages_list">
                 <!-- filled by javascript -->
             </ul>
             <form class="form" id="message_form">
-                <input type="text" id="send_message" autocomplete="off"/>
-                <button class="confirm">Envoyer</button>
+                <input type="text" id="sendMessage" class="textInput" autocomplete="off" placeholder="Message"/>
+                <button class="confirm">
+                    <img src="images/icons/send.png" alt=""/>
+                </button>
             </form>
         </aside>
-              
-        <div class="col-md-9" id="games_container" style="position:initial;">
-            <div id="gameCarousel" class="carousel slide" data-ride="carousel">
-                <!-- Indicators -->
-                <ol class="carousel-indicators">
-                    <!--Indicators will be added here by JavaScript-->
-                </ol>
-        
-                <!-- Dynamic Carrousel -->
-                <div class="carousel-inner">
-                    <!-- Carrousel element will be added here by JavaScript -->
-                </div>
-        
-                <!-- Arrow previous next -->
-                <a class="carousel-control-prev" style="color : black" href="#gameCarousel" role="button" data-slide="prev">
-                    <span class="carousel-control-prev-icon" aria-hidden="true">
-                        <i class="fas fa-arrow-left fa-2x"></i>
-                    </span>
-                    <span class="sr-only">Précédent</span>
-                </a>
-                <a class="carousel-control-next" style="color : black" href="#gameCarousel" role="button" data-slide="next">
-                    <span class="carousel-control-next-icon" aria-hidden="true">
-                        <i class="fas fa-arrow-right fa-2x"></i>
-                    </span>
-                    <span class="sr-only">Suivant</span>
-                </a>
-            </div>
+
+        <div class="gamesContainer">
+            <!-- filled by javascript -->
         </div>
-        
-          </div>
-      </div>
-  
-      <script src="/socket.io/socket.io.js"></script>
-      <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
-      <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.5.3/dist/js/bootstrap.bundle.min.js"></script>
- 
+    </div>
 
-  </body>
-  <script src="/socket.io/socket.io.js"></script>
-  <script src="client.js" type="module"></script>
-  </html>
+    <div class="menubar">
+        <div class="chat-toggle menu-item" onclick="switch_chat()">
+            <img src="images/icons/message.png" alt="Chat" />
+        </div>
+        <div class="back-main-menu menu-item center">
+            <a href="index.html">
+                <img src="images/icons/home.png" alt="Back" />
+            </a>
+        </div>
+        <div class="user-profile menu-item">
+            <a href="profile.html">
+                <img src="images/icons/profile.png" alt="Settings" />
+            </a>
+        </div>
+    </div>
 
+    <script src="/socket.io/socket.io.js"></script>
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.5.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        function switch_chat(){
+            document.querySelector('.chat').classList.toggle('open');
+            document.querySelector('.chat-toggle').classList.toggle('open');
+        }
+    </script>
+</body>
+<script src="/socket.io/socket.io.js"></script>
+<script src="client.js" type="module"></script>
+
+</html>

@@ -141,6 +141,10 @@
             "max_length" : null,
             "required" : true
         },
+        "allow_chat_commands" : {
+            "type" : "boolean",
+            "required" : false
+        },
         "paths" : {
             "type" : "dict",
             "required" : true,

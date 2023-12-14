@@ -23,7 +23,7 @@ csocket.emit(EVENTS.MISC.USERNAME, Date.now(), username);                       
 fetchGames();
 
 csocket.on(EVENTS.CHAT.USER_JOINED, (timestamp, name) => {                                //catching the newUser event, triggered by the server when a new user joins the chat
-    receive_message(timestamp, name, "a rejoint le chat ! &#128075;"); //&#128075; = emoji "person raising hand"
+    receive_message(timestamp, "Information", name + " a rejoint le chat ! &#128075;"); //&#128075; = emoji "person raising hand"
 });
 
 csocket.on(EVENTS.CHAT.MESSAGE, (timestamp, _username, msg) => {                   //catching the new_message event, triggered by the server when a user sends a message
@@ -31,7 +31,7 @@ csocket.on(EVENTS.CHAT.MESSAGE, (timestamp, _username, msg) => {                
 });
 
 csocket.on(EVENTS.CHAT.USER_LEFT, (timestamp, _username) => {                   //catching the new_message event, triggered by the server when a user sends a message
-    receive_message(timestamp, _username, "a quitté le chat ! &#128078;"); //&#128078; = emoji "person leaving"
+    receive_message(timestamp, "Information", _username + " a quitté le chat ! &#128078;"); //&#128078; = emoji "person leaving"
 });
 
 csocket.on(EVENTS.SYSTEM.ERROR, (timestamp, msg) => {                   //catching the new_message event, triggered by the server when a user sends a message
@@ -121,7 +121,7 @@ function format_message(timestamp, _username, msg){
     sender.classList.add('username');
     item.appendChild(sender);
     let message = document.createElement('div');
-    message.textContent = msg;
+    message.innerHTML = msg;
     message.classList.add('message');
     item.appendChild(message);
     let date = document.createElement('span');
@@ -153,17 +153,15 @@ function fetchGames() {
             gameContainer.innerHTML = ''; // Erase the existing indicators
 
             games.forEach((game, index) => {
-                for(let i = 0; i < 50; i++){
-                    // Create a new element for each game
-                    let Item = document.createElement('div');
-                    Item.addEventListener('click', () => PlayGame(game.name));
-                    Item.classList.add('GameItem');
-                    Item.innerHTML = `
-                        <img src="${game.icon}" alt="${game.name}">
-                        <h5>${game.name}</h5>`;
+                // Create a new element for each game
+                let Item = document.createElement('div');
+                Item.addEventListener('click', () => PlayGame(game.name));
+                Item.classList.add('GameItem');
+                Item.innerHTML = `
+                    <img src="${game.icon}" alt="${game.name}">
+                    <h5>${game.name}</h5>`;
 
-                    gameContainer.appendChild(Item);
-                }
+                gameContainer.appendChild(Item);
             });
         })
         .catch(error => {
