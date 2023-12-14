@@ -121,7 +121,7 @@ function format_message(timestamp, _username, msg){
     sender.classList.add('username');
     item.appendChild(sender);
     let message = document.createElement('div');
-    message.textContent = msg;
+    message.innerHTML = msg;
     message.classList.add('message');
     item.appendChild(message);
     let date = document.createElement('span');
