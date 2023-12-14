@@ -8,12 +8,12 @@ const express                                                     = require('exp
 const settings                                                    = require('./server_modules/settings/main.js');
 const Logger                                                      = require('./server_modules/logs/logger');
 const Database                                                    = require('./server_modules/database/database.js');
+const socketIo = require('socket.io');
 const { parseCMD }                                                = require('./server_modules/cmd/main.js');
 const { User }                                                    = require('./server_modules/user/main.js');
 const { EVENTS, Room, CIO }                                       = require('./server_modules/events/main.js');
 const { GameLoader }                                              = require('./server_modules/loader/loader.js');
 const { get_404_url, is_special_url, get_special_url, build_url, getPlatform } = require('./server_modules/redirection/main.js');
-
 // -------------------------------------------------------------------- SERVER INITIALIZATION
 Logger.debug("intitializing express app");
 const app = express();
@@ -27,6 +27,7 @@ const gameLoader = new GameLoader();
 
 Logger.debug("server initialized successfully");
 
+const io = socketIo(server);
 // -------------------------------------------------------------------- SERVER CONFIGURATION
 
 //app.use(express.static(settings.get("public_dir")));
@@ -39,13 +40,11 @@ app.get('/game-start/:gameName', async (req, res) => {
             throw new Error(`Game ${gameName} not found`);
         }
         if (game.starterFunction && game.serverData) {
-
             const serverScriptContent = new TextDecoder('utf-8').decode(new Uint8Array(game.serverData));
 
             eval(serverScriptContent);
-
-            if (typeof serverScript[game.starterFunction] === 'function') {
-                serverScript[game.starterFunction]();
+            if (typeof global[game.starterFunction] === 'function') {
+                global.initializeMorpionSocket(io);
                 res.json({ message: `Game ${gameName} started successfully.` });
             } else {
                 throw new Error('Starter function not found in server script.');
@@ -54,6 +53,7 @@ app.get('/game-start/:gameName', async (req, res) => {
             throw new Error('Game data is incomplete.');
         }
     } catch (error) {
+        console.log(error)
         Logger.error(`Error starting game ${gameName}: ${error.message}`);
         res.status(500).json({ error: error.message });
     }
