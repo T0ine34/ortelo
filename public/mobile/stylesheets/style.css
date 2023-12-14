@@ -2,6 +2,29 @@
     font-size: 1.15em;
 }
 
+@media (not(prefers-color-scheme: dark)){
+    :root{
+        --background-color : #FFFFFF;
+        --border-color : #000000;
+        --accent-color : rgba(84, 146, 246, 0.69);
+        --detail-color : #888888;
+    }
+}
+
+@media (prefers-color-scheme: dark){
+    :root{
+        --background-color : #131516;
+        --border-color : #FFFFFF;
+        --accent-color : rgba(84, 146, 246, 0.69);
+        --detail-color : #888888;
+    }
+}
+
+body{
+    background-color: var(--background-color);
+    color: var(--border-color);
+}
+
 .menubar{
 
     &::before{
@@ -9,8 +32,8 @@
         display: block;
         position: absolute;
         border-radius: 50%;
-        border: 1px solid black;
-        background-color: #FFFFFF;
+        border: 1px solid var(--border-color);
+        background-color: var(--background-color);
         width: 4.5em;
         height: 4.5em;
         z-index: 42;
@@ -30,7 +53,7 @@
         bottom: 0;
         display: flex;
         flex-direction: row;
-        border-top: 1px solid black;
+        border-top: 1px solid var(--border-color);
 
         &::before{
             top: calc(50% - 1.15em);
@@ -61,6 +84,16 @@
     }
 }
 
+@media (prefers-color-scheme: dark){
+    .menubar{
+        & .menu-item{
+            & img{
+                filter: invert(1);
+            }
+        }
+    }
+}
+
 @media (orientation: landscape){
     .menubar{
         width: 3em;
@@ -69,7 +102,7 @@
         left: 0;
         display: flex;
         flex-direction: column;
-        border-right: 1px solid black;
+        border-right: 1px solid var(--border-color);
         word-wrap: break-word;
 
         &::before{
@@ -105,7 +138,7 @@
     display: none;
     position: absolute;
     z-index: 22;
-    background-color: white;
+    background-color: var(--background-color);
 
     &.open{
         display: block;
@@ -129,7 +162,7 @@
             height: 2em;
             width: calc( 95% - 2em);
             padding: 0em 0.5em;
-            border: 1px solid black;
+            border: 1px solid var(--border-color);
             border-radius: 0.8em;
             margin-left: 2.5%;
         }
@@ -137,11 +170,11 @@
         .confirm{
             height: 2em;
             width: 2em;
-            border: 1px solid black;
+            border: 1px solid var(--border-color);
             border-radius: 0.8em;
             margin-left: 0.5em;
-            background-color: rgba(84, 146, 246, 0.69);
-            color: white;
+            background-color: var(--accent-color);
+            color: var(--background-color);
             cursor: pointer;
             & img{
                 width: 1em;
@@ -163,7 +196,7 @@
             width: max-content;
             min-width: 30%;
             padding: 0.2em 0.5em 0.2em 0.5em;
-            border: 1px solid black;
+            border: 1px solid var(--border-color);
             margin-bottom: 0.5em;
 
             &.me{
@@ -180,7 +213,7 @@
 
             .date{
                 font-size: 0.8em;
-                color: gray;
+                color: var(--detail-color);
                 text-align: right;
             }
 
@@ -212,7 +245,7 @@
     position: absolute;
     & .GameItem{
         padding: 0.5em;
-        border: 1px solid black;
+        border: 1px solid var(--border-color);
         border-radius: 1em;
         margin: 1em;
         margin-left: 10%;
