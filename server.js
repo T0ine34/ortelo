@@ -12,7 +12,8 @@ const { parseCMD }                                                = require('./s
 const { User }                                                    = require('./server_modules/user/main.js');
 const { EVENTS, Room, CIO }                                       = require('./server_modules/events/main.js');
 const { GameLoader }                                              = require('./server_modules/loader/loader.js');
-const { get_404_url, is_special_url, get_special_url, build_url, getPlatform } = require('./server_modules/redirection/main.js');
+const { get_404_url, is_special_url, get_special_url, build_url, getPlatform, is_common_ressource } = require('./server_modules/redirection/main.js');
+const e = require('express');
 
 // -------------------------------------------------------------------- SERVER INITIALIZATION
 Logger.debug("intitializing express app");
@@ -133,7 +134,28 @@ function set_redirections(){
             });
         }
         else{
-            let url = build_url(req);
+            let url;
+            if(req.path.startsWith("/mobile")){
+                let path = req.path.substring(7);
+                if(is_common_ressource(path)){
+                    url = settings.get("public_common_dir") + path;
+                }
+                else{
+                    url = settings.get("public_mobile_dir") + path;
+                }
+            }
+            else if(req.path.startsWith("/desktop")){
+                let path = req.path.substring(8);
+                if(is_common_ressource(path)){
+                    url = settings.get("public_common_dir") + path;
+                }
+                else{
+                    url = settings.get("public_desktop_dir") + path;
+                }
+            }
+            else{
+                url = build_url(req);
+            }
 
             res.sendFile(__dirname+ '/' + url, (err) => {
                 if(err){
