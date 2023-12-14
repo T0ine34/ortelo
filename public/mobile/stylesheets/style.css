@@ -70,6 +70,7 @@
         display: flex;
         flex-direction: column;
         border-right: 1px solid black;
+        word-wrap: break-word;
 
         &::before{
             top: 50%;
@@ -199,7 +200,7 @@
 
 @media (orientation: landscape){
     .chat{
-        width: calc(100% - 3em);
+        width: calc(100% - 4em - 1em);
         height: 100%;
         right: 0;
     }
