@@ -174,13 +174,13 @@ function set_rooms(){
 cio.on(EVENTS.INTERNAL.CONNECTION, (csocket) => {
     csocket.once(EVENTS.MISC.USERNAME, (timestamp, username) => {
         let user = new User(csocket, username);    //building the user object
-        user.emit(EVENTS.SYSTEM.INFO, Date.now(), "You are now connected as " + username);   //sending a message to the user to inform him that he is connected
+        user.emit(EVENTS.SYSTEM.INFO, Date.now(), "Vous êtes connecté en tant que " + username);   //sending a message to the user to inform him that he is connected
         rooms.get(general).emit(EVENTS.CHAT.USER_JOINED, Date.now(), username);               //broadcasting the newUser event to all the users of the general room, excepting the new one
         user.joinRoom(rooms.get(general));                                        //adding the user to the general room
 
         user.on(EVENTS.INTERNAL.DISCONNECT, (reason) => {
             for(let room of user.rooms.values()){
-                room.emit(EVENTS.CHAT.USER_LEFT, Date.now(), ""); 
+                room.emit(EVENTS.CHAT.USER_LEFT, Date.now(), user.username);
             }
         });
 

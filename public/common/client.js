@@ -23,7 +23,7 @@ csocket.emit(EVENTS.MISC.USERNAME, Date.now(), username);                       
 fetchGames();
 
 csocket.on(EVENTS.CHAT.USER_JOINED, (timestamp, name) => {                                //catching the newUser event, triggered by the server when a new user joins the chat
-    receive_message(timestamp, name, "a rejoint le chat ! &#128075;"); //&#128075; = emoji "person raising hand"
+    receive_message(timestamp, "Information", name + " a rejoint le chat ! &#128075;"); //&#128075; = emoji "person raising hand"
 });
 
 csocket.on(EVENTS.CHAT.MESSAGE, (timestamp, _username, msg) => {                   //catching the new_message event, triggered by the server when a user sends a message
@@ -31,7 +31,7 @@ csocket.on(EVENTS.CHAT.MESSAGE, (timestamp, _username, msg) => {                
 });
 
 csocket.on(EVENTS.CHAT.USER_LEFT, (timestamp, _username) => {                   //catching the new_message event, triggered by the server when a user sends a message
-    receive_message(timestamp, _username, "a quitté le chat ! &#128078;"); //&#128078; = emoji "person leaving"
+    receive_message(timestamp, "Information", _username + " a quitté le chat ! &#128078;"); //&#128078; = emoji "person leaving"
 });
 
 csocket.on(EVENTS.SYSTEM.ERROR, (timestamp, msg) => {                   //catching the new_message event, triggered by the server when a user sends a message
