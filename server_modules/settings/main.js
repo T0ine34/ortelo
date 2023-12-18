@@ -95,7 +95,7 @@ class Settings{
     /**
      * @description set a value in the settings file, creating the keys if they do not exist
      * @param {string} key the key to set the value of; can be a nested key (e.g. "a.b.c")
-     * @param {any} value the value to set
+     * @param {String | Boolean | number | null} value the value to set
      * @see {@link Settings#has}
      */
     set(key, value){
