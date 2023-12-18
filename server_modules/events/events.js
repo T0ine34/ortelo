@@ -122,10 +122,10 @@ class EVENT{
  * @description This instance of {@link ServerModules.ServerEvents.EVENTS_NAMESPACE} contains all the events that can be sent between the client and the server.
  * Accessing a property of this object will return an {@link ServerModules.ServerEvents.EVENT} or a {@link ServerModules.ServerEvents.EVENTS_NAMESPACE} object.
  * @instance
+ * @example
+ * socket.emit(EVENTS.CHAT.JOINED, "username");
+ * 
  */
-let EVENTS = null;
-
-//we are in the server
-EVENTS = new EVENTS_NAMESPACE(require("../../"+settings.get("public_common_dir") + "/assets/ressources/events.json"));
+let EVENTS = new EVENTS_NAMESPACE(require("../../"+settings.get("public_common_dir") + "/assets/ressources/events.json"));
 Object.freeze(EVENTS);
 module.exports = { EVENTS, EVENT, EVENTS_NAMESPACE };
