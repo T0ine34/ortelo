@@ -21,8 +21,8 @@ class Room{
      */
     constructor(name){
         this._name = name;
-        this._users = new Set();
-        this._user_list = new Set();
+        this._users = new Set();        //this set will contain all the users in the room
+        this._user_list = new Set();    // this list will act as a blacklist or a whitelist depending on the value of _use_as_whitelist
         this._use_as_whitelist = false; //if true, the _user_list will be used as a whitelist instead of a blacklist
         this._is_visible = true;        //if false, the room will not be visible by users that cannot join it
                                         //if true, the room will be visible by all users
@@ -31,7 +31,9 @@ class Room{
 
     /**
      * @description Set the visibility of the room.
-     * @param {boolean} bool - true if the room should be visible, false otherwise.
+     * @throws {Error} if the value is not a boolean.
+     * @type {boolean}
+     * @returns {boolean} true if the room is visible, false otherwise.
      */
     set visible(bool){
         if(typeof bool !== "boolean") throw new Error("bool is not a boolean");
@@ -39,10 +41,6 @@ class Room{
         logger.debug("room " + this._name + " visibility set to " + bool);
     }
 
-    /**
-     * @description Return true if the room is visible, false otherwise.
-     * @returns {boolean} true if the room is visible, false otherwise.
-     */
     get visible(){
         return this._is_visible;
     }
@@ -50,7 +48,6 @@ class Room{
     /**
      * @description Add a user to the room.
      * @param {CSocket} user - The user to add.
-     * @returns {boolean} true if the user has been added, false otherwise.
      * @throws {Error} if the user is not a CSocket object.
      * @returns {boolean} true if the user has been added, false otherwise.
      */
@@ -70,6 +67,8 @@ class Room{
 
     /**
      * @see Room#addUser
+     * @description Alias for {@link Room#addUser addUser}.
+     * @param {CSocket} user - The user to add.
      */
     join(user){
         return this.addUser(user);
@@ -124,9 +123,9 @@ class Room{
 
     /**
      * @description Set the room to use a whitelist or a blacklist.
-     * @param {boolean} bool - true if the room should use a whitelist, false otherwise.
-     * @throws {Error} if bool is not a boolean.
-     * @description if the list mode is changed, the list will be cleared.
+     * @throws {Error} if the value is not a boolean.
+     * @type {boolean}
+     * @returns {boolean} true if the room is using a whitelist, false otherwise.
      */
     set use_whitelist(bool){
         if(typeof bool !== "boolean") throw new Error("bool is not a boolean");
@@ -136,11 +135,6 @@ class Room{
         logger.debug("room " + this._name + " now using " + (bool ? "whitelist" : "blacklist"));
     }
 
-    /**
-     * @description Return true if the room is using a whitelist, false otherwise.
-     * @returns {boolean} true if the room is using a whitelist, false otherwise.
-     * @readonly
-     */
     get use_whitelist(){
         return this._use_as_whitelist;
     }
