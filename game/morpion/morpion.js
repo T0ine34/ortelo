@@ -1,4 +1,3 @@
-const socketIo = require('socket.io');
 class Morpion {
     constructor() {
         this.board = [["", "", ""], ["", "", ""], ["", "", ""]];

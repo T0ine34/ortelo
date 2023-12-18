@@ -295,6 +295,11 @@ class Room{
         }
     }
 
+    /**
+     * @description Get the number of users in the room.
+     * @returns {number} The number of users in the room.
+     * @readonly
+     */
     countUsers(){
         return this._users.size;
     }

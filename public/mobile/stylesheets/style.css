@@ -32,8 +32,10 @@ body{
         display: block;
         position: absolute;
         border-radius: 50%;
-        border: 1px solid var(--border-color);
-        background-color: var(--background-color);
+        border-style: solid;
+        border-width: 1px;
+        border-color: var(--border-color);
+        background-color: var(--background-color, #FFFFFF);
         width: 4.5em;
         height: 4.5em;
         z-index: 42;
@@ -53,7 +55,9 @@ body{
         bottom: 0;
         display: flex;
         flex-direction: row;
-        border-top: 1px solid var(--border-color);
+        border-color: var(--border-color);
+        border-style: solid;
+        border-width: 1px 0 0 0;
 
         &::before{
             top: calc(50% - 1.15em);
@@ -102,7 +106,9 @@ body{
         left: 0;
         display: flex;
         flex-direction: column;
-        border-right: 1px solid var(--border-color);
+        border-color: var(--border-color);
+        border-style: solid;
+        border-width: 0 1px 0 0;
         word-wrap: break-word;
 
         &::before{
@@ -138,7 +144,7 @@ body{
     display: none;
     position: absolute;
     z-index: 22;
-    background-color: var(--background-color);
+    background-color: var(--background-color, #FFFFFF);
 
     &.open{
         display: block;
@@ -162,7 +168,9 @@ body{
             height: 2em;
             width: calc( 95% - 2em);
             padding: 0em 0.5em;
-            border: 1px solid var(--border-color);
+            border-style: solid;
+            border-width: 1px;
+            border-color: var(--border-color);
             border-radius: 0.8em;
             margin-left: 2.5%;
         }
@@ -170,7 +178,9 @@ body{
         .confirm{
             height: 2em;
             width: 2em;
-            border: 1px solid var(--border-color);
+            border-style: solid;
+            border-width: 1px;
+            border-color: var(--border-color);
             border-radius: 0.8em;
             margin-left: 0.5em;
             background-color: var(--accent-color);
@@ -196,7 +206,9 @@ body{
             width: max-content;
             min-width: 30%;
             padding: 0.2em 0.5em 0.2em 0.5em;
-            border: 1px solid var(--border-color);
+            border-style: solid;
+            border-width: 1px;
+            border-color: var(--border-color);
             margin-bottom: 0.5em;
 
             &.me{
@@ -245,7 +257,9 @@ body{
     position: absolute;
     & .GameItem{
         padding: 0.5em;
-        border: 1px solid var(--border-color);
+        border-style: solid;
+        border-width: 1px;
+        border-color: var(--border-color);
         border-radius: 1em;
         margin: 1em;
         margin-left: 10%;
