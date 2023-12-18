@@ -294,6 +294,10 @@ class Room{
             user.on(event, callback);
         }
     }
+
+    countUsers(){
+        return this._users.size;
+    }
 }
 
 /**
