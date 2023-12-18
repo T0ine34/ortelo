@@ -69,6 +69,17 @@ class User{
     emit(event, ...args) {
         this._socket.emit(event, ...args);
     }
+
+    /**
+     * @description transmit an event to the user
+     * @param {string} event The name of the event to transmit
+     * @param  {...any} args The arguments to pass to the event
+     * @see {@link ServerSocket.CSocket#transmit CSocket.transmit}
+     */
+    transmit(event, ...args) {
+        this._socket.transmit(event, ...args);
+    }
+
     /**
      * @description add a listener to an event
      * @param {string} event The name of the event to listen to
