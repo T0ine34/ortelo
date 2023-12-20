@@ -1,4 +1,4 @@
-
+@import url('scrollbar.css');
 
 @media (not(prefers-color-scheme: dark)){
     :root{
@@ -12,7 +12,7 @@
 
 @media (prefers-color-scheme: dark){
     :root{
-        --background-color : #2b2c2c;
+        --background-color : rgb(43, 42, 51);
         --border-color : #FFFFFF;
         --accent-color : rgba(115, 165, 245, 0.69);
         --accent-color-hover : rgba(40, 108, 218, 0.9);
@@ -76,6 +76,7 @@ body{
             border-radius: 0.8em;
             margin-left: 2.5%;
             background-color: var(--background-color);
+            color: var(--border-color);
         }
 
         .confirm{

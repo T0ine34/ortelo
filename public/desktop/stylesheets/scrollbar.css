@@ -1,0 +1,45 @@
+@media (not(prefers-color-scheme: dark)){
+    :root{
+        --background-color : #FFFFFF;
+        --border-color : #000000;
+        --accent-color : rgba(84, 146, 246, 0.69);
+        --accent-color-hover : rgba(49, 127, 253, 0.9);
+        --detail-color : #888888;
+    }
+}
+
+@media (prefers-color-scheme: dark){
+    :root{
+        --background-color : rgb(43, 42, 51);
+        --border-color : #FFFFFF;
+        --accent-color : rgba(115, 165, 245, 0.69);
+        --accent-color-hover : rgba(40, 108, 218, 0.9);
+        --detail-color : #888888;
+    }
+}
+
+
+
+/* change the appearance of the scrollbar, for webkit browsers */
+::-webkit-scrollbar {
+    width: 1em;
+    
+}
+
+::-webkit-scrollbar-track {
+    background: var(--background-color);
+}
+
+::-webkit-scrollbar-thumb {
+    background-color: var(--border-color);
+    border-radius: 0.5em;
+    border: 3px solid var(--background-color);
+    
+}
+
+/* change the appearance of the scrollbar, for other browsers */
+
+*{
+    scrollbar-width: thin;
+    scrollbar-color: var(--border-color) var(--background-color);
+}

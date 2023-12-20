@@ -13,7 +13,7 @@
 
 @media (prefers-color-scheme: dark){
     :root{
-        --background-color : #2b2c2c;
+        --background-color : rgb(43, 42, 51);
         --border-color : #FFFFFF;
         --accent-color : rgba(84, 146, 246, 0.69);
         --detail-color : #888888;
@@ -173,6 +173,7 @@ body{
             border-color: var(--border-color);
             border-radius: 0.8em;
             margin-left: 2.5%;
+            color: var(--border-color);
         }
 
         .confirm{
