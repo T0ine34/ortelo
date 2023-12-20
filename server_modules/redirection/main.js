@@ -1,6 +1,8 @@
-settings = require('../settings/main.js');
+const { Settings } = require('../settings/main.js');
 const fs = require('fs');
 logger = require('../logs/logger.js');
+
+var settings = new Settings("./server.config");
 
 /**
  * @description Contain functions to manage redirections of the server

@@ -50,6 +50,15 @@ class Settings{
      * @throws {Error} if the file cannot be read
      */
     constructor(filepath){
+
+        if(!is_json(filepath)){
+            throw new Error("Settings file muse be a JSON file (got '" + filepath + "')");
+        }
+        let [res, reason] = is_json_matching(filepath);
+        if(!res){
+            throw new Error("Error while parsing config.json : " + reason);
+        }
+
         if(!Settings._instances[filepath]){
             try{
                 this._data = JSON.parse(fs.readFileSync(filepath));
@@ -165,10 +174,6 @@ class Settings{
     }
 }
 
-const config_filepath = "./server.config";
-if(!is_json(config_filepath)){ throw new Error(config_filepath+" is not a valid json file"); }
 
-[res, reason] = is_json_matching(config_filepath);
-if(!res){ throw new Error("Error while parsing config.json : " + reason); }
 
-module.exports = new Settings(config_filepath);
+module.exports = { Settings };

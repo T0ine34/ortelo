@@ -1,6 +1,7 @@
 const { set } = require('../settings/main');
 
-settings = require('../settings/main.js');
+const { Settings } = require('../settings/main.js');
+var settings = new Settings("./server.config");
 
 /**
  * @description Contains the events that can be sent between the client and the server.

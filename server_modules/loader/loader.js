@@ -2,7 +2,9 @@ const fs = require('fs');
 const JSZip = require('jszip');
 const path = require('path');
 const { Game } = require('./game');
-setttings = require('../settings/main.js');
+const { Settings } = require('../settings/main.js');
+
+var settings = new Settings("./server.config");
 
 /**
  * @module Loader

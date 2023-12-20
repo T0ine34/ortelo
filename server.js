@@ -1,11 +1,14 @@
+// -------------------------------------------------------------------- INITIALIZATION OF SETTINGS
+
+const { Settings }                                                = require('./server_modules/settings/main.js');
+var settings = new Settings("./server.config");
+
 // -------------------------------------------------------------------- REQUIRED MODULES
 
-
-const fs = require('fs');
-const { TextDecoder } = require('util');
+const fs                                                          = require('fs');
+const { TextDecoder }                                             = require('util');
 const http                                                        = require('http');
 const express                                                     = require('express');
-const settings                                                    = require('./server_modules/settings/main.js');
 const Logger                                                      = require('./server_modules/logs/logger');
 const Database                                                    = require('./server_modules/database/database.js');
 const { parseCMD }                                                = require('./server_modules/cmd/main.js');
@@ -14,6 +17,7 @@ const { EVENTS, Room, CIO }                                       = require('./s
 const { GameLoader }                                              = require('./server_modules/loader/loader.js');
 const { get_404_url, is_special_url, get_special_url, build_url, getPlatform, is_common_ressource } = require('./server_modules/redirection/main.js');
 const e = require('express');
+
 
 // -------------------------------------------------------------------- SERVER INITIALIZATION
 Logger.debug("intitializing express app");

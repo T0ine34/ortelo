@@ -1,10 +1,12 @@
 const fs = require("fs");
 const sqlite3 = require("sqlite3");
-const config  = require('../settings/main.js');
+const { Settings }  = require('../settings/main.js');
 const Logger  = require('../logs/logger');
 const CryptoJS = require('crypto-js');
 const BCrypt = require("bcrypt");
 const GameRooms = require("../gameRooms/main.js")
+
+var settings = new Settings("./server.config");
 
 /**
  * @module Database
@@ -35,7 +37,7 @@ class Database {
      */
     #load() {
         Logger.fine("Loading database...")
-        this._db = new sqlite3.Database(config.get("database.path"), sqlite3.OPEN_READWRITE | sqlite3.OPEN_CREATE, (err) => {
+        this._db = new sqlite3.Database(settings.get("database.path"), sqlite3.OPEN_READWRITE | sqlite3.OPEN_CREATE, (err) => {
             if (err && err.code == "SQLITE_CANTOPEN") {
                 Logger.error("Can not create or open database");
                 return;
@@ -43,7 +45,7 @@ class Database {
                 Logger.error(`Can not create or open database : ${err.toString()}`);
             }
         });
-        Logger.fine(`Database opened successfully ${config.get("database.path")}`);
+        Logger.fine(`Database opened successfully ${settings.get("database.path")}`);
         Logger.info("Updating database state");
         this.#createTables();
     }
@@ -54,7 +56,7 @@ class Database {
      * to create all tables in case the database file doesn't exsist already.
      */
     #createTables() {
-        let createTables = fs.readFileSync(config.get("database.createTablesPath"), 'utf8');
+        let createTables = fs.readFileSync(settings.get("database.createTablesPath"), 'utf8');
         Logger.debug("Loaded SQL script to create Database tables : " + createTables);
         this._db.exec(createTables);
         Logger.fine("Database state updated.");
@@ -69,7 +71,7 @@ class Database {
      * @returns wether the player has been created successfully or not.
      */
     createPlayer(name, password, emailAddress){
-        let salt = BCrypt.genSaltSync(config.get("database.bcryptRounds"));
+        let salt = BCrypt.genSaltSync(settings.get("database.bcryptRounds"));
         //let key = this.#generateRandomKey(64);
         //let hashedPassword = BCrypt.hashSync(CryptoJS.AES.encrypt(password, key).toString(), salt);
         let hashedPassword = BCrypt.hashSync(password, salt);

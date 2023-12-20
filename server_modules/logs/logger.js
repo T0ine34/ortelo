@@ -1,7 +1,8 @@
 const fs = require('fs');
 const path = require('path');
 
-const config = require('../settings/main.js');
+const { Settings } = require('../settings/main.js');
+var settings = new Settings("./server.config");
 
 /**
  * @module Logger
@@ -36,14 +37,14 @@ class Logger {
     constructor() {
         if(!Logger._instance) { //if instance does not exist, create it
             Logger._instance = this;
-            this.use_debug = config.get("logs.useDebug");
+            this.use_debug = settings.get("logs.useDebug");
             this.load();
             this.debug("Debug mode enabled")
-            setInterval(() => { //execute it at a regular interval set in server.config
+            setInterval(() => { //execute it at a regular interval set in server.settings
                 this.load();
-            }, config.get("logs.refreshTimeSec") * 1000);
+            }, settings.get("logs.refreshTimeSec") * 1000);
         }
-        this.debug("Refreshing log file every " + config.get("logs.refreshTimeSec") + " seconds");
+        this.debug("Refreshing log file every " + settings.get("logs.refreshTimeSec") + " seconds");
         return Logger._instance;
     }
 
@@ -52,11 +53,11 @@ class Logger {
      * @function
      */
     load(){
-        if(!fs.existsSync(config.get("logs.dir"))) fs.mkdirSync(config.get("logs.dir")); //** Creates log folder if it does not exists. */
+        if(!fs.existsSync(settings.get("logs.dir"))) fs.mkdirSync(settings.get("logs.dir")); //** Creates log folder if it does not exists. */
         const currentDate = new Date();
         
         //** Updates filepath to output logs to */
-        const filePath = `${config.get("logs.dir")}/${currentDate.getDate()}_${currentDate.getMonth()+1}_${currentDate.getFullYear()}_at_${currentDate.getHours() < 10 ? "0" + currentDate.getHours() : currentDate.getHours()}h${currentDate.getMinutes() < 10 ? "0" + currentDate.getMinutes() : currentDate.getMinutes()}.log`;
+        const filePath = `${settings.get("logs.dir")}/${currentDate.getDate()}_${currentDate.getMonth()+1}_${currentDate.getFullYear()}_at_${currentDate.getHours() < 10 ? "0" + currentDate.getHours() : currentDate.getHours()}h${currentDate.getMinutes() < 10 ? "0" + currentDate.getMinutes() : currentDate.getMinutes()}.log`;
         if(this._logFile && this._logFile != filePath){
             this.info("log file changed to " + filePath + "\n nothing will be added in this file anymore");
         }
@@ -65,7 +66,7 @@ class Logger {
         
         // write the first line of the log file
         this.info("new log file created");
-        this.removeOldest(); //** Removes old log files if amount of files exceeds the amount specified in config.json */
+        this.removeOldest(); //** Removes old log files if amount of files exceeds the amount specified in settings.json */
     }
 
 
@@ -110,7 +111,7 @@ class Logger {
     }
 
     /**
-     * @description Debug function outputs a message to help you debug your app. Only works if use_debug is set to true in config file.
+     * @description Debug function outputs a message to help you debug your app. Only works if use_debug is set to true in settings file.
      * @param {string} message is the message you want to log as a debug.
      * @function
      */
@@ -133,23 +134,23 @@ class Logger {
 
 
     /**
-     * @description Reads log directory, if number of files exceeds the specified amount in config.json, this function will delete the oldest ones
+     * @description Reads log directory, if number of files exceeds the specified amount in settings.json, this function will delete the oldest ones
      * @function
      */
     removeOldest() {
-        fs.readdir(config.get("logs.dir"), (err, files) => {
+        fs.readdir(settings.get("logs.dir"), (err, files) => {
             if(err) {
                 this.error("Can not remove oldests files from logs directory");
                 return;
             }
 
-            //** Checking if logs directory has more logs than max amount in config.json */
-            if(files.length > config.get("logs.maxFiles")) {
+            //** Checking if logs directory has more logs than max amount in settings.json */
+            if(files.length > settings.get("logs.maxFiles")) {
                 this.info("Removing old logs from logs directory");
-                const filesToRemove = files.slice(0, files.length - config.get("logs.maxFiles"));
+                const filesToRemove = files.slice(0, files.length - settings.get("logs.maxFiles"));
                 
                 filesToRemove.forEach(file => {
-                    const filePath = path.join(config.get("logs.dir"), file);
+                    const filePath = path.join(settings.get("logs.dir"), file);
 
                     fs.unlink(filePath, err => {
                         if (err) {
