@@ -6,8 +6,9 @@
  * @since 0.2.1
  */
 
-const { EVENTS, Room } = require("../events/main.js");
-const { User } = require("../user/main.js");
+const { EVENTS, Room }  = require("../events/main");
+const { User }          = require("../user/main");
+
 let settings = require("../settings/main.js");
 
 /**

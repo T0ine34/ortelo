@@ -1,6 +1,6 @@
 // -------------------------------------------------------------------- INITIALIZATION OF SETTINGS
 
-const { Settings }                                                = require('./server_modules/settings/main.js');
+const { Settings }                                                = require('./server_modules/settings/main');
 var settings = new Settings("./server.config");
 
 // -------------------------------------------------------------------- REQUIRED MODULES
@@ -9,13 +9,13 @@ const fs                                                          = require('fs'
 const { TextDecoder }                                             = require('util');
 const http                                                        = require('http');
 const express                                                     = require('express');
-const Logger                                                      = require('./server_modules/logs/logger');
-const Database                                                    = require('./server_modules/database/database.js');
-const { parseCMD }                                                = require('./server_modules/cmd/main.js');
-const { User }                                                    = require('./server_modules/user/main.js');
-const { EVENTS, Room, CIO }                                       = require('./server_modules/events/main.js');
-const { GameLoader }                                              = require('./server_modules/loader/loader.js');
-const { get_404_url, is_special_url, get_special_url, build_url, getPlatform, is_common_ressource } = require('./server_modules/redirection/main.js');
+const Logger                                                      = require('./server_modules/logs/main');
+const Database                                                    = require('./server_modules/database/main');
+const { parseCMD }                                                = require('./server_modules/cmd/main');
+const { User }                                                    = require('./server_modules/user/main');
+const { EVENTS, Room, CIO }                                       = require('./server_modules/events/main');
+const { GameLoader }                                              = require('./server_modules/loader/main');
+const { get_404_url, is_special_url, get_special_url, build_url, getPlatform, is_common_ressource } = require('./server_modules/redirection/main');
 const e = require('express');
 
 

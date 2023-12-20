@@ -1,5 +1,5 @@
-const fs = require("fs");
-const {is_json, is_json_matching} = require("../json_checker/main.js");
+const fs                            = require("fs");
+const {is_json, is_json_matching}   = require("../json_checker/main");
 
 /**
  * @description Contain class to manage settings

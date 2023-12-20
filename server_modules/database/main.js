@@ -1,10 +1,10 @@
-const fs = require("fs");
-const sqlite3 = require("sqlite3");
-const { Settings }  = require('../settings/main.js');
-const Logger  = require('../logs/logger');
-const CryptoJS = require('crypto-js');
-const BCrypt = require("bcrypt");
-const GameRooms = require("../gameRooms/main.js")
+const fs                    = require("fs");
+const sqlite3               = require("sqlite3");
+const Logger                = require('../logs/main');
+const CryptoJS              = require('crypto-js');
+const BCrypt                = require("bcrypt");
+const { Settings }          = require('../settings/main');
+const GameRooms             = require("../gameRooms/main")
 
 var settings = new Settings("./server.config");
 

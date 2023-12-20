@@ -1,7 +1,7 @@
-const fs = require('fs');
-const path = require('path');
+const fs            = require('fs');
+const path          = require('path');
 
-const { Settings } = require('../settings/main.js');
+const { Settings } = require('../settings/main');
 var settings = new Settings("./server.config");
 
 /**

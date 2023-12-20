@@ -1,6 +1,5 @@
-const { set } = require('../settings/main');
+const { Settings }  = require('../settings/main');
 
-const { Settings } = require('../settings/main.js');
 var settings = new Settings("./server.config");
 
 /**

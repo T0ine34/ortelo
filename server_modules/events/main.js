@@ -5,8 +5,8 @@
  * @author Antoine Buirey
  */
 
-logger                  = require("../logs/logger.js");
-const { EVENTS, EVENT } = require("./events.js");
+logger                  = require("../logs/main");
+const { EVENTS, EVENT } = require("./events");
 const { Server }        = require("socket.io");
 
 

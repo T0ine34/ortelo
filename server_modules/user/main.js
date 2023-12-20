@@ -1,5 +1,5 @@
-const { EVENTS, Room, CSocket } = require('../events/main.js');
-const { Socket } = require("socket.io");
+const { EVENTS, Room, CSocket } = require('../events/main');
+const { Socket }                = require("socket.io");
 
 /**
  * @description Contain a class representing a user connected to the server

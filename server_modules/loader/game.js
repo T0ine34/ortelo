@@ -1,4 +1,4 @@
-const Logger = require('../logs/logger');
+const Logger    = require('../logs/main');
 
 class Game {
     constructor(gameFiles, gameName) {
