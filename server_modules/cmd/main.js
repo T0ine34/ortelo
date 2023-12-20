@@ -8,8 +8,9 @@
 
 const { EVENTS, Room }  = require("../events/main");
 const { User }          = require("../user/main");
+const { Settings }      = require("../settings/main.js");
 
-let settings = require("../settings/main.js");
+var settings = new Settings("server.config");
 
 /**
  * @description Parse a command and execute it. Read the "allow_chat_commands" setting to know if we should parse commands or not.
