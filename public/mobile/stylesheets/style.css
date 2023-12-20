@@ -13,7 +13,7 @@
 
 @media (prefers-color-scheme: dark){
     :root{
-        --background-color : #131516;
+        --background-color : #2b2c2c;
         --border-color : #FFFFFF;
         --accent-color : rgba(84, 146, 246, 0.69);
         --detail-color : #888888;
@@ -231,6 +231,18 @@ body{
 
         }
     
+    }
+}
+
+@media (prefers-color-scheme: dark){
+    .chat{
+        .form{
+            .confirm{
+                img{
+                    filter: invert(1);
+                }
+            }
+        }
     }
 }
 
