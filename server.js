@@ -221,11 +221,6 @@ cio.on(EVENTS.INTERNAL.CONNECTION, (csocket) => {
         });
 
         // here, the user is connected, and the server is ready to receive events from him
-
-        for(let i = 0; i < 50; i++){
-            user.emit(EVENTS.CHAT.MESSAGE, Date.now(), "Server", "Message "+i.toString());
-        }
-        
     });
 
 });
