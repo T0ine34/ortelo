@@ -293,7 +293,7 @@
                     "type": "string"
                 }
             ],
-            "server_to_client": true,
+            "server_to_client": false,
             "client_to_server": true,
             "description": "The username of the client. (this is sent by the client to the server when the client join the game)"
         }
