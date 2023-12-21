@@ -201,8 +201,15 @@ cio.on(EVENTS.INTERNAL.CONNECTION, (csocket) => {
     csocket.once(EVENTS.MISC.USERNAME, (timestamp, username) => {
         let user = new User(csocket, username);    //building the user object
         user.emit(EVENTS.SYSTEM.INFO, Date.now(), "Vous êtes connecté en tant que " + username);   //sending a message to the user to inform him that he is connected
-        rooms.get(general).emit(EVENTS.CHAT.USER_JOINED, Date.now(), username);               //broadcasting the newUser event to all the users of the general room, excepting the new one
+        rooms.get(general).emit(EVENTS.CHAT.USER_JOIN, Date.now(), username);               //broadcasting the newUser event to all the users of the general room, excepting the new one
         user.joinRoom(rooms.get(general));        //adding the user to the general room
+        rooms.get(general).emit(EVENTS.CHAT.USER_JOINED, Date.now(), username);             //broadcasting the newUser event to all the users of the general room, including the new one
+        
+        user.on(EVENTS.INTERNAL.DISCONNECTING, (reason) => {
+            for(let room of user.rooms.values()){
+                room.emit(EVENTS.CHAT.USER_LEAVE, Date.now(), user.username);
+            }
+        });
 
         user.on(EVENTS.INTERNAL.DISCONNECT, (reason) => {
             for(let room of user.rooms.values()){
