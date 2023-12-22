@@ -13,6 +13,11 @@ class GameRooms {
         return GameRooms._instance;
     }
 
+    /**
+     * Generates a random URL for a room.
+     * @param {string} name the game name
+     * @returns a string of 25+(length of name) characters
+     */
     genURL(name) {
         const characters = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
         let key = `game/${name}-`;
