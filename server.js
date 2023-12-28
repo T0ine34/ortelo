@@ -9,28 +9,27 @@ const fs                                                          = require('fs'
 const { TextDecoder }                                             = require('util');
 const http                                                        = require('http');
 const express                                                     = require('express');
-const Logger                                                      = require('./server_modules/logs/main');
-const Database                                                    = require('./server_modules/database/main');
+const { logger }                                                  = require('./server_modules/logs/main');
+const { Database }                                                = require('./server_modules/database/main');
 const { parseCMD }                                                = require('./server_modules/cmd/main');
 const { User }                                                    = require('./server_modules/user/main');
 const { EVENTS, Room, CIO }                                       = require('./server_modules/events/main');
 const { GameLoader }                                              = require('./server_modules/loader/main');
 const { get_404_url, is_special_url, get_special_url, build_url, getPlatform, is_common_ressource } = require('./server_modules/redirection/main');
-const e = require('express');
 
 
 // -------------------------------------------------------------------- SERVER INITIALIZATION
-Logger.debug("intitializing express app");
+logger.debug("intitializing express app");
 const app = express();
-Logger.debug("intitializing http server")
+logger.debug("intitializing http server")
 const server = http.createServer(app);
-Logger.debug("intitializing CIO object using the http server")
+logger.debug("intitializing CIO object using the http server")
 const cio = CIO.from_server(server);
 
-Logger.debug("intitializing game loader");
+logger.debug("intitializing game loader");
 const gameLoader = new GameLoader();
 
-Logger.debug("server initialized successfully");
+logger.debug("server initialized successfully");
 
 // -------------------------------------------------------------------- SERVER CONFIGURATION
 
@@ -59,7 +58,7 @@ app.get('/game-start/:gameName', async (req, res) => {
             throw new Error('Game data is incomplete.');
         }
     } catch (error) {
-        Logger.error(`Error starting game ${gameName}: ${error.message}`);
+        logger.error(`Error starting game ${gameName}: ${error.message}`);
         res.status(500).json({ error: error.message });
     }
 });
@@ -133,7 +132,7 @@ function set_redirections(){
                 if(err){
                     res.status(404).sendFile(__dirname+ '/' + get_404_url(req.rawHeaders));
                 }else{
-                    Logger.debug("a special url was requested : " + req.path + " -> " + url);
+                    logger.debug("a special url was requested : " + req.path + " -> " + url);
                 }
             });
         }
@@ -166,7 +165,7 @@ function set_redirections(){
                     res.status(404).sendFile(__dirname+ '/' + get_404_url(req.rawHeaders));
                 }
                 else{
-                    Logger.debug("a common url was requested : " + req.path + " -> " + url);
+                    logger.debug("a common url was requested : " + req.path + " -> " + url);
                 }
 
             });
@@ -175,7 +174,7 @@ function set_redirections(){
 }
 
 function set_rooms(){
-    Logger.info("setting up defaults rooms");
+    logger.info("setting up defaults rooms");
     let resume = "default rooms :\n";
 
     for(let room of settings.get("default_rooms")){
@@ -188,10 +187,10 @@ function set_rooms(){
         rooms.set(room.name, r); 
         resume += "\t" + room.name + " : visible=" + room.visible + ", using_whitelist=" + room.whitelist + ", list_of_users=[" + room.userlist + "]\n";
     }
-    Logger.fine("Rooms set up successfully");
-    Logger.info(resume.substring(0, resume.length-1)); //removing the last \n
+    logger.fine("Rooms set up successfully");
+    logger.info(resume.substring(0, resume.length-1)); //removing the last \n
     let general = settings.get("main_room_name");
-    Logger.info("general room set to " + general);
+    logger.info("general room set to " + general);
     return general;
 }
 
@@ -233,17 +232,17 @@ cio.on(EVENTS.INTERNAL.CONNECTION, (csocket) => {
 });
 
 server.on("error", (error) => {
-    Logger.error(`Server crashed,  ${error.message}`);
+    logger.error(`Server crashed,  ${error.message}`);
 });
 
 server.on("close", () => {
-    Logger.fine("Server closing successfully");
+    logger.fine("Server closing successfully");
 });
 
 // -------------------------------------------------------------------- SERVER START
 loadGames().then(() => {
     server.listen(settings.get("port"), () => {
         console.log('http server opened, listening on *: ' + settings.get("port"));
-        Logger.info('http server opened, listening on *:'+server.address().port);
+        logger.info('http server opened, listening on *:'+server.address().port);
     });
 });

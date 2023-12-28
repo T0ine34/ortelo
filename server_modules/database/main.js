@@ -263,4 +263,5 @@ class Database {
 /**
  * Exports the Logger so it can be used in other files
  */
-module.exports = new Database();
+let database = new Database();
+module.exports = { database };

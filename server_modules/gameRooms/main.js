@@ -34,4 +34,5 @@ class GameRooms {
 /**
  * Exports the Logger so it can be used in other files
  */
-module.exports = new GameRooms();
+let gameRooms = new GameRooms();
+module.exports = { gameRooms }

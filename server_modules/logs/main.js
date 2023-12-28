@@ -173,4 +173,5 @@ class Logger {
 /**
  * Exports the Logger so it can be used in other files
  */
-module.exports = new Logger();
+let logger = new Logger()
+module.exports = { logger };
