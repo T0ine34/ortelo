@@ -17,7 +17,7 @@ const { EVENTS, Room, CIO }                                       = require('./s
 const { GameLoader }                                              = require('./server_modules/loader/main');
 const { get_404_url, is_special_url, get_special_url, build_url, getPlatform, is_common_ressource } = require('./server_modules/redirection/main');
 const e = require('express');
-const GameRooms = require('./server_modules/gameRooms/main');
+const { GameRooms }                                               = require('./server_modules/gameRooms/main');
 const path = require('path');
 
 
@@ -193,7 +193,7 @@ set_redirections();
 let rooms = new Map();
 let general = set_rooms(); //set default rooms, and get the main room name
 let users = new Map();
-let gameRooms = new Map();
+let gameRooms = new Map(); // key: roomUrl, value: room
 
 // -------------------------------------------------------------------- SERVER FUNCTIONS
 

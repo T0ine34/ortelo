@@ -2,23 +2,18 @@
  * @module GameRooms
  * @category Server
  * @classdesc This module provides URL generation for games.
+ * @static
  * @author Lila BRANDON
  */
 class GameRooms {
-    static _instance = null;
-    constructor() {
-        if(!GameRooms._instance) { //if instance does not exist, create it
-            GameRooms._instance = this;
-        }
-        return GameRooms._instance;
-    }
 
     /**
      * Generates a random URL for a room.
      * @param {string} name the game name
      * @returns a string of 25+(length of name) characters
+     * @static
      */
-    genURL(name) {
+    static genURL(name) {
         const characters = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
         let key = `game/${name}-`;
         
@@ -26,13 +21,9 @@ class GameRooms {
           const randomIndex = Math.floor(Math.random() * characters.length);
           key += characters[randomIndex];
         }
-      
         return key;
     }
 
 }
-/**
- * Exports the Logger so it can be used in other files
- */
-let gameRooms = new GameRooms();
-module.exports = { gameRooms }
+
+module.exports = { GameRooms }
