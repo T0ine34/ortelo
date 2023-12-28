@@ -1,6 +1,6 @@
 const fs                    = require("fs");
 const sqlite3               = require("sqlite3");
-const Logger                = require('../logs/main');
+const { logger }            = require('../logs/main');
 const CryptoJS              = require('crypto-js');
 const BCrypt                = require("bcrypt");
 const { Settings }          = require('../settings/main');
@@ -36,17 +36,17 @@ class Database {
      * Creates a new database file if there isn't one already.
      */
     #load() {
-        Logger.fine("Loading database...")
+        logger.fine("Loading database...")
         this._db = new sqlite3.Database(settings.get("database.path"), sqlite3.OPEN_READWRITE | sqlite3.OPEN_CREATE, (err) => {
             if (err && err.code == "SQLITE_CANTOPEN") {
-                Logger.error("Can not create or open database");
+                logger.error("Can not create or open database");
                 return;
             } else if (err) {
-                Logger.error(`Can not create or open database : ${err.toString()}`);
+                logger.error(`Can not create or open database : ${err.toString()}`);
             }
         });
-        Logger.fine(`Database opened successfully ${settings.get("database.path")}`);
-        Logger.info("Updating database state");
+        logger.fine(`Database opened successfully ${settings.get("database.path")}`);
+        logger.info("Updating database state");
         this.#createTables();
     }
 
@@ -57,9 +57,9 @@ class Database {
      */
     #createTables() {
         let createTables = fs.readFileSync(settings.get("database.createTablesPath"), 'utf8');
-        Logger.debug("Loaded SQL script to create Database tables : " + createTables);
+        logger.debug("Loaded SQL script to create Database tables : " + createTables);
         this._db.exec(createTables);
-        Logger.fine("Database state updated.");
+        logger.fine("Database state updated.");
     }
 
     /**
@@ -84,7 +84,7 @@ class Database {
                 return true;
             }
         });
-        Logger.fine(`Successfully created ${name}'s account`);
+        logger.fine(`Successfully created ${name}'s account`);
     }
 
     /**
@@ -127,7 +127,7 @@ class Database {
     listOnlinePlayers(callback) {
         this._db.all(`SELECT playername FROM player WHERE online='1' ORDER BY playername;`, [], (err, rows) => {
             if(err) {
-                Logger.error(`Can not fetch all online players : ${err.toString()}`);
+                logger.error(`Can not fetch all online players : ${err.toString()}`);
                 return [];
             } else {
                 let playerNames = [];
@@ -147,7 +147,7 @@ class Database {
     doPlayerExists(name, callback) {
         this._db.all(`SELECT playername FROM player WHERE playername='${name}';`, [], (err, rows) => {
             if(err){
-                Logger.error(`Can not retrieve wether the player ${name} exists or no : ${err.toString()}`);
+                logger.error(`Can not retrieve wether the player ${name} exists or no : ${err.toString()}`);
                 callback(true);
             } 
             if(rows.length > 0) callback(true);
@@ -166,7 +166,7 @@ class Database {
     doGameURLExists(url, callback) {
         this._db.get(`SELECT gameurl FROM game WHERE gameurl='${url}';`, [], (err, row) => {
             if(err) {
-                Logger.error(`Can not retrieve wether the url '${url}' already exists or no : ${err.toString()}`);
+                logger.error(`Can not retrieve wether the url '${url}' already exists or no : ${err.toString()}`);
                 callback(true);
             }
             if(row) callback(true);
@@ -184,7 +184,7 @@ class Database {
     getPlayerId(name, callback) {
         this._db.get(`SELECT playerid FROM player WHERE playername='${name}';`, [], (err, row) => {
             if(err) {
-                Logger.error(`Can not retrieve ${name}'s playerid : ${err.toString()}`);
+                logger.error(`Can not retrieve ${name}'s playerid : ${err.toString()}`);
                 callback("null");
             }
             if(row) callback(row.playerid);
@@ -202,7 +202,7 @@ class Database {
     getPassword(playerName, callback){
         this._db.get(`SELECT password FROM player WHERE playername='${playerName}';`, [], (err, row) => {
             if (err) {
-                Logger.error(`Can not retrieve ${playerName}'s password : ${err.toString()}`);
+                logger.error(`Can not retrieve ${playerName}'s password : ${err.toString()}`);
                 callback(false);
             } else {
                 let password = row ? row.password : null;
@@ -222,7 +222,7 @@ class Database {
     comparePassword(password, hashedPassword, callback) {
         BCrypt.compare(password, hashedPassword, function(err, result) {
             if (err) {
-                Logger.error(`Can't compare passwords :  + ${err.toString()}`);
+                logger.error(`Can't compare passwords :  + ${err.toString()}`);
                 callback(false);
             } else {
                 callback(result);
@@ -236,7 +236,7 @@ class Database {
      * @description Closes database connection.
      */
     close() {
-        Logger.info("Closing database");
+        logger.info("Closing database");
         this._db.close();
     }
 
@@ -261,7 +261,7 @@ class Database {
 }
 
 /**
- * Exports the Logger so it can be used in other files
+ * Exports the logger so it can be used in other files
  */
 let database = new Database();
 module.exports = { database };

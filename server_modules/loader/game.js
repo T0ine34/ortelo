@@ -1,4 +1,4 @@
-const Logger    = require('../logs/main');
+const { logger }    = require('../logs/main');
 
 class Game {
     constructor(gameFiles, gameName) {
@@ -21,7 +21,7 @@ class Game {
                 throw new Error('index.json not found in game files; available files are : ' + Object.keys(this._gameFiles).join(', '));
             }
             const jsonData = JSON.parse(this._gameFiles[this._name+'/index.json']);
-            Logger.debug("Data loaded from index.json : " + JSON.stringify(jsonData), null, 2);
+            logger.debug("Data loaded from index.json : " + JSON.stringify(jsonData), null, 2);
 
             // Mise à jour des noms et des fonctions de démarrage à partir des données JSON
             this._starterFunction = jsonData.starterfunction;
@@ -39,7 +39,7 @@ class Game {
                 throw new Error("Icon not referenced in index.json");
             }
         } catch (error) {
-            Logger.warning("Cannot load game '" + this._name + "' : " + error.message);
+            logger.warning("Cannot load game '" + this._name + "' : " + error.message);
         }
     }
     // Getters pour accéder aux données des fichiers
