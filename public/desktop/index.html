@@ -29,7 +29,12 @@
                 </button>
             </form>
         </aside>
-
+        <button class="urlShareButton" style="display: none;">
+            Copier Room URL
+        </button>
+        <div class="waitingScreen" style="display: none;">
+            <h2>En attente du deuxième joueur...</h2>
+        </div>
         <div class="gamesContainer">
             <!-- filled by javascript -->
         </div>
@@ -37,6 +42,7 @@
 
     <script src="/socket.io/socket.io.js"></script>
     <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/clipboard@2/dist/clipboard.min.js"></script>
 
 
 </body>

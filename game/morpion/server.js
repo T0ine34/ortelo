@@ -1,9 +1,22 @@
-class Morpion {
+const { EVENTS, Room, CIO } = require('./server_modules/events/main.js');
+class Server {
     constructor() {
         this.board = [["", "", ""], ["", "", ""], ["", "", ""]];
+        this.players = { X: null, O: null };
         this.currentPlayer = "X";
         this.isGameOver = false;
         this.winner = null;
+    }
+
+    addPlayer(username) {
+        if (!this.players.X) {
+            this.players.X = username;
+            return "X";
+        } else if (!this.players.O) {
+            this.players.O = username;
+            return "O";
+        }
+        return null;
     }
 
     initializeBoard() {
@@ -13,8 +26,11 @@ class Morpion {
         this.winner = null;
     }
 
-    makeMove(row, col) {
+    makeMove(row, col, username) {
         if (this.board[row][col] || this.isGameOver) {
+            return false;
+        }
+        if (username !== this.players[this.currentPlayer]) {
             return false;
         }
         if (this.board[row][col] === "" && !this.isGameOver) {
@@ -71,25 +87,29 @@ class Morpion {
         };
     }
 }
-function initializeMorpionSocket(io, game) {
-    io.on('connection', (socket) => {
-        console.log('a user connected to morpion');
+function initializeMorpionSocket(room) {
+    let game = new Server();
+    game.initializeBoard();
 
-        socket.on('move', ({ row, col }) => {
-            const moveValid = game.makeMove(row, col);
+    const usersArray = Array.from(room.users);
+    const joueur1 = usersArray[0].username;
+    game.addPlayer(joueur1);
+    const joueur2 = usersArray[1].username;
+    game.addPlayer(joueur2);
+
+    room.on(EVENTS.GAME.DATA, (timestamp, data) => {
+        if (data && "row" in data && "col" in data && "username" in data) {
+            const moveValid = game.makeMove(data.row, data.col, data.username);
             if (moveValid) {
-                io.emit('gameState', game.getGameState());
+                room.transmit(EVENTS.GAME.DATA, Date.now(), game.getGameState());
             }
-        });
-
-        socket.on('restart', () => {
+        } else if (data && "restartKey" in data && data.restartKey === "restart") {
             game.initializeBoard();
-            io.emit('gameState', game.getGameState());
-        });
-
-        socket.on('disconnect', () => {
-            console.log('user disconnected from morpion');
-        });
+            room.transmit(EVENTS.GAME.DATA, Date.now(), game.getGameState());
+        } else {
+            console.error("Invalid data received:", data);
+        }
     });
 }
-module.exports = { Morpion, initializeMorpionSocket };
+global.initializeMorpionSocket = initializeMorpionSocket;
+module.exports = { Server: Server, initializeMorpionSocket };
