@@ -16,6 +16,9 @@ const { User }                                                    = require('./s
 const { EVENTS, Room, CIO }                                       = require('./server_modules/events/main');
 const { GameLoader }                                              = require('./server_modules/loader/main');
 const { get_404_url, is_special_url, get_special_url, build_url, getPlatform, is_common_ressource } = require('./server_modules/redirection/main');
+const e = require('express');
+const GameRooms = require('./server_modules/gameRooms/main');
+const path = require('path');
 
 
 // -------------------------------------------------------------------- SERVER INITIALIZATION
@@ -35,33 +38,76 @@ logger.debug("server initialized successfully");
 
 //app.use(express.static(settings.get("public_dir")));
 
-app.get('/game-start/:gameName', async (req, res) => {
+
+app.get('/game-start/:gameName/:username', async (req, res) => {
     const gameName = req.params.gameName.toLowerCase();
-    try {
-        const game = gameLoader.gamesData[gameName];
-        if (!game) {
-            throw new Error(`Game ${gameName} not found`);
-        }
-        if (game.starterFunction && game.serverData) {
+    const username = req.params.username;
 
-            const serverScriptContent = new TextDecoder('utf-8').decode(new Uint8Array(game.serverData));
+    const user = users.get(username);
+    if (!user) {
+        return res.status(404).json({ message : `User ${username} does not exist.` });
+    }
 
-            eval(serverScriptContent);
+    let room = new Room(gameName, username);
 
-            if (typeof serverScript[game.starterFunction] === 'function') {
-                serverScript[game.starterFunction]();
-                res.json({ message: `Game ${gameName} started successfully.` });
-            } else {
-                throw new Error('Starter function not found in server script.');
-            }
-        } else {
-            throw new Error('Game data is incomplete.');
-        }
-    } catch (error) {
-        logger.error(`Error starting game ${gameName}: ${error.message}`);
-        res.status(500).json({ error: error.message });
+    room.addUser(user);
+
+    let roomUrl = GameRooms.genURL(gameName);
+
+    gameRooms.set(roomUrl, room);
+
+    res.json({ roomUrl: roomUrl, message: `Game ${gameName} initiated. Waiting for second player.` });
+});
+
+app.get('/game-wait/game/:roomUrl', (req, res) => {
+    let roomUrl = req.params.roomUrl;
+    let room = gameRooms.get("game/"+roomUrl);
+
+    if (!room) {
+        return res.status(404).json({message : `The room ${roomUrl} does not exist.`});
+    } else if (room.users.size < 2) {
+        return res.status(200).json({message : `Waiting for players to fill the room.`});
+    }
+    if (room.run) {
+        return res.json({ message: `Game ${room.name} already running successfully.` });
+    }
+
+    const game = gameLoader.gamesData[room.name];
+    const serverScriptContent = new TextDecoder('utf-8').decode(new Uint8Array(game.serverData));
+    eval(serverScriptContent);
+
+    if (typeof global[game.starterFunction] === 'function') {
+        global[game.starterFunction](room);
+        res.json({ message: `Game ${room.name} started successfully.` });
+    } else {
+        throw new Error('Starter function not found in server script.');
     }
 });
+
+app.get('/gameUrl/:roomUrl/:username', (req, res) => {
+    const roomUrl = 'game/'+req.params.roomUrl;
+    const username = req.params.username;
+    const user = users.get(username);
+
+    if (!user) {
+        return res.status(404).json({ message : `User ${username} does not exist.` });
+    }
+
+    let room = gameRooms.get(roomUrl);
+
+    if (!room) {
+        return res.status(404).json({ message : `The room ${roomUrl} does not exist.` });
+    }
+
+    if (room.users && room.users.size >= 2) {
+        return res.status(403).json({ message : `The room ${roomUrl} is full.` });
+    }
+    let a = room.addUser(user);
+    res.json({message : `User ${username} joined game room ${roomUrl} successfully`});
+
+});
+
+
 app.get('/games-info', (req, res) => {
     const gamesData = gameLoader.gamesData;
     const fields = req.query.x ? req.query.x.split(',') : null;
@@ -98,6 +144,43 @@ function getGameInfo(game, fields) {
     });
     return info;
 }
+app.get('/game/:url', (req, res) => {
+    const filePath = path.join(__dirname, "server_modules", "redirection", "gameRedirect.js");
+
+    const roomUrl = 'game/'+req.params.url;
+    let room = gameRooms.get(roomUrl);
+    if (!room) {
+        return res.status(404).json({ message : `The room ${roomUrl} does not exist.` });
+    }
+    if (room.users && room.users.size >= 2) {
+        return res.status(403).json({ message : `The room ${roomUrl} is full.` });
+    }
+
+    fs.readFile(filePath, 'utf8', (err, data) => {
+        if (err) {
+            console.error("Erreur lors de la lecture du fichier :", err);
+            res.status(500).send('Erreur lors du chargement du script');
+            return;
+        }
+
+        const scriptWithHost = data.replace('[HOST_PLACEHOLDER]', req.headers.host);
+
+        res.send(`
+            <!DOCTYPE html>
+            <html>
+            <head>
+                <title>Redirection de Jeu</title>
+            </head>
+            <body>
+                <script>${scriptWithHost}</script>
+            </body>
+            </html>
+        `);
+    });
+});
+
+
+
 
 set_redirections();
 
@@ -109,6 +192,8 @@ set_redirections();
 
 let rooms = new Map();
 let general = set_rooms(); //set default rooms, and get the main room name
+let users = new Map();
+let gameRooms = new Map();
 
 // -------------------------------------------------------------------- SERVER FUNCTIONS
 
@@ -199,6 +284,7 @@ function set_rooms(){
 cio.on(EVENTS.INTERNAL.CONNECTION, (csocket) => {
     csocket.once(EVENTS.MISC.USERNAME, (timestamp, username) => {
         let user = new User(csocket, username);    //building the user object
+        users.set(username, user);
         user.emit(EVENTS.SYSTEM.INFO, Date.now(), "Vous êtes connecté en tant que " + username);   //sending a message to the user to inform him that he is connected
         rooms.get(general).emit(EVENTS.CHAT.USER_JOIN, Date.now(), username);               //broadcasting the newUser event to all the users of the general room, excepting the new one
         user.joinRoom(rooms.get(general));        //adding the user to the general room

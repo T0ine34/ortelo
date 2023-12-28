@@ -1,11 +1,14 @@
+let EVENTS;
+let csocket;
 function start() {
-    const socket = io();
     let currentPlayer = "X";
     let isGameOver;
     let winner;
     let gameBoard = [["", "", ""], ["", "", ""], ["", "", ""]];
+    csocket = window.csocket;
+    let username = window.username;
 
-    socket.on('gameState', (state) => {
+    csocket.on(EVENTS.GAME.DATA, (timestamp, state) => {
         updateGameState(state);
         updateFightersDisplay();
     });
@@ -33,7 +36,7 @@ function start() {
 
     function handleMove(row, col) {
         if (!isGameOver && gameBoard[row][col] === "") {
-            socket.emit('move', { row, col });
+            csocket.emit(EVENTS.GAME.DATA, Date.now(), { row, col, username});
         }
     }
 
@@ -134,7 +137,7 @@ function start() {
     }
 
     function restartGame() {
-        socket.emit('restart');
+        csocket.emit(EVENTS.GAME.DATA, Date.now(), { "restartKey": "restart"});
         this.style.display = 'none';
         let zombie = document.getElementById("fighterX");
         let ghost = document.getElementById("fighterO");
@@ -143,4 +146,15 @@ function start() {
         ghost.classList.remove("ghost");
     }
 }
-document.addEventListener('DOMContentLoaded', start);
+
+import('./modules/events/main.js').then(module => {
+    EVENTS = module.EVENTS;
+    if (document.readyState === "complete" ||
+        (document.readyState !== "loading" && !document.documentElement.doScroll)) {
+        start();
+    } else {
+        document.addEventListener("DOMContentLoaded", start);
+    }
+}).catch(error => {
+    console.error('Erreur lors du chargement du module :', error);
+});

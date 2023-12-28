@@ -1,6 +1,8 @@
 import { CSocket, EVENTS } from "./modules/events/main.js";
 import { cookies } from "./modules/cookies/main.js";
 
+new ClipboardJS('.urlShareButton');
+
 const MAX_HISTORY_SIZE = 100;
 
 
@@ -18,9 +20,8 @@ else{
 cookies.set("username", username, 1); //save the username for 1 hour
 console.info("username set to " + username +" for 1 hour");
 
-let csocket = new CSocket(io());
+let csocket = window.csocket = new CSocket(io());
 csocket.emit(EVENTS.MISC.USERNAME, Date.now(), username);                               //sending the newUser event to the server, with the username as parameter
-fetchGames();
 
 csocket.on(EVENTS.CHAT.USER_JOIN, (timestamp, name) => {                                //catching the newUser event, triggered by the server when a new user joins the chat
     receive_message(timestamp, "Information", name + " a rejoint le chat ! &#128075;"); //&#128075; = emoji "person raising hand"
@@ -49,6 +50,7 @@ csocket.on(EVENTS.SYSTEM.BROADCAST, (timestamp, msg) => {              //catchin
 
 csocket.on(EVENTS.SYSTEM.INFO, (timestamp, msg) => {                   //catching the new_message event, triggered by the server when a user sends a message
     receive_message(timestamp, "Information", msg);
+    mayjoinroom();
 });
 
 
@@ -96,7 +98,7 @@ form.addEventListener('submit', function(e) {                   //this is trigge
         while(history.length > MAX_HISTORY_SIZE){
             history.shift(); //remove the first element
         }
-        
+
         input.value = '';
     }
 });
@@ -141,7 +143,7 @@ function format_message(timestamp, _username, msg){
 let receive_message = (timestamp, username, msg) => {
     let item = format_message(timestamp, username, msg);
     messages.appendChild(item);
-    item.scrollIntoView(); 
+    item.scrollIntoView();
 }
 
 
@@ -168,34 +170,157 @@ function fetchGames() {
             console.error('Erreur lors du chargement des jeux:', error);
         });
 }
+
 function PlayGame(name) {
+    let container = document.querySelector('.gamesContainer');
+
     fetch(`/games-info?${name}=html,css,js`)
-        .then(response => response.json())
+        .then(gameResponse => gameResponse.json())
         .then(game => {
-            const container = document.querySelector('.gamesContainer');
-            if (game.html) {
-                const htmlString = new TextDecoder('utf-8').decode(new Uint8Array(game.html.data));
-                const parser = new DOMParser();
-                const doc = parser.parseFromString(htmlString, 'text/html');
-                doc.querySelectorAll('link[href], script[src]').forEach(el => el.remove());
-                container.innerHTML = doc.body.innerHTML;
-            }
 
-            if (game.css) {
-                const cssStyle = document.createElement('style');
-                const cssData = new TextDecoder('utf-8').decode(new Uint8Array(game.css.data));
-                cssStyle.innerHTML = `.x ${cssData}`;
-                document.head.appendChild(cssStyle);
-            }
+            const htmlString = new TextDecoder('utf-8').decode(new Uint8Array(game.html.data));
+            const doc = new DOMParser().parseFromString(htmlString, 'text/html');
+            doc.querySelectorAll('link[href], script[src]').forEach(el => el.remove());
+            container.innerHTML = doc.body.innerHTML;
 
-            if (game.js) {
-                const scriptTag = document.createElement('script');
-                scriptTag.textContent = new TextDecoder('utf-8').decode(new Uint8Array(game.js.data));
-                container.appendChild(scriptTag);
-            }
-            fetch(`/game-start/${name}`)
+            const cssStyle = document.createElement('style');
+            const cssData = new TextDecoder('utf-8').decode(new Uint8Array(game.css.data));
+            cssStyle.innerHTML = `.x ${cssData}`;
+            document.head.appendChild(cssStyle);
+
+            let scriptContent = new TextDecoder('utf-8').decode(new Uint8Array(game.js.data));
+            let scriptTag = document.createElement('script');
+            scriptTag.textContent = scriptContent;
+            window.username = username;
+            document.body.appendChild(scriptTag);
+
+            return fetch(`/game-start/${name}/${username}`);
         })
-        .catch(error => {
-            console.error(`Erreur lors du chargement du ${name}:`, error);
-        });
+        .then(startResponse => startResponse.json())
+        .then(startData => {
+
+            let shareButton = document.querySelector('.urlShareButton');
+            let waitingScreen = document.querySelector('.waitingScreen');
+
+
+            shareButton.style.position = 'absolute';
+            shareButton.style.bottom = '10px';
+            shareButton.style.display = 'block';
+            shareButton.style.left = '50%'; // Center the text
+            shareButton.style.zIndex = '100';
+
+            waitingScreen.style.position = 'absolute';
+            waitingScreen.style.bottom = '50px'; // Position above the shareButton
+            waitingScreen.style.left = '50%'; // Center horizontally
+            waitingScreen.style.transform = 'translateX(-50%)';
+            waitingScreen.style.display = 'block';
+
+            let shareUrl = window.location.href + startData.roomUrl;
+            let urlElement = document.createElement('a');
+            urlElement.href = shareUrl;
+            urlElement.textContent = shareUrl;
+            urlElement.style.position = 'absolute';
+            urlElement.style.bottom = '90px'; // Adjust so it's above the waitingScreen
+            urlElement.style.left = '50%'; // Center horizontally
+            urlElement.style.transform = 'translateX(-50%)';
+            urlElement.style.display = 'block'; // Ensure it's visible
+            urlElement.style.textAlign = 'center'; // Center the text
+            urlElement.style.zIndex = '99';
+            container.appendChild(urlElement);
+
+            // Initialiser ClipboardJS
+            new ClipboardJS('.urlShareButton', {
+                text: function() {
+                    return shareUrl;
+                }
+            });
+
+            // Style du bouton au survol (peut également être fait via une feuille de style CSS)
+            shareButton.addEventListener('mouseover', function() {
+                this.style.backgroundColor = '#555';
+                this.style.color = 'white';
+            });
+            shareButton.addEventListener('mouseout', function() {
+                this.style.backgroundColor = '';
+                this.style.color = '';
+            });
+
+            const checkRoomInterval = setInterval(function (){
+                fetch(`/game-wait/${startData.roomUrl}`)
+                    .then(gameLaunchResponse => gameLaunchResponse.json())
+                    .then(gameLaunchData => {
+                        if (gameLaunchData.message.includes("successfully")) {
+                            // The room is full and the game is successfully started, stop interval
+                            clearInterval(checkRoomInterval);
+
+                            // Hide the waiting screen and the share button
+                            waitingScreen.style.display = 'none';
+                            shareButton.style.display = 'none';
+                            urlElement.style.display = 'none';
+                        }
+                    });
+            }, 1000);
+        })
+        .catch(error => console.error(`Erreur lors du chargement du ${name}:`, error));
+}
+
+function loadGameUI(game) {
+    let container = document.querySelector('.gamesContainer');
+
+    const htmlString = new TextDecoder('utf-8').decode(new Uint8Array(game.html.data));
+    const doc = new DOMParser().parseFromString(htmlString, 'text/html');
+    doc.querySelectorAll('link[href], script[src]').forEach(el => el.remove());
+    container.innerHTML = doc.body.innerHTML;
+
+    const cssStyle = document.createElement('style');
+    const cssData = new TextDecoder('utf-8').decode(new Uint8Array(game.css.data));
+    cssStyle.innerHTML = `.x ${cssData}`;
+    document.head.appendChild(cssStyle);
+
+    let scriptContent = new TextDecoder('utf-8').decode(new Uint8Array(game.js.data));
+    let scriptTag = document.createElement('script');
+    scriptTag.textContent = scriptContent;
+    window.username = username;
+    document.body.appendChild(scriptTag);
+}
+
+async function joinGameRoom(urlParts) {
+    if (urlParts.length >= 3 && urlParts[1] === 'game') {
+        const gameNameParts = urlParts[2].split("-");
+        const gameKey = gameNameParts[0];
+        const roomUrl = urlParts[2];
+
+        const joinRoomResponse = await fetch(`/gameUrl/${roomUrl}/${username}`);
+        const joinRoomData = await joinRoomResponse.json();
+
+        if (!joinRoomData.message.includes('successfully')) {
+            console.error(joinRoomData);
+            return;
+        }
+
+        const checkRoomInterval = setInterval(async function (){
+            const gameLaunchResponse = await fetch(`/game-wait/game/${roomUrl}`);
+            const gameLaunchData = await gameLaunchResponse.json();
+
+            if (gameLaunchData.message.includes("successfully")) {
+
+                clearInterval(checkRoomInterval);
+
+                const gameUIResponse = await fetch(`/games-info?${gameKey}=html,css,js`);
+                const gameUIData = await gameUIResponse.json();
+                loadGameUI(gameUIData);
+            }
+        }, 1000);
+    }
+}
+
+function mayjoinroom() {
+    const gameRedirectData = localStorage.getItem('gameRedirect');
+    if (gameRedirectData) {
+        const urlParts = JSON.parse(gameRedirectData);
+        joinGameRoom(urlParts);
+        localStorage.removeItem('gameRedirect');
+    } else {
+        fetchGames();
+    }
 }

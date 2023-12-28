@@ -26,6 +26,7 @@ class Room{
         this._use_as_whitelist = false; //if true, the _user_list will be used as a whitelist instead of a blacklist
         this._is_visible = true;        //if false, the room will not be visible by users that cannot join it
                                         //if true, the room will be visible by all users
+        this._is_running = false;
         logger.debug("room " + name + " created");
     }
 
@@ -296,6 +297,27 @@ class Room{
      */
     countUsers(){
         return this._users.size;
+    }
+
+    /**
+     * @description Get the running status of the room.
+     * @returns {boolean} True if the room is running, false otherwise.
+     */
+    get run() {
+        return this._is_running;
+    }
+
+    /**
+     * @description Set the running status of the room.
+     * @param {boolean} value - The new running status.
+     * @throws {Error} if the value is not a boolean.
+     */
+    set run(value) {
+        if (typeof value !== 'boolean') {
+            throw new Error('Value must be a boolean');
+        }
+        this._is_running = value;
+        logger.debug(`Room ${this._name} running status set to ${value}`);
     }
 }
 

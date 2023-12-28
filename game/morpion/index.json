@@ -5,7 +5,7 @@
     "mainscript": "main.js",
     "html": "index.html",
     "css": "style.css",
-    "server" : "morpion.js",
+    "server" : "server.js",
     "starterfunction" : "initializeMorpionSocket",
     "images":{
         "icon":"morpion.png"
