@@ -1,3 +1,4 @@
 const urlParts = window.location.pathname.split('/');
 localStorage.setItem('gameRedirect', JSON.stringify(urlParts));
-window.location.href = 'http://[HOST_PLACEHOLDER]';
+const protocol = window.location.protocol;
+window.location.href = protocol + '//' + '[HOST_PLACEHOLDER]';

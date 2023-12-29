@@ -145,17 +145,21 @@ let receive_message = (timestamp, username, msg) => {
     messages.appendChild(item);
     item.scrollIntoView();
 }
-
-
+function clearChat() {
+    messages.innerHTML = '';
+    let chatTitle = document.querySelector('.title');
+    if (chatTitle) {
+        chatTitle.textContent = 'Discussion du jeu';
+    }
+}
 function fetchGames() {
     fetch('/games-info?x=name,icon')
         .then(response => response.json())
         .then(games => {
             let gameContainer = document.querySelector('.gamesContainer');
-            gameContainer.innerHTML = ''; // Erase the existing indicators
+            gameContainer.innerHTML = '';
 
             games.forEach((game, index) => {
-                // Create a new element for each game
                 let Item = document.createElement('div');
                 Item.addEventListener('click', () => PlayGame(game.name));
                 Item.classList.add('GameItem');
@@ -173,6 +177,7 @@ function fetchGames() {
 
 function PlayGame(name) {
     let container = document.querySelector('.gamesContainer');
+    clearChat();
 
     fetch(`/games-info?${name}=html,css,js`)
         .then(gameResponse => gameResponse.json())
@@ -206,12 +211,12 @@ function PlayGame(name) {
             shareButton.style.position = 'absolute';
             shareButton.style.bottom = '10px';
             shareButton.style.display = 'block';
-            shareButton.style.left = '50%'; // Center the text
+            shareButton.style.left = '50%';
             shareButton.style.zIndex = '100';
 
             waitingScreen.style.position = 'absolute';
-            waitingScreen.style.bottom = '50px'; // Position above the shareButton
-            waitingScreen.style.left = '50%'; // Center horizontally
+            waitingScreen.style.bottom = '50px';
+            waitingScreen.style.left = '50%';
             waitingScreen.style.transform = 'translateX(-50%)';
             waitingScreen.style.display = 'block';
 
@@ -220,22 +225,20 @@ function PlayGame(name) {
             urlElement.href = shareUrl;
             urlElement.textContent = shareUrl;
             urlElement.style.position = 'absolute';
-            urlElement.style.bottom = '90px'; // Adjust so it's above the waitingScreen
-            urlElement.style.left = '50%'; // Center horizontally
+            urlElement.style.bottom = '90px';
+            urlElement.style.left = '50%';
             urlElement.style.transform = 'translateX(-50%)';
-            urlElement.style.display = 'block'; // Ensure it's visible
-            urlElement.style.textAlign = 'center'; // Center the text
+            urlElement.style.display = 'block';
+            urlElement.style.textAlign = 'center';
             urlElement.style.zIndex = '99';
             container.appendChild(urlElement);
 
-            // Initialiser ClipboardJS
             new ClipboardJS('.urlShareButton', {
                 text: function() {
                     return shareUrl;
                 }
             });
 
-            // Style du bouton au survol (peut également être fait via une feuille de style CSS)
             shareButton.addEventListener('mouseover', function() {
                 this.style.backgroundColor = '#555';
                 this.style.color = 'white';
@@ -250,10 +253,8 @@ function PlayGame(name) {
                     .then(gameLaunchResponse => gameLaunchResponse.json())
                     .then(gameLaunchData => {
                         if (gameLaunchData.message.includes("successfully")) {
-                            // The room is full and the game is successfully started, stop interval
                             clearInterval(checkRoomInterval);
 
-                            // Hide the waiting screen and the share button
                             waitingScreen.style.display = 'none';
                             shareButton.style.display = 'none';
                             urlElement.style.display = 'none';
@@ -286,6 +287,7 @@ function loadGameUI(game) {
 
 async function joinGameRoom(urlParts) {
     if (urlParts.length >= 3 && urlParts[1] === 'game') {
+        clearChat();
         const gameNameParts = urlParts[2].split("-");
         const gameKey = gameNameParts[0];
         const roomUrl = urlParts[2];

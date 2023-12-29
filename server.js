@@ -38,7 +38,13 @@ logger.debug("server initialized successfully");
 
 //app.use(express.static(settings.get("public_dir")));
 
-
+/**
+ * Start a new game with the given game name and username.
+ * @route GET /game-start/:gameName/:username
+ * @param {string} gameName - Name of the game.
+ * @param {string} username - Name of the user initiating the game.
+ * @returns {JSON} - JSON object with room URL and a message.
+ */
 app.get('/game-start/:gameName/:username', async (req, res) => {
     const gameName = req.params.gameName.toLowerCase();
     const username = req.params.username;
@@ -51,6 +57,9 @@ app.get('/game-start/:gameName/:username', async (req, res) => {
     let room = new Room(gameName, username);
 
     room.addUser(user);
+    user.socket.leave(rooms.get(general));
+    msg = `User ${username} joined the game chat.`;
+    room.emit(EVENTS.CHAT.MESSAGE, Date.now(), username, msg);
 
     let roomUrl = GameRooms.genURL(gameName);
 
@@ -59,6 +68,12 @@ app.get('/game-start/:gameName/:username', async (req, res) => {
     res.json({ roomUrl: roomUrl, message: `Game ${gameName} initiated. Waiting for second player.` });
 });
 
+/**
+ * Wait for players to fill the game room.
+ * @route GET /game-wait/game/:roomUrl
+ * @param {string} roomUrl - URL of the game room.
+ * @returns {JSON} - JSON object with a message about the room's status.
+ */
 app.get('/game-wait/game/:roomUrl', (req, res) => {
     let roomUrl = req.params.roomUrl;
     let room = gameRooms.get("game/"+roomUrl);
@@ -84,6 +99,13 @@ app.get('/game-wait/game/:roomUrl', (req, res) => {
     }
 });
 
+/**
+ * Join a game room.
+ * @route GET /gameUrl/:roomUrl/:username
+ * @param {string} roomUrl - URL of the game room.
+ * @param {string} username - Username of the player joining.
+ * @returns {JSON} - JSON object with a success message.
+ */
 app.get('/gameUrl/:roomUrl/:username', (req, res) => {
     const roomUrl = 'game/'+req.params.roomUrl;
     const username = req.params.username;
@@ -103,11 +125,24 @@ app.get('/gameUrl/:roomUrl/:username', (req, res) => {
         return res.status(403).json({ message : `The room ${roomUrl} is full.` });
     }
     let a = room.addUser(user);
+    user.socket.leave(rooms.get(general));
+    room.on(EVENTS.CHAT.MESSAGE, (timestamp, username, msg) => {
+        room.users.forEach((user) => {
+            user.transmit(EVENTS.CHAT.MESSAGE, Date.now(), username, msg);
+        });
+    });
+    msg = `User ${username} joined the game chat.`;
+    room.emit(EVENTS.CHAT.MESSAGE, Date.now(), username, msg);
     res.json({message : `User ${username} joined game room ${roomUrl} successfully`});
 
 });
 
-
+/**
+ * Get information about games.
+ * @route GET /games-info
+ * @param {string[]} [fields] - Optional. Specific fields to retrieve.
+ * @returns {JSON} - JSON array of game information.
+ */
 app.get('/games-info', (req, res) => {
     const gamesData = gameLoader.gamesData;
     const fields = req.query.x ? req.query.x.split(',') : null;
@@ -144,6 +179,13 @@ function getGameInfo(game, fields) {
     });
     return info;
 }
+
+/**
+ * Retrieve game-specific HTML content.
+ * @route GET /game/:url
+ * @param {string} url - URL identifier for the game.
+ * @returns {HTML} - HTML content for the game.
+ */
 app.get('/game/:url', (req, res) => {
     const filePath = path.join(__dirname, "server_modules", "redirection", "gameRedirect.js");
 
@@ -269,7 +311,7 @@ function set_rooms(){
         for(let username of room.userlist){
             r.add_to_list(username);
         }
-        rooms.set(room.name, r); 
+        rooms.set(room.name, r);
         resume += "\t" + room.name + " : visible=" + room.visible + ", using_whitelist=" + room.whitelist + ", list_of_users=[" + room.userlist + "]\n";
     }
     logger.fine("Rooms set up successfully");
@@ -289,7 +331,7 @@ cio.on(EVENTS.INTERNAL.CONNECTION, (csocket) => {
         rooms.get(general).emit(EVENTS.CHAT.USER_JOIN, Date.now(), username);               //broadcasting the newUser event to all the users of the general room, excepting the new one
         user.joinRoom(rooms.get(general));        //adding the user to the general room
         rooms.get(general).emit(EVENTS.CHAT.USER_JOINED, Date.now(), username);             //broadcasting the newUser event to all the users of the general room, including the new one
-        
+
         user.on(EVENTS.INTERNAL.DISCONNECTING, (reason) => {
             for(let room of user.rooms.values()){
                 room.emit(EVENTS.CHAT.USER_LEAVE, Date.now(), user.username);
