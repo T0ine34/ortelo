@@ -4,7 +4,6 @@ class Game {
     constructor(gameFiles, gameName) {
         this._gameFiles = gameFiles;
         this._name = gameName;
-        this._starterFunction = null;
 
         // Variables pour stocker les contenus des fichiers en mémoire
         this._iconData = null;
@@ -22,9 +21,6 @@ class Game {
             }
             const jsonData = JSON.parse(this._gameFiles['index.json']);
             logger.debug("Data loaded from index.json : " + JSON.stringify(jsonData), null, 2);
-
-            // Mise à jour des noms et des fonctions de démarrage à partir des données JSON
-            this._starterFunction = jsonData.starterfunction;
 
             // Stocker le contenu des fichiers en mémoire
             this._htmlData = jsonData.html ? this._gameFiles[jsonData.html] : null;
@@ -45,9 +41,6 @@ class Game {
     // Getters pour accéder aux données des fichiers
     get name() {
         return this._name;
-    }
-    get starterFunction() {
-        return this._starterFunction;
     }
 
     get iconData() {

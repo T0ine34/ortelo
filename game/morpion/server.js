@@ -87,7 +87,7 @@ class Server {
         };
     }
 }
-function initializeMorpionSocket(room) {
+function morpion(room) {
     let game = new Server();
     game.initializeBoard();
 
@@ -111,5 +111,5 @@ function initializeMorpionSocket(room) {
         }
     });
 }
-global.initializeMorpionSocket = initializeMorpionSocket;
-module.exports = { Server: Server, initializeMorpionSocket };
+global.morpion = morpion;
+module.exports = { Server: Server, morpion };

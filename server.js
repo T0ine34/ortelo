@@ -76,8 +76,8 @@ app.get('/game-wait/game/:roomUrl', (req, res) => {
     const serverScriptContent = new TextDecoder('utf-8').decode(new Uint8Array(game.serverData));
     eval(serverScriptContent);
 
-    if (typeof global[game.starterFunction] === 'function') {
-        global[game.starterFunction](room);
+    if (typeof global[room.name] === 'function') {
+        global[room.name](room);
         res.json({ message: `Game ${room.name} started successfully.` });
     } else {
         throw new Error('Starter function not found in server script.');
