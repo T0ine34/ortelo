@@ -1,4 +1,7 @@
 const { EVENTS, Room, CIO } = require('./server_modules/events/main.js');
+/**
+ * Class representing the server logic for a Tic-Tac-Toe game.
+ */
 class Server {
     constructor() {
         this.board = [["", "", ""], ["", "", ""], ["", "", ""]];
@@ -7,7 +10,11 @@ class Server {
         this.isGameOver = false;
         this.winner = null;
     }
-
+    /**
+     * Add a player to the game.
+     * @param {string} username - Username of the player to add.
+     * @returns {string|null} Symbol representing the player added ('X' or 'O'), or null if no space.
+     */
     addPlayer(username) {
         if (!this.players.X) {
             this.players.X = username;
@@ -25,7 +32,13 @@ class Server {
         this.isGameOver = false;
         this.winner = null;
     }
-
+    /**
+     * Make a move on the game board.
+     * @param {number} row - The row index of the move.
+     * @param {number} col - The column index of the move.
+     * @param {string} username - Username of the player making the move.
+     * @returns {boolean} True if the move was successful, false otherwise.
+     */
     makeMove(row, col, username) {
         if (this.board[row][col] || this.isGameOver) {
             return false;
@@ -77,16 +90,24 @@ class Server {
         }
     }
 
-
+    /**
+     * Get the current state of the game.
+     * @returns {Object} Current state of the game including board, currentPlayer, isGameOver, winner, and players.
+     */
     getGameState() {
         return {
             board: this.board,
             currentPlayer: this.currentPlayer,
             isGameOver: this.isGameOver,
-            winner: this.winner
+            winner: this.winner,
+            players: this.players
         };
     }
 }
+/**
+ * Initialize a socket connection for the Morpion (Tic-Tac-Toe) game.
+ * @param {Room} room - The game room.
+ */
 function morpion(room) {
     let game = new Server();
     game.initializeBoard();

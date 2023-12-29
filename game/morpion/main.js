@@ -7,6 +7,7 @@ function start() {
     let gameBoard = [["", "", ""], ["", "", ""], ["", "", ""]];
     csocket = window.csocket;
     let username = window.username;
+    let players;
 
     csocket.on(EVENTS.GAME.DATA, (timestamp, state) => {
         updateGameState(state);
@@ -18,33 +19,49 @@ function start() {
 
     document.getElementById("restartButton").style.display = 'none';
     document.getElementById("restartButton").addEventListener('click', restartGame);
-
+    /**
+     * Updates the game state based on the data received from the server.
+     * @param {Object} state - The current state of the game from the server.
+     */
     function updateGameState(state) {
         currentPlayer = state.currentPlayer;
         isGameOver = state.isGameOver;
         gameBoard = state.board;
         winner = state.winner;
+        players = state.players;
         renderBoard(gameBoard);
         updateFightersDisplay();
     }
-
+    /**
+     * Handles the click event on a cell of the game board.
+     */
     function cellClicked() {
         const row = this.parentNode.rowIndex;
         const col = this.cellIndex;
         handleMove(row, col);
     }
-
+    /**
+     * Handles a move made by a player.
+     * @param {number} row - The row index of the move.
+     * @param {number} col - The column index of the move.
+     */
     function handleMove(row, col) {
         if (!isGameOver && gameBoard[row][col] === "") {
             csocket.emit(EVENTS.GAME.DATA, Date.now(), { row, col, username});
         }
     }
-
+    /**
+     * Renders the game board.
+     * @param {string[][]} board - The current state of the game board.
+     */
     function renderBoard(board) {
         updateBoardDisplay(board);
         updateGameStatusDisplay();
     }
-
+    /**
+     * Updates the display of the game board.
+     * @param {string[][]} board - The current state of the game board.
+     */
     function updateBoardDisplay(board) {
         const table = document.getElementById("gameBoard");
         board.forEach((row, rowIndex) => {
@@ -60,10 +77,29 @@ function start() {
             });
         });
     }
-
+    function updateTurnMessage() {
+        const statusElement = document.getElementById("gameStatus");
+        const restartButton = document.getElementById("restartButton");
+        let message;
+        if (players) {
+            if (players[currentPlayer] === username) {
+                message = "C'est votre tour";
+            } else {
+                message = "Au tour de l'adversaire";
+            }
+            statusElement.innerHTML = `${message} <span class='${currentPlayer === 'X' ? 'red-color' : 'blue-color'}'>(${currentPlayer})</span>`;
+        } else {
+            statusElement.innerHTML = `Tour de <span class='${currentPlayer === 'X' ? 'red-color' : 'blue-color'}'>${currentPlayer}</span>`;
+        }
+        restartButton.style.display = 'none';
+    }
+    /**
+     * Updates the game status display, including current player and game over messages.
+     */
     function updateGameStatusDisplay() {
         const statusElement = document.getElementById("gameStatus");
         const restartButton = document.getElementById("restartButton");
+        let message;
 
         if (isGameOver) {
             let message = "Match nul!";
@@ -77,8 +113,7 @@ function start() {
             statusElement.innerHTML = message;
             restartButton.style.display = 'block';
         } else {
-            statusElement.innerHTML = `Tour de <span class='${currentPlayer === 'X' ? 'red-color' : 'blue-color'}'>${currentPlayer}</span>`;
-            restartButton.style.display = 'none';
+            updateTurnMessage();
         }
     }
 
@@ -147,6 +182,9 @@ function start() {
     }
 }
 
+/**
+ * Dynamic import of the events module and initialization of the game.
+ */
 import('./modules/events/main.js').then(module => {
     EVENTS = module.EVENTS;
     if (document.readyState === "complete" ||
