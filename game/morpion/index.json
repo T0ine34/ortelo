@@ -6,8 +6,7 @@
     "html": "index.html",
     "css": "style.css",
     "server" : "server.js",
-    "starterfunction" : "morpion",
     "images":{
-        "icon":"morpion.png"
+        "icon":"images/morpion.png"
     }
 }

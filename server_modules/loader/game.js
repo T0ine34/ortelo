@@ -18,20 +18,20 @@ class Game {
         try {
 
             // Supposons que index.json est stocké en tant que chaîne JSON dans _gameFiles
-            if (!this._gameFiles[this._name+'/'+'index.json']){
+            if (!this._gameFiles['index.json']){
                 throw new Error('index.json not found in game files; available files are : ' + Object.keys(this._gameFiles).join(', '));
             }
-            const jsonData = JSON.parse(this._gameFiles[this._name+'/'+'index.json']);
+            const jsonData = JSON.parse(this._gameFiles['index.json']);
             logger.debug("Data loaded from index.json : " + JSON.stringify(jsonData), null, 2);
             // Stocker le contenu des fichiers en mémoire
-            this._htmlData = jsonData.html ? this._gameFiles[this._name+'/'+jsonData.html] : null;
-            this._cssData = jsonData.css ? this._gameFiles[this._name+'/'+jsonData.css] : null;
-            this._jsData = jsonData.mainscript ? this._gameFiles[this._name+'/'+jsonData.mainscript] : null;
-            this._serverData = jsonData.server ? this._gameFiles[this._name+'/'+jsonData.server] : null;
+            this._htmlData = jsonData.html ? this._gameFiles[jsonData.html] : null;
+            this._cssData = jsonData.css ? this._gameFiles[jsonData.css] : null;
+            this._jsData = jsonData.mainscript ? this._gameFiles[jsonData.mainscript] : null;
+            this._serverData = jsonData.server ? this._gameFiles[jsonData.server] : null;
             // Gestion de l'icône
             if (jsonData.images && jsonData.images.icon) {
                 let iconPath = jsonData.images.icon;
-                this._iconData = this._gameFiles[this._name+'/images/'+iconPath] || null;
+                this._iconData = this._gameFiles[iconPath] || null;
             } else {
                 throw new Error("Icon not referenced in index.json");
             }
