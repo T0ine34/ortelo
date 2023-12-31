@@ -3,7 +3,7 @@ const JSZip         = require('jszip');
 const path          = require('path');
 const { Game }      = require('./game');
 const { Settings }  = require('../settings/main');
-
+ 
 var settings = new Settings("./server.config");
 
 /**
