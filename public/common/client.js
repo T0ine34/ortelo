@@ -177,6 +177,7 @@ function fetchGames() {
 
 function PlayGame(name) {
     let container = document.querySelector('.gamesContainer');
+    let roomWaitContainer = document.querySelector('.roomWaitSomeUsers');
     clearChat();
 
     fetch(`/games-info?${name}=html,css,js`)
@@ -187,6 +188,8 @@ function PlayGame(name) {
             const doc = new DOMParser().parseFromString(htmlString, 'text/html');
             doc.querySelectorAll('link[href], script[src]').forEach(el => el.remove());
             container.innerHTML = doc.body.innerHTML;
+
+            container.appendChild(roomWaitContainer);
 
             const cssStyle = document.createElement('style');
             const cssData = new TextDecoder('utf-8').decode(new Uint8Array(game.css.data));
@@ -204,34 +207,23 @@ function PlayGame(name) {
         .then(startResponse => startResponse.json())
         .then(startData => {
 
+            let gamesContainer = document.querySelector('.gamesContainer');
+            gamesContainer.style.position = 'relative';
+
+            let roomWaitContainer = document.querySelector('.roomWaitSomeUsers');
             let shareButton = document.querySelector('.urlShareButton');
             let waitingScreen = document.querySelector('.waitingScreen');
-
-
-            shareButton.style.position = 'absolute';
-            shareButton.style.bottom = '10px';
-            shareButton.style.display = 'block';
-            shareButton.style.left = '50%';
-            shareButton.style.zIndex = '100';
-
-            waitingScreen.style.position = 'absolute';
-            waitingScreen.style.bottom = '50px';
-            waitingScreen.style.left = '50%';
-            waitingScreen.style.transform = 'translateX(-50%)';
-            waitingScreen.style.display = 'block';
+            let roomUrlbrute = document.querySelector('.roomUrlbrute');
 
             let shareUrl = window.location.href + startData.roomUrl;
-            let urlElement = document.createElement('a');
-            urlElement.href = shareUrl;
-            urlElement.textContent = shareUrl;
-            urlElement.style.position = 'absolute';
-            urlElement.style.bottom = '90px';
-            urlElement.style.left = '50%';
-            urlElement.style.transform = 'translateX(-50%)';
-            urlElement.style.display = 'block';
-            urlElement.style.textAlign = 'center';
-            urlElement.style.zIndex = '99';
-            container.appendChild(urlElement);
+
+            roomUrlbrute.href = shareUrl;
+            roomUrlbrute.textContent = shareUrl;
+
+            roomWaitContainer.style.display = 'block';
+            waitingScreen.style.display = 'block';
+            shareButton.style.display = 'inline-block';
+            roomUrlbrute.style.display = 'block';
 
             new ClipboardJS('.urlShareButton', {
                 text: function() {
@@ -239,13 +231,14 @@ function PlayGame(name) {
                 }
             });
 
-            shareButton.addEventListener('mouseover', function() {
-                this.style.backgroundColor = '#555';
-                this.style.color = 'white';
-            });
-            shareButton.addEventListener('mouseout', function() {
-                this.style.backgroundColor = '';
-                this.style.color = '';
+            shareButton.addEventListener('click', function() {
+                this.classList.add('clicked');
+                let originalText = this.textContent;
+                this.textContent = 'Copié!';
+                setTimeout(() => {
+                    this.classList.remove('clicked');
+                    this.textContent = originalText;
+                }, 1000);
             });
 
             const checkRoomInterval = setInterval(function (){
@@ -255,9 +248,13 @@ function PlayGame(name) {
                         if (gameLaunchData.message.includes("successfully")) {
                             clearInterval(checkRoomInterval);
 
+                            let gamesContainer = document.querySelector('.gamesContainer');
+                            gamesContainer.style.position = 'absolute';
+
+                            roomWaitContainer.style.display = 'none';
                             waitingScreen.style.display = 'none';
                             shareButton.style.display = 'none';
-                            urlElement.style.display = 'none';
+                            roomUrlbrute.style.display = 'none';
                         }
                     });
             }, 1000);

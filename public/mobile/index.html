@@ -30,11 +30,15 @@
                 </button>
             </form>
         </aside>
-        <button class="urlShareButton" style="display: none;">
-            Copier Room URL
-        </button>
-        <div class="waitingScreen" style="display: none;">
-            <h2>En attente du deuxième joueur...</h2>
+        <div class="roomWaitSomeUsers">
+            <div class="waitingScreen" style="display: none;">
+                <h2>Partagez avec votre ami !</h2>
+            </div>
+            <button class="urlShareButton" style="display: none;">
+                Copier Room URL
+            </button>
+            <div class="copy-confirmation" style="display: none;">URL copiée!</div>
+            <a class="roomUrlbrute" style="display: none;"></a>
         </div>
         <div class="gamesContainer">
             <!-- filled by javascript -->

@@ -18,6 +18,7 @@ class Game {
         try {
 
             // Supposons que index.json est stocké en tant que chaîne JSON dans _gameFiles
+            // Attention quand vous compressez le rar faut compresser que les fichiers pas le dossier
             if (!this._gameFiles['index.json']){
                 throw new Error('index.json not found in game files; available files are : ' + Object.keys(this._gameFiles).join(', '));
             }

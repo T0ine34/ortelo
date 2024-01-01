@@ -74,7 +74,7 @@ app.get('/game-start/:gameName/:username', async (req, res) => {
  * @param {string} roomUrl - URL of the game room.
  * @returns {JSON} - JSON object with a message about the room's status.
  */
-app.get('/game-wait/game/:roomUrl', (req, res) => {
+app.get('/game-wait/game/:roomUrl', async (req, res) => {
     let roomUrl = req.params.roomUrl;
     let room = gameRooms.get("game/"+roomUrl);
 
@@ -86,13 +86,15 @@ app.get('/game-wait/game/:roomUrl', (req, res) => {
     if (room.run) {
         return res.json({ message: `Game ${room.name} already running successfully.` });
     }
-
+    function sleep(seconds) {
+        return new Promise(resolve => setTimeout(resolve, seconds * 1000));
+    }
     const game = gameLoader.gamesData[room.name];
     const serverScriptContent = new TextDecoder('utf-8').decode(new Uint8Array(game.serverData));
     eval(serverScriptContent);
-
     if (typeof global[room.name] === 'function') {
         global[room.name](room);
+        room.run= true;
         res.json({ message: `Game ${room.name} started successfully.` });
     } else {
         throw new Error('Starter function not found in server script.');

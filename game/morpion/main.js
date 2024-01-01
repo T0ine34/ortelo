@@ -10,9 +10,17 @@ function start() {
     let players;
 
     csocket.on(EVENTS.GAME.DATA, (timestamp, state) => {
-        updateGameState(state);
-        updateFightersDisplay();
+        if (state && "all_connected" in state && "players" in state) {
+            players = state.players;
+            updateTurnMessage();
+        } else {
+            updateGameState(state);
+            updateFightersDisplay();
+        }
     });
+
+    csocket.emit(EVENTS.GAME.DATA, Date.now(), {ready: "ready"});
+
     document.querySelectorAll('#gameBoard td').forEach(cell => {
         cell.addEventListener('click', cellClicked);
     });
