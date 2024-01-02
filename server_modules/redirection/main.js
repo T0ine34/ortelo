@@ -1,6 +1,6 @@
 const { Settings }  = require('../settings/main');
 const fs            = require('fs');
-logger              = require('../logs/main');
+const { logger }    = require('../logs/main');
 
 var settings = new Settings("./server.config");
 
