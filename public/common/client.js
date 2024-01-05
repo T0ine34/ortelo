@@ -208,7 +208,10 @@ function PlayGame(name) {
         .then(startData => {
 
             let gamesContainer = document.querySelector('.gamesContainer');
-            gamesContainer.style.position = 'relative';
+            let menuBarExists = document.querySelector('.menubar') !== null;
+            if (!menuBarExists) {
+                gamesContainer.style.position = 'relative';
+            }
 
             let roomWaitContainer = document.querySelector('.roomWaitSomeUsers');
             let shareButton = document.querySelector('.urlShareButton');
@@ -220,7 +223,7 @@ function PlayGame(name) {
             roomUrlbrute.href = shareUrl;
             roomUrlbrute.textContent = shareUrl;
 
-            roomWaitContainer.style.display = 'block';
+            roomWaitContainer.style.display = 'flex';
             waitingScreen.style.display = 'block';
             shareButton.style.display = 'inline-block';
             roomUrlbrute.style.display = 'block';

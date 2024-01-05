@@ -284,6 +284,7 @@ body{
     }
 }
 
+
 @media (orientation: portrait){
     .gamesContainer{
         width: 100%;
@@ -298,8 +299,11 @@ body{
 @media (orientation: landscape){
     /* put 2 GameItem side by side, as much rows as needed */
     .gamesContainer{
+        margin-left: 3em;
         width: calc(100% - 3em);
+        position: absolute;
         height: 100%;
+        top: 0;
         right: 0;
         overflow-y: scroll;
 
@@ -312,6 +316,9 @@ body{
 
 
 .roomWaitSomeUsers {
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
     display: none;
     position: absolute;
     top: 50%;
@@ -323,7 +330,10 @@ body{
     padding: 20px;
     border-radius: 10px;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    width: 50vw;
+    height: 30vh;
 }
+
 
 .urlShareButton {
     background-color: #f0f0f0;
@@ -332,7 +342,7 @@ body{
     text-align: center;
     text-decoration: none;
     display: inline-block;
-    font-size: 16px;
+    font-size: 15px;
     margin: 4px 2px;
     transition-duration: 0.4s;
     cursor: pointer;
@@ -345,10 +355,16 @@ body{
     color: white;
 }
 
-.roomUrlbrute, .waitingScreen {
-    margin-top: 20px;
-    display: block;
-    width: 100%;
+.roomUrlbrute, .waitingScreen, .urlShareButton {
+    margin-top: 1vh;
+    width: auto;
+    max-width: 100%;
+}
+
+.roomUrlbrute {
+    word-wrap: break-word;
+    overflow-wrap: break-word;
+    font-size: 15px;
 }
 
 .waitingScreen h2 {
