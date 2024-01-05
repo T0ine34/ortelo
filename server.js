@@ -41,7 +41,7 @@ logger.debug("server initialized successfully");
 
 /**
  * Start a new game with the given game name and username.
- * @route GET /game-start/:gameName/:username
+ * @name GET /game-start/:gameName/:username
  * @param {string} gameName - Name of the game.
  * @param {string} username - Name of the user initiating the game.
  * @returns {JSON} - JSON object with room URL and a message.
@@ -71,7 +71,7 @@ app.get('/game-start/:gameName/:username', async (req, res) => {
 
 /**
  * Wait for players to fill the game room.
- * @route GET /game-wait/game/:roomUrl
+ * @name GET /game-wait/game/:roomUrl
  * @param {string} roomUrl - URL of the game room.
  * @returns {JSON} - JSON object with a message about the room's status.
  */
@@ -104,7 +104,7 @@ app.get('/game-wait/game/:roomUrl', async (req, res) => {
 
 /**
  * Join a game room.
- * @route GET /gameUrl/:roomUrl/:username
+ * @name GET /gameUrl/:roomUrl/:username
  * @param {string} roomUrl - URL of the game room.
  * @param {string} username - Username of the player joining.
  * @returns {JSON} - JSON object with a success message.
@@ -142,7 +142,7 @@ app.get('/gameUrl/:roomUrl/:username', (req, res) => {
 
 /**
  * Get information about games.
- * @route GET /games-info
+ * @name GET /games-info
  * @param {string[]} [fields] - Optional. Specific fields to retrieve.
  * @returns {JSON} - JSON array of game information.
  */
@@ -185,7 +185,7 @@ function getGameInfo(game, fields) {
 
 /**
  * Retrieve game-specific HTML content.
- * @route GET /game/:url
+ * @name GET /game/:url
  * @param {string} url - URL identifier for the game.
  * @returns {HTML} - HTML content for the game.
  */
