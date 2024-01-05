@@ -19,6 +19,7 @@ const { get_404_url, is_special_url, get_special_url, build_url, getPlatform, is
 const e = require('express');
 const { GameRooms }                                               = require('./server_modules/gameRooms/main');
 const path = require('path');
+const { log } = require('console');
 
 
 // -------------------------------------------------------------------- SERVER INITIALIZATION
@@ -207,8 +208,6 @@ app.get('/game/:url', (req, res) => {
             return;
         }
 
-        const scriptWithHost = data.replace('[HOST_PLACEHOLDER]', req.headers.host);
-
         res.send(`
             <!DOCTYPE html>
             <html>
@@ -216,7 +215,7 @@ app.get('/game/:url', (req, res) => {
                 <title>Redirection de Jeu</title>
             </head>
             <body>
-                <script>${scriptWithHost}</script>
+                <script>${data}</script>
             </body>
             </html>
         `);
