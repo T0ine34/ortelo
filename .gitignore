@@ -9,3 +9,4 @@
 ftpAutoPush.config
 Dockerfile
 build.bat
+build.sh
