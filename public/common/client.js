@@ -5,7 +5,6 @@ new ClipboardJS('.urlShareButton');
 
 const MAX_HISTORY_SIZE = 100;
 
-
 let username;
 if(cookies.exists("username")){
     username = cookies.get("username");
@@ -13,6 +12,7 @@ if(cookies.exists("username")){
 }
 else{
     console.info("username not found in cookies");
+    //location.href = "connection.html"; Will redirect user to log in page
     while (username == null || username == "" || !username.trim().length || username.length > 16) {
         username = prompt("Enter your username (can not be longer than 16 characters)");
     }
@@ -177,7 +177,7 @@ function fetchGames() {
 
 function PlayGame(name) {
     let container = document.querySelector('.gamesContainer');
-    let roomWaitContainer = document.querySelector('.roomWaitSomeUsers');
+    let roomWaitContainer = document.querySelector('.popup_wait_users');
     clearChat();
 
     fetch(`/games-info?${name}=html,css,js`)
@@ -213,7 +213,7 @@ function PlayGame(name) {
                 gamesContainer.style.position = 'relative';
             }
 
-            let roomWaitContainer = document.querySelector('.roomWaitSomeUsers');
+            let roomWaitContainer = document.querySelector('.popup_wait_users');
             let shareButton = document.querySelector('.urlShareButton');
             let waitingScreen = document.querySelector('.waitingScreen');
             let roomUrlbrute = document.querySelector('.roomUrlbrute');
@@ -250,9 +250,6 @@ function PlayGame(name) {
                     .then(gameLaunchData => {
                         if (gameLaunchData.message.includes("successfully")) {
                             clearInterval(checkRoomInterval);
-
-                            let gamesContainer = document.querySelector('.gamesContainer');
-                            gamesContainer.style.position = 'absolute';
 
                             roomWaitContainer.style.display = 'none';
                             waitingScreen.style.display = 'none';
