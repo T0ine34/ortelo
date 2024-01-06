@@ -192,10 +192,9 @@ body{
 
 .gamesContainer{
     display: flex;
-
     text-align: center;
-
     overflow-y:auto;
+
     & .GameItem{
         width: 20em;
         height: min-content;
