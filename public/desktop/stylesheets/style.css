@@ -84,7 +84,7 @@ body{
 }
 .left-content .form .textInput {
     width: 100%;
-    padding: 0.75rem;
+    padding: 0.55rem;
     border-style: solid;
     box-sizing: border-box;
     border-width: 1px;
@@ -98,7 +98,7 @@ body{
     justify-content: center;
     align-items: center;
     aspect-ratio: 1;
-    max-width: 15%;
+    max-width: 11%;
     padding: 0.5rem;
     border-style: solid;
     border-width: 1px;
