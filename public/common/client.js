@@ -220,7 +220,6 @@ function PlayGame(name) {
 
             let shareUrl = window.location.href + startData.roomUrl;
 
-            roomUrlbrute.href = shareUrl;
             roomUrlbrute.textContent = shareUrl;
 
             roomWaitContainer.style.display = 'flex';
