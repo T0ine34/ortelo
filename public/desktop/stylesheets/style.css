@@ -20,138 +20,147 @@
     }
 }
 
+* {
+    box-sizing: border-box;
+}
+
+html, body {
+    padding: 0;
+    margin: 0;
+    overflow: hidden;
+}
+
 
 body{
     background-color: var(--background-color);
     color: var(--border-color);
 }
 
-
-.banner{
-    width: 25%;
-    text-align: center;
-    height: 100px;
-    img{
-        height: 80%;
-    }
+.root {
+    display: flex;
+    margin: 0;
+    padding: 0;
+    min-height: 100vh;
+    width: 100%;
 }
 
-.chat{
+
+.left-content {
+    display: flex;
+    justify-content: space-between;
     width: 25%;
-    position: fixed;
+    flex-direction: column;
+    height: 100vh;
     border-color: var(--border-color);
     border-style: solid;
     border-width: 1px 1px 0 0;
-    height: calc(100% - 100px); 
-    bottom: 0;
-    left: 0;
+}
 
+.left-content header {
+    height: 15vh;
+    display: flex;
+    justify-content: center;
+}
+.left-content .title {
+    text-align: center;
+    font-size: 1.5em;
+    font-weight: bold;
+    margin-bottom: 0.5em;
+}
+.left-content main {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    height: 85vh;
+    padding: 0.75rem;
+}
 
-    .title{
-        text-align: center;
-        font-size: 1.5em;
-        font-weight: bold;
-        margin-bottom: 0.5em;
-
+.left-content .form {
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+    gap: 1rem;
+    padding: 0 0.75rem;
+}
+.left-content .form .textInput {
+    width: 100%;
+    padding: 0.75rem;
+    border-style: solid;
+    box-sizing: border-box;
+    border-width: 1px;
+    border-color: var(--border-color);
+    border-radius: 0.8em;
+    background-color: var(--background-color);
+    color: var(--border-color);
+}
+.left-content .form .confirm {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    aspect-ratio: 1;
+    max-width: 15%;
+    padding: 0.5rem;
+    border-style: solid;
+    border-width: 1px;
+    border-color: var(--border-color);
+    border-radius: 0.8em;
+    background-color: var(--accent-color);
+    cursor: pointer;
+    transition: background-color 0.2s ease-in-out;
+    img{
+        aspect-ratio: 1;
+        width: 100%;
+        height: 100%;
     }
 
-
-    .form{
-        width: calc(100% - 1em);
-        height: 3em;
-        bottom: 0;
-        padding: 0.5em;
-
-        .textInput{
-            height: 3em;
-            width: calc( 95% - 2em - 3em);
-            padding: 0em 0.5em;
-            border-style: solid;
-            position: absolute;
-            box-sizing: border-box;
-            left: 0.5em;
-            bottom: 1em;
-            border-width: 1px;
-            border-color: var(--border-color);
-            border-radius: 0.8em;
-            margin-left: 2.5%;
-            background-color: var(--background-color);
-            color: var(--border-color);
-        }
-
-        .confirm{
-            height: 3em;
-            width: 3em;
-            position: absolute;
-            right: 1em;
-            bottom: 1em;
-            border-style: solid;
-            border-width: 1px;
-            border-color: var(--border-color);
-            border-radius: 0.8em;
-            margin-left: 0.5em;
-            background-color: var(--accent-color);
-            cursor: pointer;
-            transition: background-color 0.2s ease-in-out;
-            img{
-                width: 1.5em;
-                margin-top: 0.25em;
-            }
-
-            &:hover{
-                background-color: var(--accent-color-hover);
-            }
-
-        }
+    &:hover{
+        background-color: var(--accent-color-hover);
     }
-
-    .messages_list{
-        width: calc(100% - 1em);
-        overflow-y: scroll;
-        overflow-x: hidden;
-        height: calc(100% - 3em - 100px);
-        padding: 0.5em;
-        margin-bottom: 2em;
-        list-style: none;
-
-        .message_item{
-            max-width: 90%;
-            width: max-content;
-            min-width: 30%;
-            margin-bottom: 0.5em;
-            padding: 0.2em 0.5em 0.2em 0.5em;
-            border-width: 1px;
-            border-style: solid;
-            border-color: var(--border-color);
-            word-wrap: break-word;
-
-            &.me{
-                border-radius: 1em 1em 0 1em;
-                text-align: right;
-                margin-left: auto;
-
-            }
-            &.other{
-                border-radius: 1em 1em 1em 0;
-                text-align: left;
-                margin-right: auto;
-
-
-            }
-
-            .date{
-                font-size: 0.8em;
-                color: var(--detail-color);
-                text-align: right;
-            }
-
-        }
+}
+.left-content .messages_list {
+    width: 100%;
+    height: 70%;
+    overflow-y: scroll;
+    overflow-x: hidden;
+    margin: 0;
+    max-height: 70%;
+    padding: 0.5rem;
+    list-style: none;
+}
+.left-content .message_item {
+    max-width: 90%;
+    width: max-content;
+    min-width: 30%;
+    margin-bottom: 0.5em;
+    padding: 0.2em 0.5em 0.2em 0.5em;
+    border-width: 1px;
+    border-style: solid;
+    border-color: var(--border-color);
+    word-wrap: break-word;
     
+    &.me{
+        border-radius: 1em 1em 0 1em;
+        text-align: right;
+        margin-left: auto;
+        
+    }
+    &.other{
+        border-radius: 1em 1em 1em 0;
+        text-align: left;
+        margin-right: auto;
+        
+        
+    }
+    
+    .date{
+        font-size: 0.8em;
+        color: var(--detail-color);
+        text-align: right;
     }
 }
 
 @media (prefers-color-scheme: dark){
-    .chat{
+    .left-content{
         .form{
             .confirm{
                 img{
@@ -162,18 +171,31 @@ body{
     }
 }
 
-.gamesContainer{
-    right: 0;
-    top: 10%;
-    position: absolute;
-    width: 70%;
-    text-align: center;
-    margin-left:30%;
+.right-content .profile {
     display: flex;
-    flex-wrap: wrap;
-    justify-content: center;
+    justify-content: right;
+    height: 15vh;
+}
+
+.root .profile img {
+    width: 80px;
+    height: 70px;
+}
+
+.right-content {
+    height: 100vh;
+    width: 75%;
+    padding: 0.75rem;
+}
+
+.right-content .profile figure { margin: 0; }
+
+.gamesContainer{
+    display: flex;
+
+    text-align: center;
+
     overflow-y:auto;
-    height: 90%;
     & .GameItem{
         width: 20em;
         height: min-content;
@@ -204,23 +226,38 @@ body{
     }
 }
 
+.games {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
 
-.roomWaitSomeUsers {
-    flex-direction: column;
+.popup_wait_users {
+    display: none;
     align-items: center;
     justify-content: center;
-    display: none;
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
+    position: fixed;
+    top: 0;
+    bottom: 0;
+    /* left: 0;
+    right: 0; */
+    z-index: 100;
+    width: 40%;
+}
+
+
+.roomWaitSomeUsers {
+    display: flex;
+    justify-content: center;
+    flex-direction: column;
+    align-items: center;
     background-color: #ffcc00;
+    position: fixed;
+    height: 50%;
     color: black;
-    padding: 20px;
     border-radius: 10px;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-    width: 50vw;
-    height: 30vh;
+    width: 40%;
 }
 
 
