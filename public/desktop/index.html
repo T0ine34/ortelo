@@ -1,6 +1,5 @@
 <!DOCTYPE html>
 <html>
-
 <head>
     <title>Ortelo</title>
     <meta charset="UTF-8">
@@ -8,48 +7,64 @@
     <link rel="icon" type="image/x-icon" href="assets/images/ortelo_logo.png">
     <link rel="stylesheet" href="stylesheets/style.css">
     <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.15.4/css/all.css">
-
 </head>
 
 <body>
-    <div class="container-fluid">
-        <div class="banner">
-            <img src="assets/images/ortelo_banner.png" alt="App Banner" />
+    <div class="root">
+
+        <aside class="left-content">
+            <header class="ortelo_banner">
+                <figure>
+                    <img src="assets/images/ortelo_banner.png" alt="Ortelo Banner"/>
+                </figure>
+            </header>
+            <main>
+                <h3 class="title"> Discussion générale </h3>
+                <ul id="messages" class="messages_list">
+                    <!-- filled by javascript -->
+                </ul>
+                <form class="form" id="message_form">
+                    <input type="text" class="textInput" id="sendMessage" placeholder="Message" autocomplete="off" />
+                    <button class="confirm">
+                        <img src="assets/images/send.png" alt=""/>
+                    </button>
+                </form>
+            </main>
+        </aside>
+
+        <div class="right-content">
+            <header class="profile">
+                <figure>
+                    <a href="profile.html">
+                        <img src="assets/images/profile.png" href="" alt="Profile"/>
+                    </a>
+                </figure>
+            </header>
+    
+            <main class="games">
+                <div class="popup_wait_users">
+                    <div class="roomWaitSomeUsers">
+                        <div class="waitingScreen" style="display: none;">
+                            <h2>Partagez avec votre ami !</h2>
+                        </div>
+                        <button class="urlShareButton" style="display: none;">
+                            Copier le lien 
+                        </button>
+                        <a class="roomUrlbrute" style="display: none;"></a>
+                    </div>
+                </div>
+                <div class="gamesContainer">
+                    <!-- filled by javascript -->
+                </div>
+            </main>
         </div>
 
-        <aside class="chat">
-            <h3 class="title"> Discussion générale </h3>
-            <ul id="messages" class="messages_list">
-                <!-- filled by javascript -->
-            </ul>
-            <form class="form" id="message_form">
-                <input type="text" class="textInput" id="sendMessage" placeholder="Message" autocomplete="off" />
-                <button class="confirm">
-                    <img src="assets/images/send.png" alt=""/>
-                </button>
-            </form>
-        </aside>
-        <div class="roomWaitSomeUsers">
-            <div class="waitingScreen" style="display: none;">
-                <h2>Partagez avec votre ami !</h2>
-            </div>
-            <button class="urlShareButton" style="display: none;">
-                Copier L'url 
-            </button>
-            <a class="roomUrlbrute" style="display: none;"></a>
-        </div>
-        <div class="gamesContainer">
-            <!-- filled by javascript -->
-        </div>
+        
     </div>
 
     <script src="/socket.io/socket.io.js"></script>
-    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="client.js" type="module"></script>
     <script src="https://cdn.jsdelivr.net/npm/clipboard@2/dist/clipboard.min.js"></script>
 
-
 </body>
-<script src="/socket.io/socket.io.js"></script>
-<script src="client.js" type="module"></script>
-
 </html>
