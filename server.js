@@ -52,14 +52,14 @@ app.get('/game-start/:gameName/:username', async (req, res) => {
 
     const user = users.get(username);
     if (!user) {
-        return res.status(404).json({ message : `User ${username} does not exist.` });
+        return res.status(404).json({ message : `${username} does not exist.` });
     }
 
     let room = new Room(gameName, username);
 
     room.addUser(user);
     user.socket.leave(rooms.get(general));
-    msg = `User ${username} joined the game chat.`;
+    msg = `${username} joined the game chat.`;
     room.emit(EVENTS.CHAT.MESSAGE, Date.now(), username, msg);
 
     let roomUrl = GameRooms.genURL(gameName);
@@ -134,9 +134,9 @@ app.get('/gameUrl/:roomUrl/:username', (req, res) => {
             user.transmit(EVENTS.CHAT.MESSAGE, Date.now(), username, msg);
         });
     });
-    msg = `User ${username} joined the game chat.`;
+    msg = `${username} joined the game chat.`;
     room.emit(EVENTS.CHAT.MESSAGE, Date.now(), username, msg);
-    res.json({message : `User ${username} joined game room ${roomUrl} successfully`});
+    res.json({message : `${username} joined game room ${roomUrl} successfully`});
 
 });
 
