@@ -49,14 +49,16 @@ class Settings{
      * @param {string} filepath the path to the settings file (must be a JSON file)
      * @throws {Error} if the file cannot be read
      */
-    constructor(filepath){
+    constructor(filepath, check_integrity = true){
 
         if(!is_json(filepath)){
             throw new Error("Settings file muse be a JSON file (got '" + filepath + "')");
         }
-        let [res, reason] = is_json_matching(filepath);
-        if(!res){
-            throw new Error("Error while parsing config.json : " + reason);
+        if(check_integrity){
+            let [res, reason] = is_json_matching(filepath);
+            if(!res){
+                throw new Error("Error while parsing config.json : " + reason);
+            }
         }
 
         if(!Settings._instances[filepath]){
