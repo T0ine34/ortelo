@@ -39,6 +39,8 @@ client-tests:
 build-image:
   stage: build
   image: docker:stable
+  before_script:
+    - docker login -u $DOCKER_LOGIN -p $DOCKER_PASSWORD
   script:
     - echo "Building image"
     - docker build -t $IMAGE_NAME:$IMAGE_TAG .
