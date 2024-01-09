@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html>
+<html lang="fr">
 <head>
     <title>Ortelo - Connexion</title>
     <meta charset="UTF-8">
@@ -18,22 +18,22 @@
             <div class="col-12 col-md-6">
                 <div id="login_section">
                     <h2>Connexion</h2>
-                    <form id="login_form" method="POST" action="/login">
+                    <form id="login_form">
                         <div class="form-group">
                             <label for="username">Nom d'utilisateur</label>
-                            <input type="text" class="form-control" id="username" name="username" required>
+                            <input type="text" class="form-control" id="username" required>
                         </div>
                         <div class="form-group">
                             <label for="password">Mot de passe</label>
                             <div class="input-group">
-                                <input type="password" class="form-control" id="password" name="password" required>
+                                <input type="password" class="form-control" id="password" required>
                                 <div class="input-group-append">
                                     <button type="button" class="btn btn-outline-secondary" id="show_login_password">Afficher</button>
                                 </div>
                             </div>
                         </div>
                         <div class="form-group form-check">
-                            <input type="checkbox" class="form-check-input" id="remember_me" name="remember_me">
+                            <input type="checkbox" class="form-check-input" id="remember_me">
                             <label class="form-check-label" for="remember_me">Rester connecté</label>
                         </div>
                         <button type="submit" class="btn btn-login">Se connecter</button>
@@ -47,16 +47,16 @@
                     <form id="signup_form">
                         <div class="form-group">
                             <label for="signup_username">Nom d'utilisateur</label>
-                            <input type="text" class="form-control" id="signup_username" name="signup_username" required>
+                            <input type="text" class="form-control" id="signup_username" required>
                         </div>
                         <div class="form-group">
                             <label for="email">Adresse e-mail</label>
-                            <input type="email" class="form-control" id="email" name="email" required>
+                            <input type="email" class="form-control" id="email" required>
                         </div>
                         <div class="form-group">
                             <label for="signup_password">Mot de passe</label>
                             <div class="input-group">
-                                <input type="password" class="form-control" id="signup_password" name="signup_password" required>
+                                <input type="password" class="form-control" id="signup_password" required>
                                 <div class="input-group-append">
                                     <button type="button" class="btn btn-outline-secondary" id="show_signup_password">Afficher</button>
                                 </div>
@@ -65,13 +65,13 @@
                         <div class="form-group">
                             <label for="confirm_password">Confirmer le mot de passe</label>
                             <div class="input-group">
-                                <input type="password" class="form-control" id="confirm_password" name="confirm_password" required>
+                                <input type="password" class="form-control" id="confirm_password" required>
                                 <div class="input-group-append">
                                     <button type="button" class="btn btn-outline-secondary" id="show_confirm_password">Afficher</button>
                                 </div>
                             </div>
                         </div>
-                        <button type="submit">Créer un compte</button>
+                        <button type="submit" class="btn btn-create">Créer un compte</button>
                     </form>
                     <button type="button" onclick="showLogin()">Retour à la connexion</button>
                 </div>
@@ -81,16 +81,17 @@
                     <form id="forgot_password_form">
                         <div class="form-group">
                             <label for="forgot_email">Adresse e-mail</label>
-                            <input type="email" class="form-control" id="forgot_email" name="forgot_email" required>
+                            <input type="email" class="form-control" id="forgot_email" required>
                         </div>
-                        <button type="button" onclick="sendResetEmail()">Réinitialiser le mot de passe</button>
+                        <button type="button" onclick="sendResetEmail()" class="btn btn-reset">Réinitialiser le mot de passe</button>
                     </form>
-                    <button type="button" onclick="showLogin()">Retour à la connexion</button>
+                    <button type="button" onclick="showLogin()" class="btn btn-back">Retour à la connexion</button>
                 </div>
             </div>
         </div>
     </div>
 
+    <script src="bootstrap/js/bootstrap.min.js"></script>
     <script src="desktop.js"></script>
 </body>
 </html>

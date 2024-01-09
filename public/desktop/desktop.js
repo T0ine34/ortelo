@@ -1,85 +1,115 @@
-function showLogin() {
-    // Display the login form
-    document.querySelector("#login_section").style.display = "block";
+document.addEventListener('DOMContentLoaded', () => {
+    // Event listeners for showing the respective forms
+    document.querySelector('#login_section button[type="button"]').addEventListener('click', showSignup);
+    document.querySelector('#signup_section button[type="button"]').addEventListener('click', showLogin);
+    document.querySelectorAll('.forgot-password-button').forEach(button => {
+        button.addEventListener('click', showForgotPassword);
+    });
 
-    // Hide the other sections (sign-up and password reset)
+    // Event listeners for form submission
+    document.querySelector('#login_form').addEventListener('submit', login);
+    document.querySelector('#signup_form').addEventListener('submit', signUp);
+    document.querySelector('#forgot_password_form button').addEventListener('click', sendResetEmail);
+
+    // Event listeners for toggling password visibility
+    document.querySelector('#show_login_password').addEventListener('click', () => togglePasswordVisibility('#password'));
+    document.querySelector('#show_signup_password').addEventListener('click', () => togglePasswordVisibility('#signup_password'));
+    document.querySelector('#show_confirm_password').addEventListener('click', () => togglePasswordVisibility('#confirm_password'));
+});
+
+function showLogin() {
+    document.querySelector("#login_section").style.display = "block";
     document.querySelector("#signup_section").style.display = "none";
     document.querySelector("#forgot_password_section").style.display = "none";
 }
 
 function showSignup() {
-    // Display the sign-up form
     document.querySelector("#signup_section").style.display = "block";
-
-    // Hide the other sections (login and password reset)
     document.querySelector("#login_section").style.display = "none";
     document.querySelector("#forgot_password_section").style.display = "none";
 }
 
-
-// Function to display the password reset form
 function showForgotPassword() {
-    // Get the password reset section
-    const forgotPasswordSection = document.querySelector("#forgot_password_section");
+    document.querySelector("#forgot_password_section").style.display = "block";
+    document.querySelector("#login_section").style.display = "none";
+    document.querySelector("#signup_section").style.display = "none";
+}
 
-    // Show or hide the section based on its current state
-    if (forgotPasswordSection.style.display === "block") {
-        // If the section is already displayed, hide it
-        forgotPasswordSection.style.display = "none";
+function togglePasswordVisibility(passwordFieldId) {
+    const passwordInput = document.querySelector(passwordFieldId);
+    const toggleButton = passwordInput.nextElementSibling.children[0]; // Assumes button is the first child of the input-group-append
+    if (passwordInput.type === 'password') {
+        passwordInput.type = 'text';
+        toggleButton.textContent = 'Masquer';
     } else {
-        // Otherwise, display it and hide the login and signup sections
-        forgotPasswordSection.style.display = "block";
-        document.querySelector("#login_section").style.display = "none";
-        document.querySelector("#signup_section").style.display = "none";
+        passwordInput.type = 'password';
+        toggleButton.textContent = 'Afficher';
     }
 }
 
-// Function to show or hide the password when creating an account
-document.querySelector("#show_signup_password").addEventListener('click', function () {
-    const passwordInput = document.querySelector('#signup_password');
-    if (passwordInput.type === 'password') {
-        passwordInput.type = 'text';
-        this.textContent = 'Masquer';
-    } else {
-        passwordInput.type = 'password';
-        this.textContent = 'Afficher';
-    }
-});
+async function login(event) {
+    event.preventDefault();
+    const username = document.querySelector('#username').value;
+    const password = document.querySelector('#password').value;
 
-document.querySelector("#show_login_password").addEventListener('click', function () {
-    const loginPasswordInput = document.querySelector('#password');
-    if (loginPasswordInput.type === 'password') {
-        loginPasswordInput.type = 'text';
-        this.textContent = 'Masquer';
-    } else {
-        loginPasswordInput.type = 'password';
-        this.textContent = 'Afficher';
-    }
-});
+    try {
+        const response = await fetch('/login', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ username, password })
+        });
 
-// Function to show or hide the password confirmation field when creating an account
-document.querySelector("#show_confirm_password").addEventListener('click', function () {
-    const confirmPasswordInput = document.querySelector('#confirm_password');
-    if (confirmPasswordInput.type === 'password') {
-        confirmPasswordInput.type = 'text';
-        this.textContent = 'Masquer';
-    } else {
-        confirmPasswordInput.type = 'password';
-        this.textContent = 'Afficher';
-    }
-});
+        const data = await response.json();
 
-// Function to send the password reset email
+        if (data.success) {
+            console.log('Login successful');
+        } else {
+            console.error('Login failed');
+        }
+    } catch (error) {
+        console.error('Error during login', error);
+    }
+}
+
+async function signUp(event) {
+    event.preventDefault();
+    const username = document.querySelector('#signup_username').value;
+    const email = document.querySelector('#email').value;
+    const password = document.querySelector('#signup_password').value;
+    const confirmPassword = document.querySelector('#confirm_password').value;
+
+    if (password !== confirmPassword) {
+        console.error('Passwords do not match.');
+        return;
+    }
+
+    try {
+        const response = await fetch('/register', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ username, email, password })
+        });
+
+        const data = await response.json();
+
+        if (data.success) {
+            console.log('Signup successful');
+        } else {
+            console.error('Signup failed');
+        }
+    } catch (error) {
+        console.error('Error during signup', error);
+    }
+}
+
 function sendResetEmail() {
-    // Get the value of the email address
     const emailInput = document.querySelector('#forgot_email').value;
-
-    // Display the confirmation message
-    const confirmationMessage = document.createElement('p');
-    confirmationMessage.textContent = `A password reset email has been sent to ${emailInput}. Please check your inbox.`;
-
-    // Add the confirmation message to the password reset section
-    const forgotPasswordSection = document.querySelector("#forgot_password_form");
-    forgotPasswordSection.innerHTML = '';
-    forgotPasswordSection.appendChild(confirmationMessage);
+    // Implement the fetch call to your password reset endpoint
+    // After you send the email, you can display the confirmation message
+    const confirmationMessage = `A password reset email has been sent to ${emailInput}. Please check your inbox.`;
+    alert(confirmationMessage); // For now, we just show an alert. You can improve this.
 }
