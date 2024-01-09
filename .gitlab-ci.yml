@@ -1,8 +1,17 @@
 
-image: node:21-alpine3.18
+image: node:21-alpine3.18 # all jobs will use this image unless specified otherwise
+
+variables:
+  # image name is the branch name
+  IMAGE_NAME: s3a01/$CI_COMMIT_REF_SLUG
+  # image tag is the commit hash of the branch (size: 7 chars)
+  IMAGE_TAG: $CI_COMMIT_SHA
+  # other tags may be created on specific events, like the creation of a release
+
 
 stages:
   - test
+  - build
   - deploy
 
 
@@ -27,4 +36,14 @@ client-tests:
     - make client-test
 
 
-
+build-image:
+  stage: build
+  image: docker:stable
+  script:
+    - echo "Building image"
+    - docker build -t $IMAGE_NAME:$IMAGE_TAG .
+    - docker push $IMAGE_NAME:$IMAGE_TAG
+  artifacts:
+    paths:
+      - ./build
+    expire_in: 1 week

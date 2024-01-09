@@ -7,6 +7,5 @@
 /docs
 *.db
 ftpAutoPush.config
-Dockerfile
 build.bat
 build.sh
