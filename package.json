@@ -10,7 +10,8 @@
 		"socket.io": "^4.7.2",
 		"socket.io-client": "^4.7.2",
 		"sqlite3": "^5.1.6",
-		"taffydb": "^2.7.3"
+		"taffydb": "^2.7.3",
+		"unit-test": "^0.0.9"
 	},
 	"scripts": {
 		"start": "npx nodemon server.js",

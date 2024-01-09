@@ -1,0 +1,30 @@
+
+image: node:21-alpine3.18
+
+stages:
+  - test
+  - deploy
+
+
+server-tests:
+  stage: test
+  before_script:
+    - echo "Setting up server tests"
+    - apk add --no-cache make
+    - npm install
+  script:
+    - echo "Running server tests"
+    - make server-test
+
+client-tests:
+  stage: test
+  before_script:
+    - echo "Setting up client tests"
+    - apk add --no-cache make
+    - npm install
+  script:
+    - echo "Running client tests"
+    - make client-test
+
+
+
