@@ -42,7 +42,6 @@ function get_bwn(mainstring, start_char, end_char){
  * @description a class for managing settings, only one instance per file is allowed, creating a new instance with the same file will return the already existing one
  */
 class Settings{
-    static _instances = {};
 
     /**
      * @description constructor for the Settings class
@@ -61,17 +60,13 @@ class Settings{
             }
         }
 
-        if(!Settings._instances[filepath]){
-            try{
-                this._data = JSON.parse(fs.readFileSync(filepath));
-            }
-            catch(e){
-                throw new Error("Error while reading settings file : " + e);
-            }
-            this._filepath = filepath;
-            Settings._instances[filepath] = this;
+        try{
+            this._data = JSON.parse(fs.readFileSync(filepath));
         }
-        return Settings._instances[filepath];
+        catch(e){
+            throw new Error("Error while reading settings file : " + e);
+        }
+        this._filepath = filepath;
     }
 
     /**
