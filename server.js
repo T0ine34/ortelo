@@ -225,7 +225,7 @@ app.get('/game/:url', (req, res) => {
 
 
 /**
- * Tries logging in the user with the given username and password
+ * Tries to log in the user with the given username and password
  * @param {String} username The player's username
  * @param {String} password The user's password
  * @return {boolean} True if the user is logged in
@@ -233,6 +233,23 @@ app.get('/game/:url', (req, res) => {
 app.get('/login/:username/:password', (req, res) => {
 
     database.login(req.params.username, req.params.password, (result) => {
+        logger.info(`Logging player ${req.params.username} : ${result}`);
+        if(result == true) res.send(true);
+        else res.send(false);
+    })
+
+});
+
+/**
+ * Tries to register the user with the given username and password
+ * @param {String} username The player's username
+ * @param {String} password The user's password
+ * @return {boolean} True if the user is logged in
+ */
+app.get('/register/:username/:password/:email', (req, res) => {
+
+    database.createPlayer(req.params.username, req.params.password, req.params.email, (result) => {
+        logger.info(`Creating player ${req.params.username} : ${result}`);
         if(result == true) res.send(true);
         else res.send(false);
     })
