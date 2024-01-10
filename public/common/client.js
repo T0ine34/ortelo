@@ -15,7 +15,7 @@ if(cookies.exists("username")){
 }
 
 
-let csocket = new CSocket(io());
+let csocket = window.csocket = new CSocket(io());
 csocket.emit(EVENTS.MISC.USERNAME, Date.now(), username);  
 
 csocket.on(EVENTS.CHAT.USER_JOIN, (timestamp, name) => {                                //catching the newUser event, triggered by the server when a new user joins the chat
