@@ -9,19 +9,10 @@ let username;
 if(cookies.exists("username")){
     username = cookies.get("username");
     console.info("username read from cookies : " + username);
-}
-else{
+} else {
     console.info("username not found in cookies");
-    //location.href = "connection.html"; Will redirect user to log in page
-    while (username == null || username == "" || !username.trim().length || username.length > 16) {
-        username = prompt("Enter your username (can not be longer than 16 characters)");
-    }
+    location.href = "connection.html"; // Will redirect user to log in page
 }
-cookies.set("username", username, 1); //save the username for 1 hour
-console.info("username set to " + username +" for 1 hour");
-
-let csocket = window.csocket = new CSocket(io());
-csocket.emit(EVENTS.MISC.USERNAME, Date.now(), username);                               //sending the newUser event to the server, with the username as parameter
 
 csocket.on(EVENTS.CHAT.USER_JOIN, (timestamp, name) => {                                //catching the newUser event, triggered by the server when a new user joins the chat
     receive_message(timestamp, "Information", name + " a rejoint le chat ! &#128075;"); //&#128075; = emoji "person raising hand"
