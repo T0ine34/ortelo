@@ -21,8 +21,6 @@ const { GameRooms }                                               = require('./s
 const path = require('path');
 const { log } = require('console');
 
-database.createPlayer("LilaOf", "agrou", "boo");
-
 // -------------------------------------------------------------------- SERVER INITIALIZATION
 logger.debug("intitializing express app");
 const app = express();
@@ -244,6 +242,7 @@ app.get('/login/:username/:password', (req, res) => {
  * Tries to register the user with the given username and password
  * @param {String} username The player's username
  * @param {String} password The user's password
+ * @param {String} email The user's email
  * @return {boolean} True if the user is logged in
  */
 app.get('/register/:username/:password/:email', (req, res) => {
