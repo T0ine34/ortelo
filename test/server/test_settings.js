@@ -1,74 +1,102 @@
 var Assertions = require('unit-test').Assertions;
 
-const { Settings }                                                = require('../../server_modules/settings/main');
+fs = require('fs');
 
+const { Settings } = require('../../server_modules/settings/main');
+
+function reset(){
+    if(fs.existsSync("./test/server/settings/test_settings.json")){
+        fs.unlinkSync("./test/server/settings/test_settings.json");
+    }
+}
+
+function makeCopy(){
+    reset();
+    if(fs.existsSync("./test/server/settings/base_test_settings.json")){
+        fs.copyFileSync("./test/server/settings/base_test_settings.json", "./test/server/settings/test_settings.json");
+    }
+}
 
 module.exports = {
     'test-loading': function() {
         let settings = null;
+        makeCopy();
         try{
-            settings = new Settings("./test/server/base_test_settings.json", false);
+            settings = new Settings("./test/server/settings/base_test_settings.json", false);
         }catch(e){
-            Assertions.AssertionError("Error while loading settings : " + e);
+            // do nothing, the test will fail because settings is null
         }
-        Assertions.assert(settings instanceof Settings);
+        Assertions.assert(settings instanceof Settings, "testing settings class constructor");
+        reset();
     },
 
     'test-saving': function() {
-        let settings = new Settings("./test/server/base_test_settings.json", false);
-        settings.save("./test/server/test_settings.json");
-        const fs = require('fs');
-        Assertions.assert(fs.existsSync("./test/server/test_settings.json"));
+        makeCopy();
+        let settings = new Settings("./test/server/settings/test_settings.json", false);
+        settings.save("./test/server/settings/test_settings_cpy.json");
+        Assertions.assert(fs.existsSync("./test/server/settings/test_settings_cpy.json"), "testing saving of settings");
+        fs.unlinkSync("./test/server/settings/test_settings_cpy.json");
+        reset();
     },
 
     'test-getting': function() {
-        let settings = new Settings("./test/server/base_test_settings.json", false);
-        Assertions.assert(settings.get("port") == 3000);
-        Assertions.assert(settings.get("main_room_name") == "general");
-        Assertions.assert(settings.get("allow_chat_commands") == true);
-        Assertions.assert(settings.get("database.path") == "./database/serverDatabase.db");
-        Assertions.assert(settings.get("public_common_dir") == "public/common");
+        makeCopy();
+        let settings = new Settings("./test/server/settings/test_settings.json", false);
+        Assertions.assert(settings.get("port") == 3000, "testing getting integer from settings");
+        Assertions.assert(settings.get("main_room_name") == "general", "testing getting string from settings");
+        Assertions.assert(settings.get("allow_chat_commands") == true, "testing getting booloean from settings");
+        Assertions.assert(settings.get("database.path") == "./database/serverDatabase.db", "testing getting nested keys from settings");
+        Assertions.assert(settings.get("public_common_dir") == "public/common", "testing getting alias value from settings");
+        reset();
     },
 
     'test-getting-unknown': function() {
-        let settings = new Settings("./test/server/base_test_settings.json", false);
-        Assertions.assert(settings.get("test_item") == undefined);
+        makeCopy();
+        let settings = new Settings("./test/server/settings/test_settings.json", false);
+        Assertions.assert(settings.get("test_item") == undefined, "testing getting unavaliable item");
+        reset();
     },
 
     'test-setting': function() {
-        let settings = new Settings("./test/server/test_settings.json", false);
+        makeCopy();
+        let settings = new Settings("./test/server/settings/test_settings.json", false);
         settings.set("port", 3001);
         settings.set("main_room_name", "test_room");
         settings.set("allow_chat_commands", false);
         settings.set("database.path", "./database/testDatabase.db");
         settings.set("private_common_dir", "%public_common_dir%");
-        Assertions.assert(settings.get("port") == 3001);
-        Assertions.assert(settings.get("main_room_name") == "test_room");
-        Assertions.assert(settings.get("allow_chat_commands") == false);
-        Assertions.assert(settings.get("database.path") == "./database/testDatabase.db");
-        Assertions.assert(settings.get("public_common_dir") == "public/common");
+        Assertions.assert(settings.get("port") == 3001, "testing setting integer into settings");
+        Assertions.assert(settings.get("main_room_name") == "test_room", "testing setting string into settings");
+        Assertions.assert(settings.get("allow_chat_commands") == false, "testing setting boolean into settings");
+        Assertions.assert(settings.get("database.path") == "./database/testDatabase.db", "testing setting nested key into settings");
+        Assertions.assert(settings.get("public_common_dir") == "public/common", "testing setting alias variables into settings");
+        reset();
     },
 
     'test-delete': function() {
-        let settings = new Settings("./test/server/test_settings.json", false);
+        makeCopy();
+        let settings = new Settings("./test/server/settings/test_settings.json", false);
         settings.delete("port");
         settings.delete("main_room_name");
         settings.delete("allow_chat_commands");
         settings.delete("database.path");
         settings.delete("public_common_dir");
-        Assertions.assert(settings.get("port") == undefined);
-        Assertions.assert(settings.get("main_room_name") == undefined);
-        Assertions.assert(settings.get("allow_chat_commands") == undefined);
-        Assertions.assert(settings.get("database.path") == undefined);
-        Assertions.assert(settings.get("public_common_dir") == undefined);
+        Assertions.assert(settings.get("port") == undefined, "testing deletion of integer");
+        Assertions.assert(settings.get("main_room_name") == undefined, "testing deletion of string");
+        Assertions.assert(settings.get("allow_chat_commands") == undefined, "testing deletion of boolean");
+        Assertions.assert(settings.get("database.path") == undefined, "testing deletion of nested key");
+        Assertions.assert(settings.get("public_common_dir") == undefined, "testing deletion of alias values");
+        reset();
     },
 
     'test-has': function() {
-        let settings = new Settings("./test/server/base_test_settings.json", false);
-        Assertions.assertEquals(settings.has("port"), true);
-        Assertions.assertEquals(settings.has("main_room_name"), true);
-        // Assertions.assertEquals(settings.has("allow_chat_commands"), true);
-        // Assertions.assertEquals(settings.has("database.path"), true);
-        // Assertions.assertEquals(settings.has("test_item"), false);
-    }
+        makeCopy();
+        let settings = new Settings("./test/server/settings/test_settings.json", false);
+        Assertions.assertEquals(settings.has("port"), true, "testing the 'has' method on integer");
+        Assertions.assertEquals(settings.has("main_room_name"), true, "testing the 'has' method on string");
+        Assertions.assertEquals(settings.has("allow_chat_commands"), true, "testing the 'has' method on boolean");
+        Assertions.assertEquals(settings.has("database.path"), true, "testing the 'has' method on nested keys");
+        Assertions.assertEquals(settings.has("test_item"), false, "testing the 'has' method on unavailable item");
+        reset();
+    },
 }
