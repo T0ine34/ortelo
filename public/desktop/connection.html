@@ -10,6 +10,49 @@
     <link rel="stylesheet" href="stylesheets/login.css">
 </head>
 <body>
+    <!-- <div class="root">
+        <div class="head">
+            <header>
+                <figure> <img class="app_banner" src="assets/images/ortelo_banner.png" alt="App Banner"> </figure>
+            </header>
+        </div>
+        <main class="center-content">
+            <div class="login">
+                <header>
+                    <h2> Connexion </h2>
+                </header>
+                <form id="login_form">
+                    <div class="form-group">
+                        <label for="username">Nom d'utilisateur</label>
+                        <input type="text" class="form-control" id="username" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="password">Mot de passe</label>
+                        <div>
+                            <input type="password" class="form-control" id="password" required>
+                            <div>
+                                <button type="button"  id="show_login_password">Afficher</button>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            </div>
+    
+            <div class="register">
+    
+            </div>
+    
+            <div class="forgot-password">
+    
+            </div>
+    
+    
+        </div>
+
+    </div> -->
+
+
+
     <div class="container-fluid" id="app_container">
         <div class="banner">
             <img class="app_banner" src="assets/images/ortelo_banner.png" alt="App Banner">
@@ -92,6 +135,7 @@
     </div>
 
     <script src="bootstrap/js/bootstrap.min.js"></script>
-    <script src="desktop.js"></script>
+    <script src="/socket.io/socket.io.js"></script>
+    <script src="./desktop/desktop.js" type="module"></script>
 </body>
 </html>
