@@ -33,12 +33,12 @@ function indent(str, indent){
  * @description A singleton class which provides an easy way to log infos from the app into a file every two hours.
  */
 class Logger {
-    static _instance = null;
+    static _instances = {};
     constructor(log_folder = null) {
-        if(!Logger._instance) { //if instance does not exist, create it
-            Logger._instance = this;
-            this.use_debug = settings.get("logs.useDebug");
+        if(!Logger._instances[log_folder]) {
             this._logFolder = log_folder || settings.get("logs.dir");
+            Logger._instances[log_folder] = this;
+            this.use_debug = settings.get("logs.useDebug");
             this.load();
             this.debug("Debug mode enabled")
             setInterval(() => { //execute it at a regular interval set in server.settings
@@ -46,7 +46,7 @@ class Logger {
             }, settings.get("logs.refreshTimeSec") * 1000);
         }
         this.debug("Refreshing log file every " + settings.get("logs.refreshTimeSec") + " seconds");
-        return Logger._instance;
+        return Logger._instances[log_folder];
     }
 
     /**
@@ -175,4 +175,4 @@ class Logger {
  * Exports the Logger so it can be used in other files
  */
 let logger = new Logger()
-module.exports = { logger };
+module.exports = { logger , Logger};
