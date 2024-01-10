@@ -14,6 +14,10 @@ if(cookies.exists("username")){
     location.href = "connection.html"; // Will redirect user to log in page
 }
 
+
+let csocket = new CSocket(io());
+csocket.emit(EVENTS.MISC.USERNAME, Date.now(), username);  
+
 csocket.on(EVENTS.CHAT.USER_JOIN, (timestamp, name) => {                                //catching the newUser event, triggered by the server when a new user joins the chat
     receive_message(timestamp, "Information", name + " a rejoint le chat ! &#128075;"); //&#128075; = emoji "person raising hand"
 });

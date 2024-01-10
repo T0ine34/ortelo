@@ -16,11 +16,7 @@ document.addEventListener('DOMContentLoaded', function () {
                 if(data == "true") {
                     cookies.set("username", username, 1); //save the username for 1 hour
                     console.info("username set to " + username +" for 1 hour");
-    
-    
-                    let csocket = window.csocket = new CSocket(io());
-                    csocket.emit(EVENTS.MISC.USERNAME, Date.now(), username);  
-                    
+
                     this.location.href = "index.html";
                 }
 
@@ -43,10 +39,6 @@ document.addEventListener('DOMContentLoaded', function () {
                 if(data == "true") {
                     cookies.set("username", username, 1); //save the username for 1 hour
                     console.info("username set to " + username +" for 1 hour");
-    
-    
-                    let csocket = window.csocket = new CSocket(io());
-                    csocket.emit(EVENTS.MISC.USERNAME, Date.now(), username);  
 
                     this.location.href = "index.html";
                 } else {
