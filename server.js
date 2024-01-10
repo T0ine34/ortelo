@@ -10,7 +10,7 @@ const { TextDecoder }                                             = require('uti
 const http                                                        = require('http');
 const express                                                     = require('express');
 const { logger }                                                  = require('./server_modules/logs/main');
-const { Database }                                                = require('./server_modules/database/main');
+const { database }                                                = require('./server_modules/database/main');
 const { parseCMD }                                                = require('./server_modules/cmd/main');
 const { User }                                                    = require('./server_modules/user/main');
 const { EVENTS, Room, CIO }                                       = require('./server_modules/events/main');
@@ -20,7 +20,6 @@ const e = require('express');
 const { GameRooms }                                               = require('./server_modules/gameRooms/main');
 const path = require('path');
 const { log } = require('console');
-
 
 // -------------------------------------------------------------------- SERVER INITIALIZATION
 logger.debug("intitializing express app");
@@ -220,6 +219,40 @@ app.get('/game/:url', (req, res) => {
             </html>
         `);
     });
+});
+
+
+/**
+ * Tries to log in the user with the given username and password
+ * @param {String} username The player's username
+ * @param {String} password The user's password
+ * @return {boolean} True if the user is logged in
+ */
+app.get('/login/:username/:password', (req, res) => {
+
+    database.login(req.params.username, req.params.password, (result) => {
+        logger.info(`Logging player ${req.params.username} : ${result}`);
+        if(result == true) res.send(true);
+        else res.send(false);
+    })
+
+});
+
+/**
+ * Tries to register the user with the given username and password
+ * @param {String} username The player's username
+ * @param {String} password The user's password
+ * @param {String} email The user's email
+ * @return {boolean} True if the user is logged in
+ */
+app.get('/register/:username/:password/:email', (req, res) => {
+
+    database.createPlayer(req.params.username, req.params.password, req.params.email, (result) => {
+        logger.info(`Creating player ${req.params.username} : ${result}`);
+        if(result == true) res.send(true);
+        else res.send(false);
+    })
+
 });
 
 

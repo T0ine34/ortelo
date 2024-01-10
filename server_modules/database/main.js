@@ -261,7 +261,7 @@ class Database {
 }
 
 /**
- * Exports the logger so it can be used in other files
+ * Exports the Database so it can be used in other files
  */
 let database = new Database();
 module.exports = { database };
