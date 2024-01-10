@@ -18,6 +18,8 @@ document.addEventListener('DOMContentLoaded', function () {
                     console.info("username set to " + username +" for 1 hour");
 
                     this.location.href = "index.html";
+                } else {
+                    alert("Nom d'utilisateur ou mot de passe incorrect");
                 }
 
             })
@@ -41,8 +43,6 @@ document.addEventListener('DOMContentLoaded', function () {
                     console.info("username set to " + username +" for 1 hour");
 
                     this.location.href = "index.html";
-                } else {
-                    alert("Nom d'utilisateur ou mot de passe incorrect");
                 }
 
             })
