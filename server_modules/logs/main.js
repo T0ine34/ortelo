@@ -34,10 +34,11 @@ function indent(str, indent){
  */
 class Logger {
     static _instance = null;
-    constructor() {
+    constructor(log_folder = null) {
         if(!Logger._instance) { //if instance does not exist, create it
             Logger._instance = this;
             this.use_debug = settings.get("logs.useDebug");
+            this._logFolder = log_folder || settings.get("logs.dir");
             this.load();
             this.debug("Debug mode enabled")
             setInterval(() => { //execute it at a regular interval set in server.settings
@@ -53,11 +54,11 @@ class Logger {
      * @function
      */
     load(){
-        if(!fs.existsSync(settings.get("logs.dir"))) fs.mkdirSync(settings.get("logs.dir")); //** Creates log folder if it does not exists. */
+        if(!fs.existsSync(this._logFolder)) fs.mkdirSync(this._logFolder); //** Creates log folder if it does not exists. */
         const currentDate = new Date();
         
         //** Updates filepath to output logs to */
-        const filePath = `${settings.get("logs.dir")}/${currentDate.getDate()}_${currentDate.getMonth()+1}_${currentDate.getFullYear()}_at_${currentDate.getHours() < 10 ? "0" + currentDate.getHours() : currentDate.getHours()}h${currentDate.getMinutes() < 10 ? "0" + currentDate.getMinutes() : currentDate.getMinutes()}.log`;
+        const filePath = `${this._logFolder}/${currentDate.getDate()}_${currentDate.getMonth()+1}_${currentDate.getFullYear()}_at_${currentDate.getHours() < 10 ? "0" + currentDate.getHours() : currentDate.getHours()}h${currentDate.getMinutes() < 10 ? "0" + currentDate.getMinutes() : currentDate.getMinutes()}.log`;
         if(this._logFile && this._logFile != filePath){
             this.info("log file changed to " + filePath + "\n nothing will be added in this file anymore");
         }
@@ -138,7 +139,7 @@ class Logger {
      * @function
      */
     removeOldest() {
-        fs.readdir(settings.get("logs.dir"), (err, files) => {
+        fs.readdir(this._logFolder, (err, files) => {
             if(err) {
                 this.error("Can not remove oldests files from logs directory");
                 return;
@@ -150,7 +151,7 @@ class Logger {
                 const filesToRemove = files.slice(0, files.length - settings.get("logs.maxFiles"));
                 
                 filesToRemove.forEach(file => {
-                    const filePath = path.join(settings.get("logs.dir"), file);
+                    const filePath = path.join(this._logFolder, file);
 
                     fs.unlink(filePath, err => {
                         if (err) {
