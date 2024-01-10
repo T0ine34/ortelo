@@ -50,6 +50,14 @@ class Logger {
     }
 
     /**
+     * @description The close function removes the instance of the logger from the static instances array.
+     * @function
+     */
+    close(){
+        delete Logger._instances[this._logFolder];
+    }
+
+    /**
      * @description The load function creates a new log file with the current date as name.
      * @function
      */
