@@ -1,5 +1,3 @@
-var UnitTest = require('unit-test'),
-    TestSuite = UnitTest.Suite,
-    Assertions = UnitTest.Assertions;
+var TestSuite = require('unit-test').Suite;
 
-    TestSuite.paths(__dirname+'/server', '*.js');
+TestSuite.paths(__dirname+'/server', ['*.js']);

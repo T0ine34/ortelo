@@ -2,7 +2,7 @@ const fs            = require('fs');
 const path          = require('path');
 
 const { Settings } = require('../settings/main');
-var settings = new Settings("./server.config");
+var settings = new Settings("./server.config"); 
 
 /**
  * @module Logger
@@ -41,11 +41,11 @@ class Logger {
             this.use_debug = settings.get("logs.useDebug");
             this.load();
             this.debug("Debug mode enabled")
-            setInterval(() => { //execute it at a regular interval set in server.settings
+            this.intervalId = setInterval(() => { //execute it at a regular interval set in server.settings
                 this.load();
             }, settings.get("logs.refreshTimeSec") * 1000);
+            this.debug("Refreshing log file every " + settings.get("logs.refreshTimeSec") + " seconds");
         }
-        this.debug("Refreshing log file every " + settings.get("logs.refreshTimeSec") + " seconds");
         return Logger._instances[log_folder];
     }
 
@@ -54,6 +54,7 @@ class Logger {
      * @function
      */
     close(){
+        clearInterval(this.intervalId);
         delete Logger._instances[this._logFolder];
     }
 
@@ -170,7 +171,10 @@ class Logger {
                     });
                 });
             } else {
-                this.fine("No log files to remove");
+                try{
+                    this.fine("No log files to remove");
+                }catch(e){
+                }
             }
 
         });
@@ -182,5 +186,5 @@ class Logger {
 /**
  * Exports the Logger so it can be used in other files
  */
-let logger = new Logger()
-module.exports = { logger , Logger};
+
+module.exports = {Logger};

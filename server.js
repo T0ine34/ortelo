@@ -9,7 +9,7 @@ const fs                                                          = require('fs'
 const { TextDecoder }                                             = require('util');
 const http                                                        = require('http');
 const express                                                     = require('express');
-const { logger }                                                  = require('./server_modules/logs/main');
+const { Logger }                                                  = require('./server_modules/logs/main');
 const { database }                                                = require('./server_modules/database/main');
 const { parseCMD }                                                = require('./server_modules/cmd/main');
 const { User }                                                    = require('./server_modules/user/main');
@@ -20,6 +20,8 @@ const e = require('express');
 const { GameRooms }                                               = require('./server_modules/gameRooms/main');
 const path = require('path');
 const { log } = require('console');
+
+let logger = new Logger();
 
 // -------------------------------------------------------------------- SERVER INITIALIZATION
 logger.debug("intitializing express app");

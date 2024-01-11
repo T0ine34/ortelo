@@ -5,10 +5,11 @@
  * @author Antoine Buirey
  */
 
-const { logger }        = require("../logs/main");
+const { Logger }        = require("../logs/main");
 const { EVENTS, EVENT } = require("./events");
 const { Server }        = require("socket.io");
 
+let logger = new Logger();
 
 
 /**
