@@ -5,3 +5,6 @@ server-test:
 
 client-test:
 	node test/client.js
+
+build-image:
+	docker build -t s3a01 .

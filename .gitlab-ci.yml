@@ -48,3 +48,9 @@ build-image:
     - docker push $IMAGE_NAME:latest
 
 
+deploy-image:
+  stage: deploy
+  
+  script:
+    - echo "Deploying image"
+    # docker run -d -p 3000:3000 -v s3a01_data:/data s3a01/main:latest

@@ -17,6 +17,9 @@ function getFileContent(parentPath){
 
 function clearFolder(){
     if(fs.existsSync("./test/server/logs")){
+        for( let file of fs.readdirSync("./test/server/logs") ){
+            fs.unlinkSync("./test/server/logs/" + file);
+        }
         fs.rmSync("./test/server/logs", { recursive: true });
     }
 }
