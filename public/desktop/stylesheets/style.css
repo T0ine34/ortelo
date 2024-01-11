@@ -1,4 +1,5 @@
 @import url('scrollbar.css');
+@import url('navbar.css');
 
 @media not all and (prefers-color-scheme: dark) {
     :root {
@@ -171,15 +172,16 @@ body{
     }
 }
 
-.right-content .profile {
+.right-content header {
     display: flex;
     justify-content: right;
-    height: 15vh;
+    height: 10vh;
+    margin-bottom: 0.5rem;
 }
 
-.root .profile img {
-    width: 80px;
-    height: 70px;
+.right-content header img {
+    width: 50px;
+    height: 30px;
 }
 
 .right-content {
