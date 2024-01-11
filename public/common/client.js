@@ -317,3 +317,7 @@ function mayjoinroom() {
         fetchGames();
     }
 }
+
+document.querySelector("#logout").addEventListener('click', () => {
+    cookies.delete(username);
+})

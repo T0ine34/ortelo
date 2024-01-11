@@ -1,0 +1,51 @@
+@media not all and (prefers-color-scheme: dark) {
+    :root {
+        --background-color: #FFFFFF;
+        --border-color: #000000;
+        --accent-color: rgba(84, 146, 246, 0.69);
+        --accent-color-hover: rgba(49, 127, 253, 0.9);
+        --detail-color: #888888;
+    }
+}
+
+@media (prefers-color-scheme: dark){
+    :root{
+        --background-color : rgb(43, 42, 51);
+        --border-color : #FFFFFF;
+        --accent-color : rgba(115, 165, 245, 0.69);
+        --accent-color-hover : rgba(40, 108, 218, 0.9);
+        --detail-color : #888888;
+    }
+}
+
+* {
+    box-sizing: border-box;
+}
+
+html, body {
+    padding: 0;
+    margin: 0;
+    overflow: hidden;
+}
+
+body{
+    background-color: var(--background-color);
+    color: var(--border-color);
+}
+
+.root {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin: 0;
+    padding: 0;
+    min-height: 100vh;
+    width: 100%;
+}
+
+.profile {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    border: 1px white;
+}
