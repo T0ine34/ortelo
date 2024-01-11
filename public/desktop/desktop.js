@@ -17,7 +17,7 @@ document.addEventListener('DOMContentLoaded', function () {
                     cookies.set("username", username, 1); //save the username for 1 hour
                     console.info("username set to " + username +" for 1 hour");
 
-                    this.location.href = "index.html";
+                    this.location.href = "/";
                 } else {
                     alert("Nom d'utilisateur ou mot de passe incorrect");
                 }
@@ -42,7 +42,7 @@ document.addEventListener('DOMContentLoaded', function () {
                     cookies.set("username", username, 1); //save the username for 1 hour
                     console.info("username set to " + username +" for 1 hour");
 
-                    this.location.href = "index.html";
+                    this.location.href = "/";
                 }
 
             })
