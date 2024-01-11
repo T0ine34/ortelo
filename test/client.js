@@ -1,5 +1,13 @@
-var UnitTest = require('unit-test'),
-    TestSuite = UnitTest.Suite,
-    Assertions = UnitTest.Assertions;
+var TestSuite = require('unit-test').Suite;
 
-TestSuite.paths(__dirname+'/client', '*.js');
+TestSuite.paths(__dirname+'/client', ['*.js'], function(result) {
+    console.log('===============================');
+    console.log('=== Processed ' + result.tests + ' tests, ' + result.errors + ' failed');
+    console.log('=== in ' + result.duration + 'ms');
+    console.log('===============================');
+    console.log('=== ' + (result.errors > 0 ? 'ERROR' : 'SUCCESSFUL'));
+    console.log('===============================');
+    if(result.errors > 0){
+        process.exit(1);
+    }
+});
