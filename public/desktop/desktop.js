@@ -1,8 +1,8 @@
-import { CSocket, EVENTS } from "./modules/events/main.js";
 import { cookies } from "./modules/cookies/main.js";
 
 document.addEventListener('DOMContentLoaded', function () {
     
+    // Event listener for login form
     document.querySelector('#login_form').addEventListener('submit', (event) => {
         event.preventDefault();
 
@@ -26,12 +26,17 @@ document.addEventListener('DOMContentLoaded', function () {
             .catch(error => console.error('Can not retrieve data from login', error));
     });
 
-    // Event listeners for form submission
+    // Event listener for sign up form
     document.querySelector('#signup_form').addEventListener('submit', (event) => {
         event.preventDefault();
 
-        const username = document.getElementById('username').value;
-        const password = document.getElementById('password').value;
+        const username = document.getElementById('signup_username').value;
+        const password = document.getElementById('signup_password').value;
+        const password2 = document.getElementById('confirm_password').value;
+        if(password !== password2) {
+            alert('Les mots de passe ne sont pas les mêmes');
+            return;
+        }
         const email    = document.getElementById('email').value;
 
         fetch(`/register/${username}/${password}/${email}`)
@@ -48,10 +53,11 @@ document.addEventListener('DOMContentLoaded', function () {
             })
             .catch(error => console.error('Can not retrieve data from login', error));
     });
+
     document.querySelector('#forgot_password_form button').addEventListener('click', sendResetEmail);
 
-    document.querySelector('#login_section button[type="button"]').addEventListener('click', showSignup);
-    document.querySelector('#signup_section button[type="button"]').addEventListener('click', showLogin);
+    document.querySelector('#showSignup').addEventListener('click', showSignup);
+    document.querySelector('#showLogin').addEventListener('click', showLogin);
     document.querySelectorAll('.forgot-password-button').forEach(button => {
         button.addEventListener('click', showForgotPassword);
     });
