@@ -1,0 +1,12 @@
+{
+    "name": "Reversi",
+    "version": "1.0.0",
+    "description": "Play Reversi",
+    "mainscript": "main.js",
+    "html": "index.html",
+    "css": "style.css",
+    "server": "server.js",
+    "images": {
+        "icon": "images/reversi-icon.png"
+    }
+}
