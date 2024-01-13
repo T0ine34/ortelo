@@ -3,7 +3,7 @@ import { cookies } from "./modules/cookies/main.js";
 document.addEventListener('DOMContentLoaded', function () {
     
     // Event listener for login form
-    document.querySelector('#login_form').addEventListener('submit', (event) => {
+    document.querySelector('#login-form').addEventListener('submit', (event) => {
         event.preventDefault();
 
         const username = document.getElementById('username').value;
@@ -27,7 +27,7 @@ document.addEventListener('DOMContentLoaded', function () {
     });
 
     // Event listener for sign up form
-    document.querySelector('#signup_form').addEventListener('submit', (event) => {
+    document.querySelector('#signup-form').addEventListener('submit', (event) => {
         event.preventDefault();
 
         const username  = document.getElementById('signup_username').value;
@@ -54,13 +54,10 @@ document.addEventListener('DOMContentLoaded', function () {
             .catch(error => console.error('Can not retrieve data from login', error));
     });
 
-    document.querySelector('#forgot_password_form button').addEventListener('click', sendResetEmail);
-
+    document.querySelector('#forgot-password button').addEventListener('submit', sendResetEmail);
     document.querySelector('#showSignup').addEventListener('click', showSignup);
-    document.querySelector('#showLogin').addEventListener('click', showLogin);
-    document.querySelectorAll('.forgot-password-button').forEach(button => {
-        button.addEventListener('click', showForgotPassword);
-    });
+    document.querySelectorAll('.showLogin').forEach( (button) => button.addEventListener('click', showLogin));
+    document.querySelector('#showForgotPassword').addEventListener('click', showForgotPassword);
 
 
     // Event listeners for toggling password visibility
@@ -70,21 +67,21 @@ document.addEventListener('DOMContentLoaded', function () {
 });
 
 function showLogin() {
-    document.querySelector("#login_section").style.display = "block";
-    document.querySelector("#signup_section").style.display = "none";
-    document.querySelector("#forgot_password_section").style.display = "none";
+    document.querySelector("#login").style.display = "block";
+    document.querySelector("#register").style.display = "none";
+    document.querySelector("#forgot-password").style.display = "none";
 }
 
 function showSignup() {
-    document.querySelector("#signup_section").style.display = "block";
-    document.querySelector("#login_section").style.display = "none";
-    document.querySelector("#forgot_password_section").style.display = "none";
+    document.querySelector("#register").style.display = "block";
+    document.querySelector("#login").style.display = "none";
+    document.querySelector("#forgot-password").style.display = "none";
 }
 
 function showForgotPassword() {
-    document.querySelector("#forgot_password_section").style.display = "block";
-    document.querySelector("#login_section").style.display = "none";
-    document.querySelector("#signup_section").style.display = "none";
+    document.querySelector("#forgot-password").style.display = "block";
+    document.querySelector("#login").style.display = "none";
+    document.querySelector("#register").style.display = "none";
 }
 
 function togglePasswordVisibility(passwordFieldId) {
