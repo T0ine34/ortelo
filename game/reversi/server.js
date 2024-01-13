@@ -1,22 +1,45 @@
+// Import necessary modules
 const express = require('express');
 const http = require('http');
 const socketIO = require('socket.io');
 
-
-
+// Create an Express application
 const app = express();
+
+// Configure the Express application to serve static files from the 'public' folder
 app.use(express.static('public'));
+
+// Create an HTTP server using Express
 const server = http.createServer(app);
+
+// Create a WebSocket connection using Socket.IO
 const io = socketIO(server);
 
-
+/**
+ * Class representing a Reversi game session.
+ */
 class ReversiGame {
+    /**
+     * Initializes a new instance of the ReversiGame class.
+     * @constructor
+     */
     constructor() {
+        // Initialize the game board
         this.board = this.initializeBoard();
-        this.currentPlayer = 'B'; 
+        // Current player ('B' for Black, 'W' for White)
+        this.currentPlayer = 'B';
+        // Game over flag
         this.isGameOver = false;
+        // Array to store socket IDs of connected players
         this.players = [];
+        // Winner of the game ('B' for Black, 'W' for White, 'D' for Draw)
+        this.winner = null;
     }
+
+    /**
+     * Initializes the game board with the starting pieces.
+     * @returns {string[][]} An 8x8 game board.
+     */
 
     initializeBoard() {
         let board = [...Array(8)].map(() => Array(8).fill(''));
@@ -27,7 +50,14 @@ class ReversiGame {
         return board;
     }
 
-    
+     /**
+     * Makes a move on the game board.
+     * @param {number} row - The row of the move.
+     * @param {number} col - The column of the move.
+     * @param {string} player - The player making the move ('B' or 'W').
+     * @returns {boolean} True if the move is valid and successful, false otherwise.
+     */
+
     makeMove(row, col, player) {
         if (this.board[row][col] !== '' || this.isGameOver || player !== this.currentPlayer) {
             return false;
@@ -53,6 +83,14 @@ class ReversiGame {
         }
         return true;
     }
+
+    /**
+     * Gets the flipped pieces by a move.
+     * @param {number} row - The row of the move.
+     * @param {number} col - The column of the move.
+     * @param {string} player - The player making the move ('B' or 'W').
+     * @returns {Array.<Array.<number>>} An array of coordinates of flipped pieces.
+     */
 
 
     getFlippedPieces(row, col, player) {
@@ -82,23 +120,17 @@ class ReversiGame {
         return flipped;
     }
 
+     /**
+     * Switches to the next player's turn.
+     */
+
     switchPlayer() {
         this.currentPlayer = this.currentPlayer === 'B' ? 'W' : 'B';
     }
 
-    /*checkGameOver() {
-        if (this.isGameOver) {
-            this.determineWinner();
-        }
-
-        let blackMoves = this.hasValidMove('B');
-        let whiteMoves = this.hasValidMove('W');
-
-        if (!blackMoves && !whiteMoves) {
-            this.isGameOver = true;
-            this.determineWinner();
-        }
-    }*/
+    /**
+     * Checks if the game is over and determines the winner.
+     */
 
     checkGameOver() {
         let blackMoves = this.hasValidMove('B');
@@ -113,6 +145,9 @@ class ReversiGame {
         }
     }
 
+    /**
+     * Determines the winner of the game.
+     */
 
     determineWinner() {
         let blackCount = 0;
@@ -127,6 +162,12 @@ class ReversiGame {
         this.winner = blackCount > whiteCount ? 'B' : whiteCount > blackCount ? 'W' : 'D';
     }
 
+     /**
+     * Checks if a player has a valid move.
+     * @param {string} player - The player to check ('B' or 'W').
+     * @returns {boolean} True if the player has a valid move, false otherwise.
+     */
+
     hasValidMove(player) {
         for (let row = 0; row < 8; row++) {
             for (let col = 0; col < 8; col++) {
@@ -137,6 +178,12 @@ class ReversiGame {
         }
         return false;
     }
+    
+    /**
+     * Adds a player to the game session.
+     * @param {string} socketId - The socket ID of the player to add.
+     * @returns {boolean} True if the player was successfully added, false if the game is full.
+     */
 
     addPlayer(socketId) {
         if (this.players.length < 2 && !this.players.includes(socketId)) {
@@ -146,13 +193,27 @@ class ReversiGame {
         return false;
     }
 
+    /**
+     * Removes a player from the game session.
+     * @param {string} socketId - The socket ID of the player to remove.
+     */
+
     removePlayer(socketId) {
         this.players = this.players.filter(id => id !== socketId);
     }
 
+    /**
+     * Checks if the game is ready to start with two players.
+     * @returns {boolean} True if there are two players in the game, false otherwise.
+     */
+
     isReadyToStart() {
         return this.players.length === 2;
     }
+
+    /**
+     * Resets the game state to the initial state.
+     */
 
     resetGame() {
         this.board = this.initializeBoard();
@@ -160,6 +221,11 @@ class ReversiGame {
         this.isGameOver = false;
         this.winner = null;
     }
+
+    /**
+     * Gets the current state of the game.
+     * @returns {Object} An object representing the game state.
+     */
 
     getGameState() {
         return {
@@ -173,6 +239,12 @@ class ReversiGame {
 
 
 let game = new ReversiGame();
+
+/**
+ * Handles the 'connection' event when a player connects to the server.
+ * @event
+ * @param {Socket} socket - The socket representing the connected player.
+ */
 
 io.on('connection', (socket) => {
     if (game.addPlayer(socket.id)) {
