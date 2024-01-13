@@ -234,7 +234,7 @@ app.get('/login/:username/:password', (req, res) => {
         logger.info(`Logging player ${req.params.username} : ${result}`);
         if(result == true) res.send(true);
         else res.send(false);
-    })
+    });
 
 });
 
@@ -249,9 +249,9 @@ app.get('/register/:username/:password/:email', (req, res) => {
 
     database.createPlayer(req.params.username, req.params.password, req.params.email, (result) => {
         logger.info(`Creating player ${req.params.username} : ${result}`);
-        if(result == true) res.send(true);
+        if(result === true) res.send(true);
         else res.send(false);
-    })
+    });
 
 });
 

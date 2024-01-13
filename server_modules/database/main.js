@@ -70,21 +70,21 @@ class Database {
      * @param {string} emailAddress is the player's email address, is not a must.
      * @returns wether the player has been created successfully or not.
      */
-    createPlayer(name, password, emailAddress){
+    createPlayer(name, password, emailAddress, callback){
         let salt = BCrypt.genSaltSync(settings.get("database.bcryptRounds"));
         //let key = this.#generateRandomKey(64);
         //let hashedPassword = BCrypt.hashSync(CryptoJS.AES.encrypt(password, key).toString(), salt);
         let hashedPassword = BCrypt.hashSync(password, salt);
 
         this.doPlayerExists(name, (exists) => {
-            if(exists) {
-                return false;
+            if(exists == true) {
+                callback(false);
             } else {
                 this._db.exec(`INSERT INTO player (playername, password${emailAddress ? ", email" : ""}, online) VALUES ('${name}', '${hashedPassword}'${emailAddress ? `, '${emailAddress}'` : ""}, 1)`);
-                return true;
+                logger.fine(`Successfully created ${name}'s account`);
+                callback(true);
             }
         });
-        logger.fine(`Successfully created ${name}'s account`);
     }
 
     /**
