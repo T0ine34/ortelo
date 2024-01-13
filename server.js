@@ -230,13 +230,11 @@ app.get('/game/:url', (req, res) => {
  * @param {String} password The user's password
  * @return {boolean} True if the user is logged in
  */
-app.get('/login/:username/:password', (req, res) => {
-
-    database.login(req.params.username, req.params.password, (result) => {
-        logger.info(`Logging player ${req.params.username} : ${result}`);
-        if(result == true) res.send(true);
-        else res.send(false);
-    });
+app.get('/login/:username/:password', async (req, res) => {
+    const logged = await database.login(req.params.username, req.params.password);
+    logger.info(`Logging player ${req.params.username} : ${logged}`);
+    if(logged == true) return res.send(true);
+    return res.send(false);
 
 });
 
@@ -247,14 +245,11 @@ app.get('/login/:username/:password', (req, res) => {
  * @param {String} email The user's email
  * @return {boolean} True if the user is logged in
  */
-app.get('/register/:username/:password/:email', (req, res) => {
-
-    database.createPlayer(req.params.username, req.params.password, req.params.email, (result) => {
-        logger.info(`Creating player ${req.params.username} : ${result}`);
-        if(result === true) res.send(true);
-        else res.send(false);
-    });
-
+app.get('/register/:username/:password/:email', async (req, res) => {
+    const created = await database.createPlayer(req.params.username, req.params.password, req.params.email);
+    logger.info(`Creating player ${req.params.username} : ${created}`);
+    if(created) return res.send(true);
+    return res.send(false);
 });
 
 
