@@ -30,14 +30,14 @@ document.addEventListener('DOMContentLoaded', function () {
     document.querySelector('#signup_form').addEventListener('submit', (event) => {
         event.preventDefault();
 
-        const username = document.getElementById('signup_username').value;
-        const password = document.getElementById('signup_password').value;
+        const username  = document.getElementById('signup_username').value;
+        const password  = document.getElementById('signup_password').value;
         const password2 = document.getElementById('confirm_password').value;
+        const email     = document.getElementById('email').value;
         if(password !== password2) {
             alert('Les mots de passe ne sont pas les mêmes');
             return;
         }
-        const email    = document.getElementById('email').value;
 
         fetch(`/register/${username}/${password}/${email}`)
             .then(response => response.text())
