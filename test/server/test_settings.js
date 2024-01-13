@@ -5,15 +5,15 @@ fs = require('fs');
 const { Settings } = require('../../server_modules/settings/main');
 
 function reset(){
-    if(fs.existsSync("./test/server/settings/test_settings.json")){
-        fs.unlinkSync("./test/server/settings/test_settings.json");
+    if(fs.existsSync("./test/server/data/test_settings.json")){
+        fs.unlinkSync("./test/server/data/test_settings.json");
     }
 }
 
 function makeCopy(){
     reset();
-    if(fs.existsSync("./test/server/settings/base_test_settings.json")){
-        fs.copyFileSync("./test/server/settings/base_test_settings.json", "./test/server/settings/test_settings.json");
+    if(fs.existsSync("./test/server/data/base_test_settings.json")){
+        fs.copyFileSync("./test/server/data/base_test_settings.json", "./test/server/data/test_settings.json");
     }
 }
 
@@ -22,7 +22,7 @@ module.exports = {
         let settings = null;
         makeCopy();
         try{
-            settings = new Settings("./test/server/settings/base_test_settings.json", false);
+            settings = new Settings("./test/server/data/base_test_settings.json", false);
         }catch(e){
             // do nothing, the test will fail because settings is null
         }
@@ -32,16 +32,16 @@ module.exports = {
 
     'test-saving': function() {
         makeCopy();
-        let settings = new Settings("./test/server/settings/test_settings.json", false);
-        settings.save("./test/server/settings/test_settings_cpy.json");
-        Assertions.assert(fs.existsSync("./test/server/settings/test_settings_cpy.json"), "testing saving of settings");
-        fs.unlinkSync("./test/server/settings/test_settings_cpy.json");
+        let settings = new Settings("./test/server/data/test_settings.json", false);
+        settings.save("./test/server/data/test_settings_cpy.json");
+        Assertions.assert(fs.existsSync("./test/server/data/test_settings_cpy.json"), "testing saving of settings");
+        fs.unlinkSync("./test/server/data/test_settings_cpy.json");
         reset();
     },
 
     'test-getting': function() {
         makeCopy();
-        let settings = new Settings("./test/server/settings/test_settings.json", false);
+        let settings = new Settings("./test/server/data/test_settings.json", false);
         Assertions.assert(settings.get("port") == 3000, "testing getting integer from settings");
         Assertions.assert(settings.get("main_room_name") == "general", "testing getting string from settings");
         Assertions.assert(settings.get("allow_chat_commands") == true, "testing getting booloean from settings");
@@ -52,14 +52,14 @@ module.exports = {
 
     'test-getting-unknown': function() {
         makeCopy();
-        let settings = new Settings("./test/server/settings/test_settings.json", false);
+        let settings = new Settings("./test/server/data/test_settings.json", false);
         Assertions.assert(settings.get("test_item") == undefined, "testing getting unavaliable item");
         reset();
     },
 
     'test-setting': function() {
         makeCopy();
-        let settings = new Settings("./test/server/settings/test_settings.json", false);
+        let settings = new Settings("./test/server/data/test_settings.json", false);
         settings.set("port", 3001);
         settings.set("main_room_name", "test_room");
         settings.set("allow_chat_commands", false);
@@ -75,7 +75,7 @@ module.exports = {
 
     'test-delete': function() {
         makeCopy();
-        let settings = new Settings("./test/server/settings/test_settings.json", false);
+        let settings = new Settings("./test/server/data/test_settings.json", false);
         settings.delete("port");
         settings.delete("main_room_name");
         settings.delete("allow_chat_commands");
@@ -91,7 +91,7 @@ module.exports = {
 
     'test-has': function() {
         makeCopy();
-        let settings = new Settings("./test/server/settings/test_settings.json", false);
+        let settings = new Settings("./test/server/data/test_settings.json", false);
         Assertions.assertEquals(settings.has("port"), true, "testing the 'has' method on integer");
         Assertions.assertEquals(settings.has("main_room_name"), true, "testing the 'has' method on string");
         Assertions.assertEquals(settings.has("allow_chat_commands"), true, "testing the 'has' method on boolean");

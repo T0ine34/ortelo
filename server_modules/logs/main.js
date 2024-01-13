@@ -2,7 +2,7 @@ const fs            = require('fs');
 const path          = require('path');
 
 const { Settings } = require('../settings/main');
-var settings = new Settings("./server.config");
+var settings = new Settings("./server.config"); 
 
 /**
  * @module Logger
@@ -33,19 +33,29 @@ function indent(str, indent){
  * @description A singleton class which provides an easy way to log infos from the app into a file every two hours.
  */
 class Logger {
-    static _instance = null;
-    constructor() {
-        if(!Logger._instance) { //if instance does not exist, create it
-            Logger._instance = this;
+    static _instances = {};
+    constructor(log_folder = null) {
+        if(!Logger._instances[log_folder]) {
+            this._logFolder = log_folder || settings.get("logs.dir");
+            Logger._instances[log_folder] = this;
             this.use_debug = settings.get("logs.useDebug");
             this.load();
             this.debug("Debug mode enabled")
-            setInterval(() => { //execute it at a regular interval set in server.settings
+            this.intervalId = setInterval(() => { //execute it at a regular interval set in server.settings
                 this.load();
             }, settings.get("logs.refreshTimeSec") * 1000);
+            this.debug("Refreshing log file every " + settings.get("logs.refreshTimeSec") + " seconds");
         }
-        this.debug("Refreshing log file every " + settings.get("logs.refreshTimeSec") + " seconds");
-        return Logger._instance;
+        return Logger._instances[log_folder];
+    }
+
+    /**
+     * @description The close function removes the instance of the logger from the static instances array.
+     * @function
+     */
+    close(){
+        clearInterval(this.intervalId);
+        delete Logger._instances[this._logFolder];
     }
 
     /**
@@ -53,11 +63,11 @@ class Logger {
      * @function
      */
     load(){
-        if(!fs.existsSync(settings.get("logs.dir"))) fs.mkdirSync(settings.get("logs.dir")); //** Creates log folder if it does not exists. */
+        if(!fs.existsSync(this._logFolder)) fs.mkdirSync(this._logFolder); //** Creates log folder if it does not exists. */
         const currentDate = new Date();
         
         //** Updates filepath to output logs to */
-        const filePath = `${settings.get("logs.dir")}/${currentDate.getDate()}_${currentDate.getMonth()+1}_${currentDate.getFullYear()}_at_${currentDate.getHours() < 10 ? "0" + currentDate.getHours() : currentDate.getHours()}h${currentDate.getMinutes() < 10 ? "0" + currentDate.getMinutes() : currentDate.getMinutes()}.log`;
+        const filePath = `${this._logFolder}/${currentDate.getDate()}_${currentDate.getMonth()+1}_${currentDate.getFullYear()}_at_${currentDate.getHours() < 10 ? "0" + currentDate.getHours() : currentDate.getHours()}h${currentDate.getMinutes() < 10 ? "0" + currentDate.getMinutes() : currentDate.getMinutes()}.log`;
         if(this._logFile && this._logFile != filePath){
             this.info("log file changed to " + filePath + "\n nothing will be added in this file anymore");
         }
@@ -138,7 +148,7 @@ class Logger {
      * @function
      */
     removeOldest() {
-        fs.readdir(settings.get("logs.dir"), (err, files) => {
+        fs.readdir(this._logFolder, (err, files) => {
             if(err) {
                 this.error("Can not remove oldests files from logs directory");
                 return;
@@ -150,7 +160,7 @@ class Logger {
                 const filesToRemove = files.slice(0, files.length - settings.get("logs.maxFiles"));
                 
                 filesToRemove.forEach(file => {
-                    const filePath = path.join(settings.get("logs.dir"), file);
+                    const filePath = path.join(this._logFolder, file);
 
                     fs.unlink(filePath, err => {
                         if (err) {
@@ -161,7 +171,10 @@ class Logger {
                     });
                 });
             } else {
-                this.fine("No log files to remove");
+                try{
+                    this.fine("No log files to remove");
+                }catch(e){
+                }
             }
 
         });
@@ -173,5 +186,5 @@ class Logger {
 /**
  * Exports the Logger so it can be used in other files
  */
-let logger = new Logger()
-module.exports = { logger };
+
+module.exports = {Logger};

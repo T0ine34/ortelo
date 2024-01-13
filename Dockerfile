@@ -14,7 +14,7 @@ COPY server_modules/ server_modules/
 COPY public/ public/
 COPY package.json .
 COPY package-lock.json .
-COPY server.config .
+COPY server.deploy.config ./server.config
 COPY server.js .
 
 RUN npm install

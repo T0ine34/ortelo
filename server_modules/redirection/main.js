@@ -1,7 +1,8 @@
 const { Settings }  = require('../settings/main');
 const fs            = require('fs');
-const { logger }    = require('../logs/main');
+const { Logger }    = require('../logs/main');
 
+let logger = new Logger();
 var settings = new Settings("./server.config");
 
 /**

@@ -20,7 +20,6 @@ function is_json(filepath){
     try {
         JSON.parse(fs.readFileSync(filepath));
     } catch (e) {
-        console.log(e);
         return false;
     }
     return true;

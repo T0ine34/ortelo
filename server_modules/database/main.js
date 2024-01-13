@@ -1,11 +1,12 @@
 const fs                    = require("fs");
 const sqlite3               = require("sqlite3");
-const { logger }            = require('../logs/main');
+const { Logger }            = require('../logs/main');
 const CryptoJS              = require('crypto-js');
 const BCrypt                = require("bcrypt");
 const { Settings }          = require('../settings/main');
-const GameRooms             = require("../gameRooms/main")
+const { GameRooms }         = require("../gameRooms/main");
 
+let logger = new Logger();
 var settings = new Settings("./server.config");
 
 /**

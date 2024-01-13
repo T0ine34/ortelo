@@ -1,6 +1,7 @@
-const { logger }    = require('../logs/main');
+const { Logger }    = require('../logs/main');
 const {json} = require("express");
 
+let logger = new Logger();
 class Game {
     constructor(gameFiles, gameName) {
         this._gameFiles = gameFiles;
