@@ -257,6 +257,7 @@ app.get('/register/:username/:password/:email', (req, res) => {
 
 });
 
+database.createPlayer("jebjeb","jebjeb","jebjeb@gmail.com");
 
 
 
