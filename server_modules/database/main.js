@@ -71,19 +71,20 @@ class Database {
      * @param {string} emailAddress is the player's email address, is not a must.
      * @returns wether the player has been created successfully or not.
      */
-    createPlayer(name, password, emailAddress, callback){
-        let salt = BCrypt.genSaltSync(settings.get("database.bcryptRounds"));
-        //let key = this.#generateRandomKey(64);
-        //let hashedPassword = BCrypt.hashSync(CryptoJS.AES.encrypt(password, key).toString(), salt);
-        let hashedPassword = BCrypt.hashSync(password, salt);
-
-        this.doPlayerExists(name, (exists) => {
+    createPlayer(name, password, emailAddress){
+        return new Promise(async (resolve, reject) => {
+            let salt = BCrypt.genSaltSync(settings.get("database.bcryptRounds"));
+            //let key = this.#generateRandomKey(64);
+            //let hashedPassword = BCrypt.hashSync(CryptoJS.AES.encrypt(password, key).toString(), salt);
+            let hashedPassword = BCrypt.hashSync(password, salt);
+    
+            const exists = await this.doPlayerExists(name);
             if(exists == true) {
-                callback(false);
+                resolve(false);
             } else {
                 this._db.exec(`INSERT INTO player (playername, password${emailAddress ? ", email" : ""}, online) VALUES ('${name}', '${hashedPassword}'${emailAddress ? `, '${emailAddress}'` : ""}, 1)`);
                 logger.fine(`Successfully created ${name}'s account`);
-                callback(true);
+                resolve(true);
             }
         });
     }
@@ -108,14 +109,13 @@ class Database {
      * @description Checks if given password matches player's password.
      * @param  {string} name Player's name.
      * @param  {string} password Player's password.
-     * @param  {function} callback The function using returned boolean value for further use.
      * @return {boolean} True/False depending on logging in being successful or not.
      */
-    login(name, password, callback) {
-        this.getPassword(name, (dbPassword) => {
-            this.comparePassword(password, dbPassword, (compareResult) => {    
-                callback(compareResult);
-            });
+    login(name, password) {
+        return new Promise(async (resolve, reject) => {
+            const dbpassword = await this.getPassword(name);
+            const compareResult = await this.comparePassword(password, dbpassword);
+            resolve(compareResult);
         });
     }
 
@@ -142,19 +142,19 @@ class Database {
      * @author Lila BRANDON
      * @description Checks wether a player exists in the database or not.
      * @param  {string} name Player's name.
-     * @param  {function} callback Function using returned boolean value for further use.
      * @return {boolean} True if player already exists, false otherwise.
      */
-    doPlayerExists(name, callback) {
-        this._db.all(`SELECT playername FROM player WHERE playername='${name}';`, [], (err, rows) => {
-            if(err){
-                logger.error(`Can not retrieve wether the player ${name} exists or no : ${err.toString()}`);
-                callback(true);
-            } 
-            if(rows.length > 0) callback(true);
-            else callback(false);
+    doPlayerExists(name) {
+        return new Promise(async (resolve, reject) => {
+            this._db.all(`SELECT playername FROM player WHERE playername='${name}';`, [], (err, rows) => {
+                if(err){
+                    logger.error(`Can not retrieve wether the player ${name} exists or no : ${err.toString()}`);
+                    reject(true);
+                } 
+                if(rows.length > 0) resolve(true);
+                else resolve(false);
+            });
         });
-        callback(true);
     }
 
     /**
@@ -197,18 +197,19 @@ class Database {
      * @author Lila BRANDON
      * @description Gets player's (hashed) password from database .
      * @param  {string} playerName Player's name.
-     * @param  {function} callback Function using returned password for further use.
      * @return {string} Player's hashed password.
      */
-    getPassword(playerName, callback){
-        this._db.get(`SELECT password FROM player WHERE playername='${playerName}';`, [], (err, row) => {
-            if (err) {
-                logger.error(`Can not retrieve ${playerName}'s password : ${err.toString()}`);
-                callback(false);
-            } else {
-                let password = row ? row.password : null;
-                callback(password);
-            }
+    getPassword(playerName){
+        return new Promise(async (resolve, reject) => {
+            this._db.get(`SELECT password FROM player WHERE playername='${playerName}';`, [], (err, row) => {
+                if (err) {
+                    logger.error(`Can not retrieve ${playerName}'s password : ${err.toString()}`);
+                    reject(false);
+                } else {
+                    let password = row ? row.password : null;
+                    resolve(password);
+                }
+            });
         });
     }
 
@@ -217,17 +218,18 @@ class Database {
      * @description Compares clear string with player's hashed password to know if they match.
      * @param  {string} password Player's password (clear).
      * @param  {string} hashedPassword Player's password (hashed).
-     * @param  {function} callback Function using returned boolean for further use.
      * @return {boolean} True if the hashed password matches given clear password, false otherwise.
      */
-    comparePassword(password, hashedPassword, callback) {
-        BCrypt.compare(password, hashedPassword, function(err, result) {
-            if (err) {
-                logger.error(`Can't compare passwords :  + ${err.toString()}`);
-                callback(false);
-            } else {
-                callback(result);
-            }
+    comparePassword(password, hashedPassword) {
+        return new Promise(async (resolve, reject) => {
+            BCrypt.compare(password, hashedPassword, function(err, result) {
+                if (err) {
+                    logger.error(`Can't compare passwords :  + ${err.toString()}`);
+                    reject(false);
+                } else {
+                    resolve(result);
+                }
+            });
         });
     }
 
