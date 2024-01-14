@@ -28,6 +28,16 @@ body {
 
 .head header {
     width: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.head figure {
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
 }
 
 img {
@@ -83,4 +93,38 @@ form button {
     border-width: 1px;
     border-color: var(--border-color);
     border-radius: 0.8em;
+}
+
+@media (orientation: landscape) {
+    html {
+        overflow: scroll;
+    }
+
+    .head {
+        height: 20%;
+    }
+
+    figure {
+        margin: 0;
+    }
+    img {
+        width: 50%;
+        height: auto;
+    }
+
+    #login, #register, #forgot-password {
+        height: 90%;
+        font-size: 0.5rem;
+    }
+
+    .form-item {
+        width: 70%;
+        height: 1.1rem;
+    }
+
+    form button {
+        margin-top: 0.5rem;
+        height: 1.2rem;
+    }
+
 }
