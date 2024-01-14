@@ -1,144 +1,120 @@
 <!DOCTYPE html>
-<html>
+<html lang="fr">
 <head>
     <title>Ortelo - Connexion</title>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="icon" type="image/x-icon" href="assets/images/ortelo_logo.png">
-    <link rel="stylesheet" href="bootstrap/css/bootstrap.min.css">
     <link rel="stylesheet" href="stylesheets/style.css">
     <link rel="stylesheet" href="stylesheets/login.css">
 </head>
 <body>
-    <div class="container-fluid" id="app_container">
-        <div class="banner">
-            <img class="app_banner" src="assets/images/ortelo_banner.png" alt="App Banner">
+    <div class="root">
+        <div class="head">
+            <header>
+                <figure> <img class="app_banner" src="assets/images/ortelo_banner.png" alt="App Banner"> </figure>
+            </header>
         </div>
-        <div class="banner d-flex align-items-center justify-content-center h-100">
-            <div class="col-12 col-md-6">
-                <div id="login_section">
-                    <h2>Connexion</h2>
-                    <form id="login_form" method="POST" action="/login">
-                            <label for="username">Nom d'utilisateur</label>
-                            <input type="text" class="form-control" id="username" name="username" required>
-                        </div>
-                        <div class="form-group">
-                            <label for="password">Mot de passe</label>
-                            <div class="input-group">
-                                <input type="password" class="form-control" id="password" name="password" required>
-                                <div class="input-group-append">
-                                    <button type="button" class="btn btn-outline-secondary" id="show_login_password">Afficher</button>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="form-group form-check">
-                            <input type="checkbox" class="form-check-input" id="remember_me" name="remember_me">
-                            <label class="form-check-label" for="remember_me">Rester connecté</label>
-                        </div>
-                        <button type="submit" class="btn btn-login">Se connecter</button>
-                    </form>
-                    <button type="button" onclick="showSignup()">Créer un compte</button>
-                    <button type="button" onclick="showForgotPassword()">Mot de passe oublié ?</button>
-                </div>
+        <main class="center-content">
 
-                <div id="signup_section" style="display: none;">
-                    <h2>Création de compte</h2>
-                    <form id="signup_form">
-                        <div class="form-group">
-                            <label for="signup_username">Nom d'utilisateur</label>
-                            <input type="text" class="form-control" id="signup_username" name="signup_username" required>
+            <div id="login">
+                <header>
+                    <h2> Connexion </h2>
+                </header>
+                <form id="login-form">
+                    <div class="form-group">
+                        <label for="username">Nom d'utilisateur</label>
+                        <div>
+                            <input type="text" class="form-item round-border" id="username" required>
                         </div>
-                        <div class="form-group">
-                            <label for="email">Adresse e-mail</label>
-                            <input type="email" class="form-control" id="email" name="email" required>
-                        </div>
-                        <div class="form-group">
-                            <label for="signup_password">Mot de passe</label>
-                            <div class="input-group">
-                                <input type="password" class="form-control" id="signup_password" name="signup_password" required>
-                                <div class="input-group-append">
-                                    <button type="button" class="btn btn-outline-secondary" id="show_signup_password">Afficher</button>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="form-group">
-                            <label for="confirm_password">Confirmer le mot de passe</label>
-                            <div class="input-group">
-                                <input type="password" class="form-control" id="confirm_password" name="confirm_password" required>
-                                <div class="input-group-append">
-                                    <button type="button" class="btn btn-outline-secondary" id="show_confirm_password">Afficher</button>
-                                </div>
-                            </div>
-                        </div>
-                        <button type="submit">Créer un compte</button>
-                    </form>
-                    <button type="button" onclick="showLogin()">Retour à la connexion</button>
-                </div>
+                    </div>
 
-                <div id="forgot_password_section" style="display: none;">
-                    <h2>Mot de passe oublié</h2>
-                    <form id="forgot_password_form">
-                    </form>
-                    <button type="button" onclick="showLogin()">Retour à la connexion</button>
-                </div>
-        </div>
+                    <div class="form-group">
+                        <label for="password">Mot de passe</label>
+                        <div>
+                            <input type="password" class="form-item round-border" id="password" required>
+                            <button type="button" class="round-border" id="show_login_password">Afficher</button>
+                        </div>
+                    </div>
+
+                    <div class="form-group form-check">
+                        <input type="checkbox" id="remember_me">
+                        <label class="form-check-label" for="remember_me">Rester connecté</label>
+                    </div>
+
+                    <button type="submit" class="round-border">Se connecter</button>
+                    <button id="showSignup" class="round-border" type="button">Créer un compte</button>
+                    <button id="showForgotPassword" class="round-border" type="button">Mot de passe oublié ?</button>
+                </form>
+            </div>
+
+
+    
+            <div id="register" style="display: none;">
+                <header>
+                    <h2> Création de compte </h2>
+                </header>
+                <form id="signup-form">
+                    <div class="form-group">
+                        <label for="signup_username">Nom d'utilisateur</label>
+                        <div>
+                            <input type="text" class="form-item round-border" id="signup_username" required>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="email">Adresse e-mail</label>
+                        <div>
+                            <input type="email" class="form-item round-border" id="email" required>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="signup_password">Mot de passe</label>
+                        <div>
+                            <input type="password" class="form-item round-border" id="signup_password" required>
+                            <button type="button" class="round-border" id="show_signup_password">Afficher</button>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="confirm_password">Confirmer le mot de passe</label>
+                        <div>
+                            <input type="password" class="form-item round-border" id="confirm_password" required>
+                            <button type="button" class="round-border" id="show_confirm_password">Afficher</button>
+                        </div>
+                    </div>
+
+                    <button type="submit" class="round-border">Créer un compte</button>
+                    <button class="showLogin round-border" type="button">Retour à la connexion</button>
+                </form>
+            </div>
+
+
+    
+            <div id="forgot-password" style="display: none;">
+                <header>
+                    <h2> Mot de passe oublié </h2>
+                </header>
+                <form id="forgot-password-form">
+                    <div class="form-group">
+                        <label for="forgot-email">Adresse e-mail</label>
+                        <div>
+                            <input type="email" class="form-item round-border" id="forgot-email" required>
+                        </div>
+                    </div>
+
+                    <button type="button" class="round-border">Réinitialiser le mot de passe</button>
+                    <button type="button" class="showLogin round-border">Retour à la connexion</button>
+                </form>
+            </div>
+    
+    
+        </main>
+
     </div>
 
-    <script>
-        // Function to display the login form
-        function showLogin() {
-            document.querySelector("#login_section").style.display = "block";
-            document.querySelector("#signup_section").style.display = "none";
-            document.querySelector("#forgot_password_section").style.display = "none";
-        }
-
-        // Function to display the account creation form
-        function showSignup() {
-            document.querySelector("#login_section").style.display = "none";
-            document.querySelector("#signup_section").style.display = "block";
-            document.querySelector("#forgot_password_section").style.display = "none";
-        }
-
-        // Function to display the password reset form
-        function showForgotPassword() {
-            document.querySelector("#login_section").style.display = "none";
-            document.querySelector("#signup_section").style.display = "none";
-            document.querySelector("#forgot_password_section").style.display = "block";
-        }
-
-        // Function to show or hide the password when creating an account
-        document.querySelector("#show_signup_password").addEventListener('click', function () {
-            const passwordInput = document.querySelector('#signup_password');
-            if (passwordInput.type === 'password') {
-                passwordInput.type = 'text';
-                this.textContent = 'Masquer';
-            } else {
-                passwordInput.type = 'password';
-                this.textContent = 'Afficher';
-            }
-        });
-
-        document.querySelector("#show_login_password").addEventListener('click', function () {
-        const loginPasswordInput = document.querySelector('#password');
-        if (loginPasswordInput.type === 'password') {
-            loginPasswordInput.type = 'text';
-            this.textContent = 'Masquer';
-        } else {
-            loginPasswordInput.type = 'password';
-            this.textContent = 'Afficher';}
-        });
-
-        // Function to show or hide the password confirmation field when creating an account
-        document.querySelector("#show_confirm_password").addEventListener('click', function () {
-            const confirmPasswordInput = document.querySelector('#confirm_password');
-            if (confirmPasswordInput.type === 'password') {
-                confirmPasswordInput.type = 'text';
-                this.textContent = 'Masquer';
-            } else {
-                confirmPasswordInput.type = 'password';
-                this.textContent = 'Afficher';
-            }
-        });
-    </script>
+    <script src="/socket.io/socket.io.js"></script>
+    <script src="login.js" type="module"></script>
 </body>
 </html>
