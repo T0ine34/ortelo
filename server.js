@@ -62,7 +62,6 @@ app.get('/game-start/:gameName/:username', async (req, res) => {
     user.socket.leave(rooms.get(general));
     msg = `${username} joined the game chat.`;
     room.emit(EVENTS.CHAT.MESSAGE, Date.now(), username, msg);
-
     let roomUrl = GameRooms.genURL(gameName);
 
     gameRooms.set(roomUrl, room);
@@ -87,9 +86,6 @@ app.get('/game-wait/game/:roomUrl', async (req, res) => {
     }
     if (room.run) {
         return res.json({ message: `Game ${room.name} already running successfully.` });
-    }
-    function sleep(seconds) {
-        return new Promise(resolve => setTimeout(resolve, seconds * 1000));
     }
     const game = gameLoader.gamesData[room.name];
     const serverScriptContent = new TextDecoder('utf-8').decode(new Uint8Array(game.serverData));
@@ -128,15 +124,18 @@ app.get('/gameUrl/:roomUrl/:username', (req, res) => {
     if (room.users && room.users.size >= 2) {
         return res.status(403).json({ message : `The room ${roomUrl} is full.` });
     }
-    let a = room.addUser(user);
+    const usersArray = Array.from(room.users.values());
+    const usernameExists = usersArray.some(user => user.username === username);
+    if (usernameExists) {
+        return res.status(403).json({message : `You are aready in the room ${roomUrl}`});
+    }
+    room.addUser(user);
     user.socket.leave(rooms.get(general));
-    room.on(EVENTS.CHAT.MESSAGE, (timestamp, username, msg) => {
-        room.users.forEach((user) => {
-            user.transmit(EVENTS.CHAT.MESSAGE, Date.now(), username, msg);
-        });
-    });
     msg = `${username} joined the game chat.`;
     room.emit(EVENTS.CHAT.MESSAGE, Date.now(), username, msg);
+    room.on(EVENTS.CHAT.MESSAGE, (timestamp, username, msg) => {
+        room.transmit(EVENTS.CHAT.MESSAGE, Date.now(), username, msg);
+    });
     res.json({message : `${username} joined game room ${roomUrl} successfully`});
 
 });

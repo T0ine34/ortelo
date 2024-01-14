@@ -116,7 +116,11 @@ function start() {
             } else {
                 const playerClass = currentPlayer === 'X' ? 'red-color' : 'blue-color';
                 message = `<span class='${playerClass}'>${currentPlayer}</span> a gagné !`;
-                showVictoryAnimation();
+                if (players[currentPlayer] === username ) {
+                    showVictoryAnimation(true);
+                } else {
+                    showVictoryAnimation(false);
+                }
             }
             statusElement.innerHTML = message;
             restartButton.style.display = 'block';
@@ -139,7 +143,7 @@ function start() {
         ghost.classList.toggle("ghost", currentPlayer === "O");
     }
 
-    function showVictoryAnimation() {
+    function showVictoryAnimation(victory) {
 
         let pumpkinSize = 100;
         let windowHeight = window.innerHeight;
@@ -151,7 +155,9 @@ function start() {
         for (let i = 0; i < 10; i++) {
             (function(i) {
                 let pumpkin = document.getElementById("victoryPumpkin" + i);
-
+                if (!victory) {
+                    pumpkin.textContent = "❄️";
+                }
                 let randomOffsetY = (Math.random() - 0.5) * (windowHeight - pumpkinSize);
                 let randomOffsetX = (Math.random() - 0.5) * (windowWidth - pumpkinSize);
 

@@ -285,7 +285,12 @@ async function joinGameRoom(urlParts) {
 
         const joinRoomResponse = await fetch(`/gameUrl/${roomUrl}/${username}`);
         const joinRoomData = await joinRoomResponse.json();
-
+        if (joinRoomData.message.includes(("You are aready in the room"))) {
+            let htmlContent = '<html><body><h1>Error</h1><p>' + joinRoomData.message + '</p></body></html>';
+            document.open();
+            document.write(htmlContent);
+            document.close();
+        }
         if (!joinRoomData.message.includes('successfully')) {
             console.error(joinRoomData);
             return;
