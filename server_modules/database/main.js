@@ -113,8 +113,8 @@ class Database {
      */
     login(name, password) {
         return new Promise(async (resolve, reject) => {
-            const dbpassword = await this.getPassword(name);
-            const compareResult = await this.comparePassword(password, dbpassword);
+            const dbpassword = await this.getPassword(name).catch( (err) => logger.error(err.toString()));
+            const compareResult = await this.comparePassword(password, dbpassword).catch( (err) => logger.error(err.toString()));;
             resolve(compareResult);
         });
     }

@@ -61,9 +61,9 @@ document.addEventListener('DOMContentLoaded', function () {
 
 
     // Event listeners for toggling password visibility
-    document.querySelector('#show_login_password').addEventListener('click', () => togglePasswordVisibility('#password'));
-    document.querySelector('#show_signup_password').addEventListener('click', () => togglePasswordVisibility('#signup_password'));
-    document.querySelector('#show_confirm_password').addEventListener('click', () => togglePasswordVisibility('#confirm_password'));
+    document.querySelector('#show_login_password').addEventListener('click', () => togglePasswordVisibility('#password', '#show_login_password'));
+    document.querySelector('#show_signup_password').addEventListener('click', () => togglePasswordVisibility('#signup_password', '#show_signup_password'));
+    document.querySelector('#show_confirm_password').addEventListener('click', () => togglePasswordVisibility('#confirm_password', '#show_confirm_password'));
 });
 
 function showLogin() {
@@ -84,9 +84,9 @@ function showForgotPassword() {
     document.querySelector("#register").style.display = "none";
 }
 
-function togglePasswordVisibility(passwordFieldId) {
+function togglePasswordVisibility(passwordFieldId, toggleButtonId) {
     const passwordInput = document.querySelector(passwordFieldId);
-    const toggleButton = passwordInput.nextElementSibling.children[0]; // Assumes button is the first child of the input-group-append
+    const toggleButton = document.querySelector(toggleButtonId);
     if (passwordInput.type === 'password') {
         passwordInput.type = 'text';
         toggleButton.textContent = 'Masquer';
