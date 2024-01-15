@@ -19,16 +19,16 @@ h1 {
 }
 
 #gameBoard {
+    border-collapse: separate;
+    border-spacing: 2px;
     width: 100%;
-    border-collapse: collapse;
     margin: 20px 0;
 }
 
 #gameBoard td {
+    background-color: #006400;
     width: 50px;
     height: 50px;
-    background-color: #006400;
-    border: 1px solid #fff;
     position: relative;
 }
 
