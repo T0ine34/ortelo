@@ -324,5 +324,6 @@ function mayjoinroom() {
 }
 
 document.querySelector("#logout").addEventListener('click', () => {
-    cookies.delete(username);
+    cookies.delete("username");
+    window.location.href = "";
 })

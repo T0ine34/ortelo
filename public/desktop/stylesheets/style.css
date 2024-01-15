@@ -172,11 +172,13 @@ body{
     }
 }
 
+
 .right-content header {
     display: flex;
     justify-content: right;
     height: 10vh;
     margin-bottom: 0.5rem;
+    color: var(--border-color);
 }
 
 .right-content header img {
