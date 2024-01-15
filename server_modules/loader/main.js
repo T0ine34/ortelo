@@ -21,7 +21,6 @@ class GameLoader {
 
     constructor(pathToGames="./"+settings.get("public_common_dir")+"/games/") {
         this._pathToGames = pathToGames;
-        this._jsZip = new JSZip();
         this._gamesData = {};
     }
 
@@ -38,7 +37,7 @@ class GameLoader {
         try {
             let zipFilePath = path.join(this._pathToGames, zipFileName);
             let data = fs.readFileSync(zipFilePath);
-            let zip = await this._jsZip.loadAsync(data);
+            let zip = await new JSZip().loadAsync(data);//permet de vider jszip car si on l'instancie une fois ca garde en mémoire
             let gameName = zipFileName.split('.')[0].toLowerCase();
             let gameFiles = {};
 

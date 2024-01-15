@@ -1,19 +1,5 @@
 // Import necessary modules
-const express = require('express');
-const http = require('http');
-const socketIO = require('socket.io');
-
-// Create an Express application
-const app = express();
-
-// Configure the Express application to serve static files from the 'public' folder
-app.use(express.static('public'));
-
-// Create an HTTP server using Express
-const server = http.createServer(app);
-
-// Create a WebSocket connection using Socket.IO
-const io = socketIO(server);
+const { EVENTS, Room, CIO } = require('./server_modules/events/main.js');
 
 /**
  * Class representing a Reversi game session.
@@ -245,38 +231,28 @@ let game = new ReversiGame();
  * @event
  * @param {Socket} socket - The socket representing the connected player.
  */
+function reversi(room) {
+    let game = new ReversiGame();
+    game.resetGame();
 
-io.on('connection', (socket) => {
-    if (game.addPlayer(socket.id)) {
-        if (game.isReadyToStart()) {
-            game.resetGame();
-            io.emit('gameStart', game.getGameState());
-        }
-    }
-
-    socket.on('makeMove', (data) => {
-        if (data.player === game.currentPlayer && game.makeMove(data.row, data.col, data.player)) {
-            io.emit('gameUpdate', game.getGameState());
-            if (game.isGameOver) {
-                io.emit('gameOver', game.getGameState());
+    const usersArray = Array.from(room.users);
+    const joueur1 = usersArray[0].username;
+    game.addPlayer(joueur1);
+    const joueur2 = usersArray[1].username;
+    game.addPlayer(joueur2);
+    room.on(EVENTS.GAME.DATA, (timestamp, data) => {
+        if (data && "row" in data && "col" in data && "username" in data) {
+            const moveValid = game.makeMove(data.row, data.col, data.username);
+            if (moveValid) {
+                room.transmit(EVENTS.GAME.DATA, Date.now(), game.getGameState());
             }
-        }
-    });
-
-    socket.on('disconnect', () => {
-        game.removePlayer(socket.id);
-        if (!game.isReadyToStart()) {
+        } else if (data && "restartKey" in data && data.restartKey === "restart") {
             game.resetGame();
-            io.emit('waitingForPlayer');
+            room.transmit(EVENTS.GAME.DATA, Date.now(), game.getGameState());
+        } else {
+            console.error("Invalid data received:", data);
         }
     });
-
-    socket.on('restartGame', () => {
-        game.resetGame();
-        io.emit('gameUpdate', game.getGameState());
-    });
-});
-
-server.listen(5000, () => {
-    console.log('Server running on port 5000');
-});
+}
+global.reversi = reversi;
+module.exports = { Server: ReversiGame, reversi };

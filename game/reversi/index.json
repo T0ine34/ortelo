@@ -7,6 +7,6 @@
     "css": "style.css",
     "server": "server.js",
     "images": {
-        "icon": "images/reversi-icon.png"
+        "icon": "images/reversi.png"
     }
 }

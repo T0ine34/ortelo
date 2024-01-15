@@ -153,7 +153,6 @@ app.get('/games-info', (req, res) => {
     const specificGameData = specificGameKey ? gamesData[specificGameKey] : null;
 
     let gameInfos = [];
-
     if (fields) {
         gameInfos = Object.values(gamesData).map(game => getGameInfo(game, fields));
     } else if (specificGameData) {
