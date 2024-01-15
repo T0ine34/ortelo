@@ -12,6 +12,24 @@ function start() {
     let players;
     csocket = window.csocket;
     let username = window.username;
+    let showHints = false;
+
+    csocket.on(EVENTS.GAME.DATA, (timestamp, state) => {
+        if (state && "all_connected" in state && "players" in state) {
+            players = state.players;
+            updateGameStatus();
+        } else if (state.restartCount !== undefined) {
+            document.getElementById('restartButton').textContent = `Redémarrer (${state.restartCount}/2)`;
+        } else {
+            document.getElementById('restartButton').textContent = 'Redémarrer';
+            players = state.players;
+            gameBoard = state.board;
+            currentPlayer = state.currentPlayer;
+            isGameOver = state.isGameOver;
+            renderBoard();
+            updateGameStatus();
+        }
+    });
 
     /**
      * @function initializeBoard
@@ -97,20 +115,36 @@ function start() {
         return valid;
     }
 
+    function toggleHints() {
+        showHints = !showHints;
+        renderBoard();
+
+        const hintButton = document.getElementById('hintButton');
+        if (showHints) {
+            hintButton.classList.add('active');
+        } else {
+            hintButton.classList.remove('active');
+        }
+    }
+
     /**
      * @function renderBoard
      * @description Render the game board with the current state.
      */
     function renderBoard() {
-        // Iterate through the game board and update the HTML table cells
         gameBoard.forEach((row, rowIndex) => {
             row.forEach((cell, colIndex) => {
                 const tableCell = document.getElementById('gameBoard').rows[rowIndex].cells[colIndex];
-                tableCell.className = ''; // Clear previous class
+                tableCell.className = '';
                 if (cell === 'B') {
                     tableCell.classList.add('black');
                 } else if (cell === 'W') {
                     tableCell.classList.add('white');
+                }
+
+                if (showHints && players[currentPlayer] === username && isValidMove(rowIndex, colIndex)) {
+                    const playableClass = players['B'] === username ? 'playable-black' : 'playable-white';
+                    tableCell.classList.add(playableClass);
                 }
             });
         });
@@ -132,33 +166,29 @@ function start() {
      */
     function updateGameStatus() {
         const statusElement = document.getElementById('gameStatus');
+
         if (isGameOver) {
-            let winnerText = winner === 'D' ? 'Draw' : (winner === 'B' ? 'Black' : 'White');
-            statusElement.textContent = `Game Over. Winner: ${winnerText}`;
+            let winnerText = winner === 'D' ? 'Match Nul' : (winner === 'B' ? 'Noir' : 'Blanc');
+            statusElement.textContent = `Fin de Partie. Vainqueur: ${winnerText}`;
         } else {
-            statusElement.textContent = `Current Player's Turn: ${currentPlayer === 'B' ? 'Black' : 'White'}`;
+            let jetonHtml = currentPlayer === "B" ? '<span class="jeton-noir"></span>' : '<span class="jeton-blanc"></span>';
+
+            if (players[currentPlayer] === username) {
+                statusElement.innerHTML = `C'est votre tour ${jetonHtml}`;
+            } else {
+                statusElement.innerHTML = `Au tour de l'adversaire ${jetonHtml}`;
+            }
         }
     }
+
 
     /**
      * @function restartGame
      * @description Send a request to the server to restart the game.
      */
     function restartGame() {
-        csocket.emit(EVENTS.GAME.DATA, Date.now(), { "restartKey": "restart"});
+        csocket.emit(EVENTS.GAME.DATA, Date.now(), { "restartKey": "restart", username : username});
     }
-    csocket.emit(EVENTS.GAME.DATA, Date.now(), {ready: "ready"});
-    csocket.on(EVENTS.GAME.DATA, (timestamp, state) => {
-        if (state && "all_connected" in state && "players" in state) {
-            players = state.players;
-        } else {
-            gameBoard = state.board;
-            currentPlayer = state.currentPlayer;
-            isGameOver = state.isGameOver;
-            renderBoard();
-            updateGameStatus();
-        }
-    });
 
     // Add click event listeners to the game board cells
     document.querySelectorAll('#gameBoard td').forEach(cell => {
@@ -169,6 +199,8 @@ function start() {
     document.getElementById('restartButton').addEventListener('click', () => {
         restartGame();
     });
+    document.getElementById('hintButton').addEventListener('click', toggleHints);
+    csocket.emit(EVENTS.GAME.DATA, Date.now(), {ready: "ready"});
 }
 import('./modules/events/main.js').then(module => {
     EVENTS = module.EVENTS;

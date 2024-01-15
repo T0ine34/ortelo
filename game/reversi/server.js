@@ -17,16 +17,28 @@ class ReversiGame {
         // Game over flag
         this.isGameOver = false;
         // Array to store socket IDs of connected players
-        this.players = [];
+        this.players = { B: null, W: null };
         // Winner of the game ('B' for Black, 'W' for White, 'D' for Draw)
         this.winner = null;
+        this.restartRequests = new Set();
+
     }
 
     /**
      * Initializes the game board with the starting pieces.
      * @returns {string[][]} An 8x8 game board.
      */
-
+    requestRestart(username) {
+        if (this.players.B === username || this.players.W === username) {
+            this.restartRequests.add(username);
+            if (this.restartRequests.size >= 2) {
+                this.resetGame();
+                this.restartRequests.clear();
+                return true;
+            }
+        }
+        return this.restartRequests.size;
+    }
     initializeBoard() {
         let board = [...Array(8)].map(() => Array(8).fill(''));
         board[3][3] = 'W';
@@ -45,7 +57,7 @@ class ReversiGame {
      */
 
     makeMove(row, col, username) {
-         let player = this.currentPlayer;
+        let player = this.currentPlayer;
         if (this.board[row][col] !== '' || this.isGameOver || username !== this.players[this.currentPlayer]) {
             return false;
         }
@@ -68,6 +80,7 @@ class ReversiGame {
                 this.switchPlayer();
             }
         }
+        this.restartRequests.delete(username);
         return true;
     }
 
@@ -210,6 +223,7 @@ class ReversiGame {
         this.currentPlayer = 'B';
         this.isGameOver = false;
         this.winner = null;
+        this.restartRequests = new Set();
     }
 
     /**
@@ -249,8 +263,12 @@ function reversi(room) {
                 room.transmit(EVENTS.GAME.DATA, Date.now(), game.getGameState());
             }
         } else if (data && "restartKey" in data && data.restartKey === "restart") {
-            game.resetGame();
-            room.transmit(EVENTS.GAME.DATA, Date.now(), game.getGameState());
+            const restartCount = game.requestRestart(data.username);
+            if (restartCount === true) {
+                room.transmit(EVENTS.GAME.DATA, Date.now(), game.getGameState());
+            } else {
+                room.transmit(EVENTS.GAME.DATA, Date.now(), { restartCount });
+            }
         } else if (data && "ready" in data) {
             room.transmit(EVENTS.GAME.DATA, Date.now(), {all_connected: "all_connected", players: game.players});
         } else {

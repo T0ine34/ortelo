@@ -80,3 +80,54 @@ h1 {
     margin-bottom: 20px;
 }
 
+.jeton-noir {
+    display: inline-block;
+    background-color: black;
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    vertical-align: middle;
+}
+
+.jeton-blanc {
+    display: inline-block;
+    background-color: white;
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    border: 1px solid black;
+    vertical-align: middle;
+}
+#gameBoard td.playable-black::after {
+    opacity: 0.3;
+    background-color: black;
+    border-radius: 50%;
+    width: 80%;
+}
+
+#gameBoard td.playable-white::after {
+    opacity: 0.3;
+    background-color: white;
+    border-radius: 50%;
+    width: 80%;
+}
+
+#hintButton {
+    background-color: #f0e68c;
+    border: 1px solid #d2b48c;
+    padding: 5px 10px;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s ease, transform 0.3s ease;
+}
+#hintButton.active {
+    background-color: #ffd700;
+    color: black;
+}
+#hintButton.active:hover {
+    background-color: #ffeb3b;
+}
+
+#hintButton.active:active {
+    background-color: #ffda00;
+}
