@@ -2,7 +2,20 @@
 
 
 ## Description
-This project is a part of the SAE-S3.A.01-2023 course at IUT AIX-MARSEILLE. It is a web application that allows students to play online together. We have a some games avaliable, and we can add more games in the future. The application is made with Socket.io, Node.js, Express and SqLite.
+
+This project is a part of the SAE-S3.A.01-2023 course at IUT AIX-MARSEILLE. It is a web application that allows students to play online together. We have a some games avaliable, and we can add more games in the future.
+
+### Technologies used
+
+- [Node.js](https://nodejs.org/en/)
+- [Express](https://expressjs.com/) for the http server
+- [Socket.io](https://socket.io/)   for the websocket server
+- [SqLite](https://www.sqlite.org/index.html) for the database
+- [JSDoc](https://jsdoc.app/) for the documentation
+- [Docker](https://www.docker.com/) for the deployment
+- [Bcrypt](https://www.npmjs.com/package/bcrypt) for the password encryption
+- [unit-test](https://www.npmjs.com/package/unit-test) for the tests
+
 
 
 ## Installation
@@ -12,25 +25,29 @@ This project is a part of the SAE-S3.A.01-2023 course at IUT AIX-MARSEILLE. It i
 #### Using node.js
 
 To install the server, you need to :
-- get the lastest release
+- get the latest release
 - extract the files
 - run `npm install` in the root folder
-- run `npx nodemon server.js` in the root folder
+- run `npm run start` in the root folder
 - that's it, the server is running on port 3000
 
-#### Using docker
+#### Using docker_cli
 
 A docker image is avaliable on docker hub. To install the server, you need to :
 - run `docker pull s3a01/main:latest` to get the image
 - run `docker run -p 3000:3000 -v s3a01-data:/data s3a01/main:latest` to run the image
+> you can change the port 3000 to any port you want, this is the port the client will connect to
 - that's it, the server is running on port 3000
 
----
-### Connection as a client
+#### Using docker desktop
 
-To connect to it as a client, you need to :
-- go to the server's ip address on port 3000
-- that's it, you are connected to the server
+A docker image is avaliable on docker hub. To install the server, you need to :
+- search for the image `s3a01/main:latest` on docker hub
+- run the image, paying attention to:
+    - redirect the port 3000 to a port on your machine (the client will connect to this port)
+    - mount a volume to the `/data` folder (this is where the database will be stored)
+- that's it, the server is running on the port you chose
+
 
 ---
 ### Create documentation
@@ -42,6 +59,10 @@ To create the documentation, you need to run the following command in the root f
 
 Then,
 the documentation will be created in the `./docs` folder as an aggregate of html files.
+
+
+## Run the tests
+To run the tests, you need to run the `make test` command in the root folder.
 
 ## Add a game
 To add a game, you need to :
@@ -119,10 +140,6 @@ Final result:
 
 - Zip every files in one archive named yourgamename.game </br>
 Note that the archive should not contain your parent folder (game) </br> But should contain index.json and every other files/folders INSIDE the parent folder
-
-
-## Run the tests
-To run the tests, you need to run the `make test` command in the root folder.
 
 
 ## Contributing
