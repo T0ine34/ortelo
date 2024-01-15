@@ -9,21 +9,29 @@ document.addEventListener('DOMContentLoaded', function () {
         const username = document.getElementById('username').value;
         const password = document.getElementById('password').value;
 
-        fetch(`/login/${username}/${password}`)
-            .then(response => response.text())
-            .then(data => {  
+        fetch(`/login`, {
+            method: "POST",
+            body: JSON.stringify({
+                username, password
+            }),
+            headers: {
+                "Content-Type": "application/json",
+            },
+        })
+        .then(response => response.text())
+        .then(data => {  
 
-                if(data == "true") {
-                    cookies.set("username", username, 1); //save the username for 1 hour
-                    console.info("username set to " + username +" for 1 hour");
+            if(data == "true") {
+                cookies.set("username", username, 1); //save the username for 1 hour
+                console.info("username set to " + username +" for 1 hour");
 
-                    this.location.href = "/";
-                } else {
-                    alert("Nom d'utilisateur ou mot de passe incorrect");
-                }
+                this.location.href = "/";
+            } else {
+                alert("Nom d'utilisateur ou mot de passe incorrect");
+            }
 
-            })
-            .catch(error => console.error('Can not retrieve data from login', error));
+        })
+        .catch(error => console.error('Can not retrieve data from login', error));
     });
 
     // Event listener for sign up form
@@ -39,19 +47,27 @@ document.addEventListener('DOMContentLoaded', function () {
             return;
         }
 
-        fetch(`/register/${username}/${password}/${email}`)
-            .then(response => response.text())
-            .then(data => {  
+        fetch(`/register`, {
+            method: "POST",
+            body: JSON.stringify({
+                username, password, email
+            }),
+            headers: {
+                "Content-Type": "application/json",
+            },
+        })
+        .then(response => response.text())
+        .then(data => {  
 
-                if(data == "true") {
-                    cookies.set("username", username, 1); //save the username for 1 hour
-                    console.info("username set to " + username +" for 1 hour");
+            if(data == "true") {
+                cookies.set("username", username, 1); //save the username for 1 hour
+                console.info("username set to " + username +" for 1 hour");
 
-                    this.location.href = "/";
-                }
+                this.location.href = "/";
+            }
 
-            })
-            .catch(error => console.error('Can not retrieve data from login', error));
+        })
+        .catch(error => console.error('Can not retrieve data from register', error));
     });
 
     document.querySelector('#forgot-password button').addEventListener('submit', sendResetEmail);

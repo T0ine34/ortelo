@@ -20,6 +20,7 @@ const e = require('express');
 const { GameRooms }                                               = require('./server_modules/gameRooms/main');
 const path = require('path');
 const { log } = require('console');
+const bodyParser = require('body-parser');
 
 let logger = new Logger();
 
@@ -35,6 +36,9 @@ logger.debug("intitializing game loader");
 const gameLoader = new GameLoader();
 
 logger.debug("server initialized successfully");
+
+logger.debug("Using Body-Parser Json");
+app.use(bodyParser.json())
 
 // -------------------------------------------------------------------- SERVER CONFIGURATION
 
@@ -228,9 +232,9 @@ app.get('/game/:url', (req, res) => {
  * @param {String} password The user's password
  * @return {boolean} True if the user is logged in
  */
-app.get('/login/:username/:password', async (req, res) => {
-    const logged = await database.login(req.params.username, req.params.password);
-    logger.info(`Logging player ${req.params.username} : ${logged}`);
+app.post('/login', async (req, res) => {
+    const logged = await database.login(req.body.username, req.body.password);
+    logger.info(`Logging player ${req.body.username} : ${logged}`);
     if(logged == true) return res.send(true);
     return res.send(false);
 
@@ -243,9 +247,9 @@ app.get('/login/:username/:password', async (req, res) => {
  * @param {String} email The user's email
  * @return {boolean} True if the user is logged in
  */
-app.get('/register/:username/:password/:email', async (req, res) => {
-    const created = await database.createPlayer(req.params.username, req.params.password, req.params.email);
-    logger.info(`Creating player ${req.params.username} : ${created}`);
+app.post('/register', async (req, res) => {
+    const created = await database.createPlayer(req.body.username, req.body.password, req.body.email);
+    logger.info(`Creating player ${req.body.username} : ${created}`);
     if(created) return res.send(true);
     return res.send(false);
 });
