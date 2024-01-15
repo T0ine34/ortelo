@@ -195,25 +195,32 @@ body{
 .gamesContainer{
     display: flex;
     text-align: center;
+    justify-content: center;
     overflow-y:auto;
-
-    & .GameItem{
-        width: 20em;
-        height: min-content;
-        border-radius: 1em;
-        margin: 1em;
-        border-style: solid;
-        border-width: 1px;
-        border-color: var(--border-color);
-        padding: 0.5em;
-        cursor: pointer;
-
-        & img{
-            width: 90%;
-            border-radius: 1em;
-        }
-    }
 }
+
+.gamesContainer .GameItem {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+    font-size: 1.25rem;
+    width: 50%;
+    border-radius: 1em;
+    margin: 0.6rem;
+    border-style: solid;
+    border-width: 1px;
+    border-color: var(--border-color);
+    padding: 0.25rem;
+    cursor: pointer;
+}
+
+.gamesContainer .GameItem img {
+    width: 30%;
+    height: auto;
+    border-radius: 1em;
+}
+
 
 .content404{
     text-align: center;
