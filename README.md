@@ -6,17 +6,33 @@ This project is a part of the SAE-S3.A.01-2023 course at IUT AIX-MARSEILLE. It i
 
 
 ## Installation
-To isntall the server, you need to :
+
+### Install the server
+
+#### Using node.js
+
+To install the server, you need to :
 - get the lastest release
 - extract the files
 - run `npm install` in the root folder
 - run `npx nodemon server.js` in the root folder
 - that's it, the server is running on port 3000
 
+#### Using docker
+
+A docker image is avaliable on docker hub. To install the server, you need to :
+- run `docker pull s3a01/main:latest` to get the image
+- run `docker run -p 3000:3000 -v s3a01-data:/data s3a01/main:latest` to run the image
+- that's it, the server is running on port 3000
+
+---
+### Connection as a client
+
 To connect to it as a client, you need to :
 - go to the server's ip address on port 3000
 - that's it, you are connected to the server
 
+---
 ### Create documentation
 To create the documentation, you need to run the following command in the root folder :
 
@@ -40,21 +56,21 @@ To create a new game, you need to :
 Now your folder should approximately look like this:
 ```
 game
-|   index.html
+| index.html
 │
-└───scripts
+├───┐ scripts
 |   |   main.js
 │   
-└───images
+├───┐ images
 |   │   sprite1.png
 |   │   sprite2.png
 |   |   icon.png
 |
-└───sounds
+├───┐ sounds
 |   |   music.mp3
 |
-└───stylesheets
-|   |   style.css
+└───┐ stylesheets
+    |   style.css
 ```
 - Inside your game folder, make a file named index.json and edit it so it looks like this :
 ```json
@@ -105,9 +121,9 @@ Final result:
 Note that the archive should not contain your parent folder (game) </br> But should contain index.json and every other files/folders INSIDE the parent folder
 
 
-## Support
-If you are having issues, please let us know by opening an issue in the repository or contact us at
-`antoine.buirey@etu.univ-amu.fr`
+## Run the tests
+To run the tests, you need to run the `make test` command in the root folder.
+
 
 ## Contributing
 As this project is a school project, we don't accept any contribution. But you can fork the project and do whatever you want with it.
