@@ -44,8 +44,9 @@ class ReversiGame {
      * @returns {boolean} True if the move is valid and successful, false otherwise.
      */
 
-    makeMove(row, col, player) {
-        if (this.board[row][col] !== '' || this.isGameOver || player !== this.currentPlayer) {
+    makeMove(row, col, username) {
+         let player = this.currentPlayer;
+        if (this.board[row][col] !== '' || this.isGameOver || username !== this.players[this.currentPlayer]) {
             return false;
         }
 
@@ -171,12 +172,15 @@ class ReversiGame {
      * @returns {boolean} True if the player was successfully added, false if the game is full.
      */
 
-    addPlayer(socketId) {
-        if (this.players.length < 2 && !this.players.includes(socketId)) {
-            this.players.push(socketId);
-            return true;
+    addPlayer(username) {
+        if (!this.players.B) {
+            this.players.B = username;
+            return "B";
+        } else if (!this.players.W) {
+            this.players.W = username;
+            return "W";
         }
-        return false;
+        return null;
     }
 
     /**
@@ -218,13 +222,11 @@ class ReversiGame {
             board: this.board,
             currentPlayer: this.currentPlayer,
             isGameOver: this.isGameOver,
-            winner: this.winner
+            winner: this.winner,
+            players: this.players
         };
     }
 }
-
-
-let game = new ReversiGame();
 
 /**
  * Handles the 'connection' event when a player connects to the server.
@@ -249,6 +251,8 @@ function reversi(room) {
         } else if (data && "restartKey" in data && data.restartKey === "restart") {
             game.resetGame();
             room.transmit(EVENTS.GAME.DATA, Date.now(), game.getGameState());
+        } else if (data && "ready" in data) {
+            room.transmit(EVENTS.GAME.DATA, Date.now(), {all_connected: "all_connected", players: game.players});
         } else {
             console.error("Invalid data received:", data);
         }

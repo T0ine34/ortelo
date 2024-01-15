@@ -47,7 +47,7 @@ function start() {
         const row = this.parentNode.rowIndex;
         const col = this.cellIndex;
         if (gameBoard[row][col] === '' && isValidMove(row, col)) {
-            csocket.emit('makeMove', {row, col, player: currentPlayer});
+            csocket.emit(EVENTS.GAME.DATA, Date.now(), { row, col, username});
         }
     }
 
@@ -145,11 +145,19 @@ function start() {
      * @description Send a request to the server to restart the game.
      */
     function restartGame() {
-        csocket.emit('restartGame');
+        csocket.emit(EVENTS.GAME.DATA, Date.now(), { "restartKey": "restart"});
     }
-
+    csocket.emit(EVENTS.GAME.DATA, Date.now(), {ready: "ready"});
     csocket.on(EVENTS.GAME.DATA, (timestamp, state) => {
-        updateGame(state);
+        if (state && "all_connected" in state && "players" in state) {
+            players = state.players;
+        } else {
+            gameBoard = state.board;
+            currentPlayer = state.currentPlayer;
+            isGameOver = state.isGameOver;
+            renderBoard();
+            updateGameStatus();
+        }
     });
 
     // Add click event listeners to the game board cells
