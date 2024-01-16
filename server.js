@@ -125,13 +125,9 @@ app.get('/gameUrl/:roomUrl/:username', (req, res) => {
         return res.status(404).json({ message : `The room ${roomUrl} does not exist.` });
     }
 
-    /*if (room.users && room.users.size >= 2) {
-        return res.status(403).json({ message : `The room ${roomUrl} is full.` });
-    }*/
     const usersArray = Array.from(room.users.values());
     const usernameExists = usersArray.some(user => user.username === username);
     if (usernameExists) {
-        //return res.status(403).json({message : `You are already in the room ${roomUrl}`});
         const lastuser = usersArray.find(user => user.username === username);
         room.removeUser(lastuser);
 
