@@ -13,6 +13,7 @@ function start() {
     csocket = window.csocket;
     let username = window.username;
     let showHints = false;
+    let winner = null;
 
     csocket.on(EVENTS.GAME.DATA, (timestamp, state) => {
         if (state && "all_connected" in state && "players" in state) {
@@ -28,6 +29,10 @@ function start() {
             isGameOver = state.isGameOver;
             renderBoard();
             updateGameStatus();
+
+            if (isGameOver) {
+                handleGameOver(state.winner);
+            }
         }
     });
 
@@ -155,6 +160,7 @@ function start() {
      * @description Handle the end of the game and display the winner.
      * @param {string} winner - The winner of the game ('B' for Black, 'W' for White, 'D' for Draw).
      */
+    
     function handleGameOver(winner) {
         isGameOver = true;
         let winnerText;
