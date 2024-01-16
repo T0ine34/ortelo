@@ -268,9 +268,6 @@ app.post('/register', async (req, res) => {
     return res.send(false);
 });
 
-database.createPlayer("jebjeb", "jebjeb", "jebjebjebj");
-database.createPlayer("jj", "jj", "jj");
-
 
 set_redirections();
 
