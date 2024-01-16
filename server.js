@@ -268,6 +268,41 @@ app.post('/register', async (req, res) => {
     return res.send(false);
 });
 
+/**
+ * API route to retrieve the currently logged-in user's information.
+ * This route uses getPlayerId to obtain the user's ID from their username,
+ * and then fetches additional user information (username and email) from the database.
+ * @endpoint /api/user
+ * @method GET
+ * @returns {JSON} - Returns a JSON object containing the username and email.
+ *                   Returns a 404 error if the user is not found,
+ *                   or a 500 error in case of a server error.
+ */
+
+app.get('/api/user', (req, res) => {
+    // Retrieve the username of the logged-in user, for example, from a session
+    const username = req.session.username; // Ensure this matches your authentication mechanism
+
+    database.getPlayerId(username, (playerId) => {
+        if (playerId === "null") {
+            return res.status(404).send('User not found');
+        }
+
+        // Now, use the ID to fetch additional user information
+        database._db.get(`SELECT username, email FROM player WHERE playerid='${playerId}'`, [], (err, row) => {
+            if (err) {
+                return res.status(500).send('Error retrieving data');
+            }
+
+            if (row) {
+                res.json(row);
+            } else {
+                res.status(404).send('User not found');
+            }
+        });
+    });
+});
+
 
 set_redirections();
 

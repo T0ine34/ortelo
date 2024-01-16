@@ -87,3 +87,29 @@ document.getElementById("showPassword").addEventListener("click", function() {
     console.error('Error fetching user data:', error);
     });
     });
+
+    // Fetch user data and populate the display form when the page loads
+document.addEventListener('DOMContentLoaded', function() {
+    fetch('/api/user', {
+        method: 'GET',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        credentials: 'include' // if you are using sessions
+    })
+    .then(response => {
+        if (!response.ok) {
+            throw new Error('Network error: ' + response.statusText);
+        }
+        return response.json();
+    })
+    .then(user => {
+        // Populate the form fields with the user data
+        document.getElementById("usernameDisplay").value = user.username;
+        document.getElementById("emailDisplay").value = user.email;
+        // Note: Password should never be retrieved or displayed for security reasons
+    })
+    .catch(error => {
+        console.error('Error fetching user data:', error);
+    });
+});
