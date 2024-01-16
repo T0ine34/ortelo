@@ -296,6 +296,8 @@ function fetchGames() {
         console.error('Erreur lors du chargement des jeux: ', error);
     });
 }
+
+
 /**
  * Initiates the process to play a game.
  * Clears the chat, fetches the game details (HTML, CSS, JS), and sets up the game UI.
@@ -386,6 +388,8 @@ function PlayGame(name) {
             });
         })
 }
+
+
 /**
  * Loads the game UI into the games container.
  * Decodes and injects HTML, CSS, and JS for the game.
@@ -411,6 +415,8 @@ function loadGameUI(game) {
     window.username = username;
     document.body.appendChild(scriptTag);
 }
+
+
 /**
  * Joins a game room based on the URL parts provided.
  * Clears the chat and checks if the URL is valid for joining a game room.
@@ -427,7 +433,7 @@ async function joinGameRoom(urlParts) {
 
         const joinRoomResponse = await fetch(`/gameUrl/${roomUrl}/${username}`);
         const joinRoomData = await joinRoomResponse.json();
-        if (joinRoomData.message.includes(("You are aready in the room"))) {
+        if (joinRoomData.message.includes(("You are already in the room"))) {
             let htmlContent = '<html><body><h1>Error</h1><p>' + joinRoomData.message + '</p></body></html>';
             document.open();
             document.write(htmlContent);
@@ -453,6 +459,8 @@ async function joinGameRoom(urlParts) {
         }, 1000);
     }
 }
+
+
 /**
  * Checks if the user should be redirected to a game room.
  * If 'gameRedirect' data is present in localStorage, tries to join the game room.

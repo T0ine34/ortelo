@@ -160,9 +160,9 @@ function start() {
      * @description Handle the end of the game and display the winner.
      * @param {string} winner - The winner of the game ('B' for Black, 'W' for White, 'D' for Draw).
      */
+
     
     function handleGameOver(winner) {
-        isGameOver = true;
         let winnerText;
         if (winner === 'D') {
             winnerText = 'Match Nul';
@@ -171,8 +171,18 @@ function start() {
         } else {
             winnerText = 'Blanc';
         }
-        alert(`Fin de Partie. Vainqueur: ${winnerText}`);
+    
+        // Sélectionner l'élément pour l'annonce du gagnant
+        let winnerAnnouncement = document.getElementById('winnerAnnouncement');
+        winnerAnnouncement.innerHTML = `Fin de Partie. Vainqueur: ${winnerText}`;
+        winnerAnnouncement.style.display = 'block';
+    
+        // Faire disparaître l'annonce après la durée de l'animation
+        setTimeout(() => {
+            winnerAnnouncement.style.display = 'none';
+        }, 5000); // 5000 millisecondes = 5 secondes
     }
+    
 
     /**
      * @function updateGameStatus
