@@ -49,3 +49,31 @@ body{
     align-items: center;
     border: 1px white;
 }
+
+.profile-container h1 {
+    text-align: center;
+}
+
+.profile-container {
+    width: 80%; 
+    margin: 0 auto; 
+}
+
+form {
+    display: flex;
+    flex-direction: column;
+    align-items: start; 
+    gap: 10px;
+}
+
+
+form .password-group {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+}
+
+
+form button[type="submit"] {
+    align-self: center; 
+}
