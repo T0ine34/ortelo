@@ -135,13 +135,15 @@ class ReversiGame {
     checkGameOver() {
         let blackMoves = this.hasValidMove('B');
         let whiteMoves = this.hasValidMove('W');
-
+    
         if (!blackMoves && !whiteMoves) {
             this.isGameOver = true;
             this.determineWinner();
+            handleGameOver(this.winner);
         } else if (this.board.every(row => row.every(cell => cell !== ''))) {
             this.isGameOver = true;
             this.determineWinner();
+            handleGameOver(this.winner);
         }
     }
 
