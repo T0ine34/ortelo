@@ -338,22 +338,3 @@ body{
 .gamesContainer.dimmed {
     background-color: rgba(0, 0, 0, 0.5);
 }
-
-
-.home-icon img, .logout-icon img {
-    width: 30px; 
-    height: auto;
-}
-
-form {
-    display: flex;
-    flex-direction: column;
-    gap: 10px;
-}
-
-button {
-    cursor: pointer;
-}
-
-
-
