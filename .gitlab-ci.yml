@@ -52,7 +52,9 @@ build-image:
 
 deploy-image:
   stage: deploy
-  
+  before-script:
+    - apk add --no-cache sshpass
   script:
     - echo "Deploying image"
-    # docker run -d -p 3000:3000 -v $VOLUME_NAME:/data $IMAGE_NAME:$IMAGE_TAG
+    - sshpass -p $VPS_PASSWORD ssh root@lila.vps.boxtoplay.com
+    - docker run -d -p 3000:3000 -v $VOLUME_NAME:/data $IMAGE_NAME:$IMAGE_TAG
