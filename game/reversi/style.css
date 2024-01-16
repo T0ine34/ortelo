@@ -7,7 +7,9 @@ body {
 }
 
 .reversi_game_div {
-    max-width: 600px;
+    max-width: 70%;
+    max-height: 80%;
+    
     margin: 0 auto;
     padding: 20px;
     background-color: white;
