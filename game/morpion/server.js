@@ -130,7 +130,6 @@ function morpion(room) {
     game.addPlayer(joueur1);
     const joueur2 = usersArray[1].username;
     game.addPlayer(joueur2);
-
     room.on(EVENTS.GAME.DATA, (timestamp, data) => {
         if (data && "row" in data && "col" in data && "username" in data) {
             const moveValid = game.makeMove(data.row, data.col, data.username);
