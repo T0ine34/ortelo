@@ -172,6 +172,11 @@ body{
     }
 }
 
+.left-content .ortelo_banner img{
+    width: 100%;
+    height: auto;
+}
+
 
 .right-content header {
     display: flex;
