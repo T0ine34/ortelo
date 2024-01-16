@@ -218,7 +218,11 @@
         isReadyToStart() {
             return this.players.length === 2;
         }
-
+        randomizePlayers(players) {
+            if (Math.random() < 0.5) {
+                [players.B, players.W] = [players.W, players.B];
+            }
+        }
         /**
          * Resets the game state to the initial state.
          */
@@ -229,6 +233,7 @@
             this.isGameOver = false;
             this.winner = null;
             this.restartRequests = new Set();
+            this.randomizePlayers(this.players);
         }
 
         /**
