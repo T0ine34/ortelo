@@ -28,6 +28,9 @@ class Room{
         this._is_visible = true;        //if false, the room will not be visible by users that cannot join it
                                         //if true, the room will be visible by all users
         this._is_running = false;
+
+        this._on_listeners = new Array();
+
         logger.debug("room " + name + " created");
     }
 
@@ -59,8 +62,10 @@ class Room{
         if(!user instanceof CSocket) throw new Error("user is not a CSocket Object");
         if(this.can_join(user)){
             this._users.add(user);
+            for(let listener of this._on_listeners){
+                user.on(listener.event, listener.callback);
+            }
             return true;
-            logger.debug("user " + user.id + " added to room " + this._name);
         }
         else{
             return false;
@@ -284,6 +289,8 @@ class Room{
         if(!event.client_to_server){ throw new Error("event " + event + " cannot be initiated by the client"); }
 
         if(typeof callback !== "function") throw new Error("callback is not a function");
+
+        this._on_listeners.push({event: event, callback: callback});
 
         logger.debug("registering event " + event + " for " + this._users.size + " users in room " + this._name);
         for(let user of this._users){
