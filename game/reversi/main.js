@@ -6,7 +6,7 @@ let EVENTS;
 let csocket;
 function start() {
     // Initialize global variables
-    let currentPlayer = 'B'; // Current player ('B' for Black, 'W' for White)
+    let currentPlayer; // Current player ('B' for Black, 'W' for White)
     let isGameOver = false; // Flag to indicate if the game is over
     let gameBoard = initializeBoard(); // Initialize the game board
     let players;

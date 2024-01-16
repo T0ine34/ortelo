@@ -256,7 +256,14 @@
         let game = new ReversiGame();
         game.resetGame();
 
+        function shuffleArray(array) {
+            for (let i = array.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [array[i], array[j]] = [array[j], array[i]];
+            }
+        }
         const usersArray = Array.from(room.users);
+        shuffleArray(usersArray);
         const joueur1 = usersArray[0].username;
         game.addPlayer(joueur1);
         const joueur2 = usersArray[1].username;
@@ -276,6 +283,7 @@
                 }
             } else if (data && "ready" in data) {
                 room.transmit(EVENTS.GAME.DATA, Date.now(), {all_connected: "all_connected", players: game.players});
+                room.transmit(EVENTS.GAME.DATA, Date.now(), game.getGameState());
             } else {
                 console.error("Invalid data received:", data);
             }

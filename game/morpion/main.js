@@ -1,7 +1,7 @@
 let EVENTS;
 let csocket;
 function start() {
-    let currentPlayer = "X";
+    let currentPlayer;
     let isGameOver;
     let winner;
     let gameBoard = [["", "", ""], ["", "", ""], ["", "", ""]];
