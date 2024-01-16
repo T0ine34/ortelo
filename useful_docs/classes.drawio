@@ -1,11 +1,11 @@
 <mxfile host="65bd71144e">
     <diagram name="Page-1" id="OR8mDddgYaSbutNOPYRM">
-        <mxGraphModel dx="2742" dy="1830" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="827" pageHeight="1169" math="0" shadow="0">
+        <mxGraphModel dx="3136" dy="1733" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="827" pageHeight="1169" math="0" shadow="0">
             <root>
                 <mxCell id="0"/>
                 <mxCell id="1" parent="0"/>
                 <mxCell id="ykMAXw_OsfZlg3vHde1L-20" value="Client" style="swimlane;whiteSpace=wrap;html=1;" parent="1" vertex="1">
-                    <mxGeometry x="64" y="90" width="636" height="340" as="geometry"/>
+                    <mxGeometry x="-680" y="-370" width="636" height="340" as="geometry"/>
                 </mxCell>
                 <mxCell id="ykMAXw_OsfZlg3vHde1L-16" value="Cookies" style="swimlane;fontStyle=1;align=center;verticalAlign=top;childLayout=stackLayout;horizontal=1;startSize=26;horizontalStack=0;resizeParent=1;resizeParentMax=0;resizeLast=0;collapsible=1;marginBottom=0;whiteSpace=wrap;html=1;" parent="ykMAXw_OsfZlg3vHde1L-20" vertex="1">
                     <mxGeometry x="336" y="40" width="270" height="146" as="geometry">
@@ -271,7 +271,7 @@
                     </mxGeometry>
                 </mxCell>
                 <mxCell id="xYIHouH2s40Z-RYDAlC_-24" value="Dynamics common classes" style="swimlane;whiteSpace=wrap;html=1;" parent="1" vertex="1">
-                    <mxGeometry x="-413" y="-400" width="440" height="350" as="geometry"/>
+                    <mxGeometry x="-1190" y="-375" width="440" height="350" as="geometry"/>
                 </mxCell>
                 <mxCell id="xYIHouH2s40Z-RYDAlC_-25" value="EVENT" style="swimlane;fontStyle=1;align=center;verticalAlign=top;childLayout=stackLayout;horizontal=1;startSize=26;horizontalStack=0;resizeParent=1;resizeParentMax=0;resizeLast=0;collapsible=1;marginBottom=0;whiteSpace=wrap;html=1;" parent="xYIHouH2s40Z-RYDAlC_-24" vertex="1">
                     <mxGeometry x="20" y="40" width="180" height="144" as="geometry"/>
@@ -304,14 +304,18 @@
                     <mxGeometry relative="1" as="geometry"/>
                 </mxCell>
                 <mxCell id="E3puZ6uhHZuNtfXPTsoB-21" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;endArrow=block;endFill=0;dashed=1;" parent="1" source="E3puZ6uhHZuNtfXPTsoB-19" target="xYIHouH2s40Z-RYDAlC_-29" edge="1">
-                    <mxGeometry relative="1" as="geometry"/>
+                    <mxGeometry relative="1" as="geometry">
+                        <Array as="points">
+                            <mxPoint x="-443" y="30"/>
+                            <mxPoint x="-1020" y="30"/>
+                        </Array>
+                    </mxGeometry>
                 </mxCell>
                 <mxCell id="E3puZ6uhHZuNtfXPTsoB-28" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;dashed=1;endArrow=block;endFill=0;" parent="1" source="E3puZ6uhHZuNtfXPTsoB-27" target="xYIHouH2s40Z-RYDAlC_-29" edge="1">
                     <mxGeometry relative="1" as="geometry">
                         <Array as="points">
-                            <mxPoint x="30" y="195"/>
-                            <mxPoint x="30" y="10"/>
-                            <mxPoint x="-110" y="10"/>
+                            <mxPoint x="-710" y="-275"/>
+                            <mxPoint x="-710" y="-110"/>
                         </Array>
                     </mxGeometry>
                 </mxCell>
