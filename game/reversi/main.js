@@ -172,15 +172,14 @@ function start() {
             winnerText = 'Blanc';
         }
     
-        // Sélectionner l'élément pour l'annonce du gagnant
         let winnerAnnouncement = document.getElementById('winnerAnnouncement');
         winnerAnnouncement.innerHTML = `Fin de Partie. Vainqueur: ${winnerText}`;
         winnerAnnouncement.style.display = 'block';
     
-        // Faire disparaître l'annonce après la durée de l'animation
+       
         setTimeout(() => {
             winnerAnnouncement.style.display = 'none';
-        }, 5000); // 5000 millisecondes = 5 secondes
+        }, 5000); 
     }
     
 

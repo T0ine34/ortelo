@@ -41,7 +41,7 @@ img {
     justify-content: center;
     width: 100%;
     height: 100%;
-    font-size: 1.5rem;
+    font-size: 1.25rem;
 }
 
 #login header, #register header, #forgot-password header {
