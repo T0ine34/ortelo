@@ -25,12 +25,18 @@ class Server {
         }
         return null;
     }
-
+    randomizePlayers(players) {
+        if (Math.random() < 0.5) {
+            [players.X, players.O] = [players.O, players.X];
+        }
+    }
     initializeBoard() {
         this.board = [["", "", ""], ["", "", ""], ["", "", ""]];
         this.currentPlayer = "X";
         this.isGameOver = false;
         this.winner = null;
+        this.randomizePlayers(this.players);
+
     }
     /**
      * Make a move on the game board.
@@ -112,11 +118,19 @@ function morpion(room) {
     let game = new Server();
     game.initializeBoard();
 
+    function shuffleArray(array) {
+        for (let i = array.length - 1; i > 0; i--) {
+            const j = Math.floor(Math.random() * (i + 1));
+            [array[i], array[j]] = [array[j], array[i]];
+        }
+    }
     const usersArray = Array.from(room.users);
+    shuffleArray(usersArray);
     const joueur1 = usersArray[0].username;
     game.addPlayer(joueur1);
     const joueur2 = usersArray[1].username;
     game.addPlayer(joueur2);
+
     room.on(EVENTS.GAME.DATA, (timestamp, data) => {
         if (data && "row" in data && "col" in data && "username" in data) {
             const moveValid = game.makeMove(data.row, data.col, data.username);
@@ -128,6 +142,7 @@ function morpion(room) {
             room.transmit(EVENTS.GAME.DATA, Date.now(), game.getGameState());
         } else if (data && "ready" in data) {
             room.transmit(EVENTS.GAME.DATA, Date.now(), {all_connected: "all_connected", players: game.players});
+            room.transmit(EVENTS.GAME.DATA, Date.now(), game.getGameState());
         } else {
             console.error("Invalid data received:", data);
         }

@@ -205,7 +205,7 @@ body{
 
 .right-content .profile figure { margin: 0; }
 
-.gamesContainer{
+.gamesContainer {
     display: flex;
     text-align: center;
     justify-content: center;
@@ -217,7 +217,7 @@ body{
     align-items: center;
     justify-content: center;
     flex-direction: column;
-    font-size: 1.25rem;
+    font-size: 1.4rem;
     width: 50%;
     border-radius: 1em;
     margin: 0.6rem;
@@ -226,6 +226,10 @@ body{
     border-color: var(--border-color);
     padding: 0.25rem;
     cursor: pointer;
+}
+
+.gamesContainer .GameItem:hover {
+    background-color: #dddddd80;
 }
 
 .gamesContainer .GameItem img {
@@ -260,8 +264,6 @@ body{
     position: fixed;
     top: 0;
     bottom: 0;
-    /* left: 0;
-    right: 0; */
     z-index: 100;
     width: 40%;
 }
