@@ -1,15 +1,24 @@
 // Toggle between display and edit forms when the 'Edit' button is clicked
-document.getElementById("editProfile").addEventListener("click", function() {
-    document.getElementById("displayForm").style.display = "none";
-    document.getElementById("editForm").style.display = "block";
 
-    // Copy the values from the display form to the edit form inputs
-    document.getElementById("usernameEdit").value = document.getElementById("usernameDisplay").value;
-    document.getElementById("emailEdit").value = document.getElementById("emailDisplay").value;
-});
+function toggleEditDisplay() {
+    var displayForm = document.getElementById("Display-content");
+    var editForm = document.getElementById("Edit-content");
+
+    if(displayForm.style.display === "none") {
+        displayForm.style.display = "block";
+        editForm.style.display = "none";
+        document.querySelector("#editButton").textContent = "Modifier";
+    } else {
+        displayForm.style.display = "none";
+        editForm.style.display = "block";
+        document.querySelector("#editButton").textContent = "Annuler";
+    }
+}
+
+document.getElementById("editButton").addEventListener("click", toggleEditDisplay);
 
 // Handle form submission for profile updates
-document.getElementById("editForm").addEventListener("submit", function(event){
+document.getElementById("Edit-content").addEventListener("submit", function(event){
     event.preventDefault();
 
     // Validate the new password and its confirmation
@@ -24,8 +33,8 @@ document.getElementById("editForm").addEventListener("submit", function(event){
     // TODO: Add code to send the updated data to the server...
 
     // Toggle the forms back to the display form after submission
-    document.getElementById("editForm").style.display = "none";
-    document.getElementById("displayForm").style.display = "block";
+    document.getElementById("Edit-content").style.display = "none";
+    document.getElementById("Display-content").style.display = "block";
 });
 
 // Function to toggle password visibility

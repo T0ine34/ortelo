@@ -84,3 +84,24 @@ form {
 button {
     cursor: pointer;
 }
+
+.data-field{
+    border: 1px solid var(--border-color);
+    border-radius: 0.5em;
+    padding: 0.5em;
+    margin: 0.5em;
+    width: 50em;
+    font-size: 1em;
+}
+
+.data-button{
+    border: 1px solid var(--border-color);
+    border-radius: 0.5em;
+    padding: 0.5em;
+    margin: 0.5em;
+    width: 10em;
+}
+
+#Display-content{
+    margin-bottom: 0.5em;
+}
