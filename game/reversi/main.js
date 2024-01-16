@@ -157,7 +157,15 @@ function start() {
      */
     function handleGameOver(winner) {
         isGameOver = true;
-        alert(`Game Over. Winner: ${winner}`);
+        let winnerText;
+        if (winner === 'D') {
+            winnerText = 'Match Nul';
+        } else if (winner === 'B') {
+            winnerText = 'Noir';
+        } else {
+            winnerText = 'Blanc';
+        }
+        alert(`Fin de Partie. Vainqueur: ${winnerText}`);
     }
 
     /**
