@@ -4,18 +4,53 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="stylesheets/profile.css">
+    <link rel="icon" type="image/x-icon" href="assets/images/Logo.svg">
+    <link rel="stylesheet" href="stylesheets/style.css">
+    <link rel="stylesheet" href="stylesheets/login.css">
     <title>Profil</title>
 </head>
 <body>
-
-<div class="root">
-
-    <div class="profile">
-        <p> Coucou !</p>
+    <div class="navigation">
+        <a href="index.html" class="home-icon">
+            <img src="assets/images/home_icon.png" alt="Home">
+        </a>
+        <a href="#" id="logout" class="logout-icon">
+            <img src="assets/images/logout.png" alt="Logout">
+        </a>
     </div>
 
-</div>
+    <div class="profile-container">
+        <h1>Profil Utilisateur</h1>
 
+        <form id="displayForm">
+            <input type="text" id="usernameDisplay" name="usernameDisplay" placeholder="Pseudo" disabled>
+            <input type="email" id="emailDisplay" name="emailDisplay" placeholder="Email" disabled>
+            <input type="password" id="passwordDisplay" name="passwordDisplay" placeholder="Mot de passe" disabled>
+            <button type="button" id="editProfile">Modifier</button>
+        </form>
+
+                
+        <form id="editForm" style="display: none;">
+            <input type="text" id="usernameEdit" name="usernameEdit" placeholder="Pseudo">
+            <input type="email" id="emailEdit" name="emailEdit" placeholder="Email">
+            
+            <div class="password-group">
+                <input type="password" id="passwordEdit" name="passwordEdit" placeholder="Nouveau mot de passe">
+                <button type="button" id="showPassword">Afficher</button>
+            </div>
+            
+            <div class="password-group">
+                <input type="password" id="confirmPasswordEdit" name="confirmPasswordEdit" placeholder="Confirmer le mot de passe">
+                <button type="button" id="showConfirmPassword">Afficher</button>
+            </div>
+
+            <button type="submit">Valider les modifications</button>
+        </form>
+
+    </div>
+
+    <script src="client.js"></script>
+    <script src="profile.js"></script>
     <script src="/socket.io/socket.io.js"></script>
 </body>
 </html>
