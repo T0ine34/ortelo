@@ -130,6 +130,7 @@ app.get('/gameUrl/:roomUrl/:username', (req, res) => {
     if (usernameExists) {
         return res.status(403).json({message : `You are aready in the room ${roomUrl}`});
     }
+    room.transmit(EVENTS.GAME.START, Date.now())
     room.addUser(user);
     user.socket.leave(rooms.get(general));
     msg = `${username} joined the game chat.`;

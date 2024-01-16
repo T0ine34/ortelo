@@ -356,12 +356,12 @@ function PlayGame(name) {
             roomUrlbrute.style.display = 'block';
 
             new ClipboardJS('.urlShareButton', {
-                text: function() {
+                text: function () {
                     return shareUrl;
                 }
             });
 
-            shareButton.addEventListener('click', function() {
+            shareButton.addEventListener('click', function () {
                 this.classList.add('clicked');
                 let originalText = this.textContent;
                 this.textContent = 'Copié!';
@@ -370,23 +370,21 @@ function PlayGame(name) {
                     this.textContent = originalText;
                 }, 1000);
             });
-
-            const checkRoomInterval = setInterval(function (){
-                fetch(`/game-wait/${startData.roomUrl}`)
-                    .then(gameLaunchResponse => gameLaunchResponse.json())
-                    .then(gameLaunchData => {
-                        if (gameLaunchData.message.includes("successfully")) {
-                            clearInterval(checkRoomInterval);
-
-                            roomWaitContainer.style.display = 'none';
-                            waitingScreen.style.display = 'none';
-                            shareButton.style.display = 'none';
-                            roomUrlbrute.style.display = 'none';
-                        }
-                    });
-            }, 1000);
+            csocket.on(EVENTS.GAME.START, (timestamp) => {
+                if (timestamp) {
+                    fetch(`/game-wait/${startData.roomUrl}`)
+                        .then(gameLaunchResponse => gameLaunchResponse.json())
+                        .then(gameLaunchData => {
+                            if (gameLaunchData.message.includes("started successfully")) {
+                                roomWaitContainer.style.display = 'none';
+                                waitingScreen.style.display = 'none';
+                                shareButton.style.display = 'none';
+                                roomUrlbrute.style.display = 'none';
+                            }
+                        });
+                }
+            });
         })
-        .catch(error => console.error(`Erreur lors du chargement du ${name}:`, error));
 }
 /**
  * Loads the game UI into the games container.
@@ -444,7 +442,7 @@ async function joinGameRoom(urlParts) {
             const gameLaunchResponse = await fetch(`/game-wait/game/${roomUrl}`);
             const gameLaunchData = await gameLaunchResponse.json();
 
-            if (gameLaunchData.message.includes("successfully")) {
+            if (gameLaunchData.message.includes("already running successfully")) {
 
                 clearInterval(checkRoomInterval);
 
