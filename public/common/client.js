@@ -1,10 +1,16 @@
 import { CSocket, EVENTS } from "./modules/events/main.js";
 import { cookies } from "./modules/cookies/main.js";
 
+// Required to put data in user's clipboard.
 new ClipboardJS('.urlShareButton');
 
+// Defines the maximum size for chat history
 const MAX_HISTORY_SIZE = 100;
 
+/*
+    Checks if the user is already logged.
+    If the user is not logged, they will be redirected to the login page.
+*/
 let username;
 if(cookies.exists("username")){
     username = cookies.get("username");
@@ -14,66 +20,118 @@ if(cookies.exists("username")){
     location.href = "connection.html"; // Will redirect user to log in page
 }
 
-
+/*
+    Defines the socket associated to the current user.
+    This allows communication between the server and the user.
+*/
 let csocket = window.csocket = new CSocket(io());
+
+
+/*
+    Client sends a message to the server
+    Telling the username taken.
+*/
 csocket.emit(EVENTS.MISC.USERNAME, Date.now(), username);  
 
+
+/*
+    Client listens for the event of a user joining the chat.
+    Then sends a join message in chat.
+*/
 csocket.on(EVENTS.CHAT.USER_JOIN, (timestamp, name) => {                                //catching the newUser event, triggered by the server when a new user joins the chat
     receive_message(timestamp, "Information", name + " a rejoint le chat ! &#128075;"); //&#128075; = emoji "person raising hand"
 });
 
+
+/*
+    Client listens for the event of a user sending a message
+    Then sends it to the chat list.
+*/
 csocket.on(EVENTS.CHAT.MESSAGE, (timestamp, _username, msg) => {                   //catching the new_message event, triggered by the server when a user sends a message
     receive_message(timestamp, _username, msg);
 });
 
+
+/*
+    Client listens for the event of a user leaving the chat
+    Then sends a leave message in chat.
+*/
 csocket.on(EVENTS.CHAT.USER_LEFT, (timestamp, _username) => {                   //catching the new_message event, triggered by the server when a user sends a message
     receive_message(timestamp, "Information", _username + " a quitté le chat ! &#128078;"); //&#128078; = emoji "person leaving"
 });
 
+
+/*
+    Client listens for the event of a system error
+    Then sends the error message in chat.
+*/
 csocket.on(EVENTS.SYSTEM.ERROR, (timestamp, msg) => {                   //catching the new_message event, triggered by the server when a user sends a message
     receive_message(timestamp, "Error", msg);
 });
 
+
+/*
+    Client listens for the event of a system warning
+    Then sends the warning message in chat.
+*/
 csocket.on(EVENTS.SYSTEM.WARNING, (timestamp, msg) => {                   //catching the new_message event, triggered by the server when a user sends a message
     receive_message(timestamp, "Warning", msg);
 });
 
 
+/*
+    Client listens for the event of a broadcast message
+    Then sends the broadcast message in chat.
+*/
 csocket.on(EVENTS.SYSTEM.BROADCAST, (timestamp, msg) => {              //catching the new_message event, triggered by the server when a user sends a message
     receive_message(timestamp, "General Information", msg);
 });
 
+
+/*
+    Client listens for the event of a system info
+    Then sends the info message in chat.
+*/
 csocket.on(EVENTS.SYSTEM.INFO, (timestamp, msg) => {                   //catching the new_message event, triggered by the server when a user sends a message
     receive_message(timestamp, "Information", msg);
     mayjoinroom();
 });
 
 
+// Gets the form elements to send a message in chat.
 let form = document.querySelector('#message_form');
 let messages = document.querySelector('#messages');
 let input = document.querySelector('#sendMessage');
 
+
+// Defines an empty array of chat history.
 let history = [];
 let history_index = 0;
 
+
+// Sets the message input to the previously sent message.
 function history_up(){
     if(history_index > 0){
         history_index--;
         input.value = history[history_index];
     }
 }
+
+
+// Sets the message input to the next sent message.
 function history_down(){
     if(history_index < history.length){
         history_index++;
         if(history_index == history.length){
             input.value = "";
-        }
-        else{
+        } else{
             input.value = history[history_index];
         }
     }
 }
 
+
+// Listens to the key event when writing in message input.
 input.addEventListener('keydown', function(e) {
     if(e.keyCode == 38){ //arrow up
         history_up();
@@ -83,21 +141,45 @@ input.addEventListener('keydown', function(e) {
     }
 });
 
-form.addEventListener('submit', function(e) {                   //this is triggered when the user click on "Send"
+
+/*
+    Listens for the message form submit action.
+    This will be triggered when the user clicks on the send button.
+*/
+form.addEventListener('submit', function(e) {
     e.preventDefault();
+    // Checks if the message input is empty or not.
     if (input.value){
-        csocket.emit(EVENTS.CHAT.MESSAGE, Date.now(), username, input.value);     //sending the sendMessage event to the server, with the username and the message as parameters
+        /* 
+            Client tells the server that they sent a message (EVENTS.CHAT.MESSAGE), 
+            at the current date, with the username and the message content.
+        */
+        csocket.emit(EVENTS.CHAT.MESSAGE, Date.now(), username, input.value);
+        
+        // Adds sent message to the chat history.
         history.push(input.value);
         history_index = history.length;
 
+        /*
+            Removes first element of chat history if current size
+            is higher than the maximum size.
+        */
         while(history.length > MAX_HISTORY_SIZE){
-            history.shift(); //remove the first element
+            history.shift();
         }
 
+        // Clears message input.
         input.value = '';
     }
 });
 
+
+/*
+    Converts a number into a string representation.
+    Minimum length will be the number of 0 added before.
+    Example: number = 15, min_length = 4
+        Output: 0015
+*/
 function format_number(number, min_length){
     let str = number.toString();
     while(str.length < min_length){
@@ -106,40 +188,77 @@ function format_number(number, min_length){
     return str;
 }
 
+
+/*
+    Converts a timestamp to a string representation.
+    Example: timestamp = 1705411105
+        Output: 14:18:25
+*/
 function format_date(timestamp){
     let d = new Date(timestamp);
     return format_number(d.getHours(), 2)+":"+format_number(d.getMinutes(), 2)+":"+format_number(d.getSeconds(), 2);
 }
 
+
+/* 
+    Formats a received message to its <li> tag representation
+    Example: timestamp = 1705411439, _username = Lila, msg = "Bonjour"
+        Output: <li class="message_item me">
+        <span class="username">Lila</span>
+        <div class="message">Bonjour</div>
+        <span class="date>14:23:59</span>
+        </li>
+*/
 function format_message(timestamp, _username, msg){
+    // Creates the four elements needed for our formatted message
     let item = document.createElement('li');
     let sender = document.createElement('span');
+    let message = document.createElement('div');
+    let date = document.createElement('span');
+    
+    // Adds "message_item" the <li> tag class list.
+    item.classList.add('message_item');
+
+    // Sets the sender span text to the username
+    // Sets the sender span class to "username" then appends the sender span to our <li> tag
     sender.textContent = _username;
     sender.classList.add('username');
     item.appendChild(sender);
-    let message = document.createElement('div');
+    
+    // Sets the content of the message div
+    // Sets the message div class to "message" then appends the message div to the <li> tag
     message.innerHTML = msg;
     message.classList.add('message');
     item.appendChild(message);
-    let date = document.createElement('span');
+
+    // Sets the date span content to formatted timestamp
+    // Sets class for date span to "date" and appends the date span to the <li> tag
     date.textContent = format_date(timestamp);
     date.classList.add('date');
     item.appendChild(date);
-    item.classList.add('message_item');
+
+    // Adds class "me" or "other" to the <li> tag depending on whether username is same as users or not.
     if(_username == username){
         item.classList.add('me');
-    }
-    else{
+    } else{
         item.classList.add('other');
     }
     return item;
 }
 
+
+/*
+    Formats the received message data
+    then adds it to the messages list and scrolls the view to the bottom.
+*/
 let receive_message = (timestamp, username, msg) => {
     let item = format_message(timestamp, username, msg);
     messages.appendChild(item);
     item.scrollIntoView();
 }
+
+
+// Clears the chat.
 function clearChat() {
     messages.innerHTML = '';
     let chatTitle = document.querySelector('.title');
@@ -147,6 +266,9 @@ function clearChat() {
         chatTitle.textContent = 'Discussion du jeu';
     }
 }
+
+
+
 function fetchGames() {
     fetch('/games-info?x=name,icon')
         .then(response => response.json())
@@ -165,9 +287,9 @@ function fetchGames() {
                 gameContainer.appendChild(Item);
             });
         })
-        .catch(error => {
-            console.error('Erreur lors du chargement des jeux:', error);
-        });
+    .catch(error => {
+        console.error('Erreur lors du chargement des jeux: ', error);
+    });
 }
 
 function PlayGame(name) {
@@ -323,6 +445,7 @@ function mayjoinroom() {
     }
 }
 
+// Listens to logout button click to remove user from cookies
 document.querySelector("#logout").addEventListener('click', () => {
     cookies.delete("username");
     window.location.href = "";
