@@ -29,3 +29,24 @@
     margin: 0;
     padding: 0;
 }
+
+.navbar{
+  height: 10vh;
+  display: inline-flex;
+  .ortelo_banner{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 50%;
+    img{
+      width: 100%;
+    }
+  }
+
+  .top-navbar{
+    figure{
+      margin: 0;
+      padding: 0;
+    }
+  }
+}

@@ -186,13 +186,13 @@ body{
     color: var(--border-color);
 }
 
-.right-content header img {
+.top-navbar img {
     height: 30px;
     width: auto;
 }
 
 @media (prefers-color-scheme: dark){
-    .right-content header img{
+    .top-navbar img.icon{
         filter: invert(1);
     }
 }
