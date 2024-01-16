@@ -268,7 +268,12 @@ function clearChat() {
 }
 
 
-
+/**
+ * Fetches game information and populates the game container.
+ * Sends a GET request to '/games-info' with query parameters for 'name' and 'icon'.
+ * On success, each game is displayed in the 'gamesContainer' element.
+ * Each game item is clickable and triggers the PlayGame function.
+ */
 function fetchGames() {
     fetch('/games-info?x=name,icon')
         .then(response => response.json())
@@ -291,7 +296,13 @@ function fetchGames() {
         console.error('Erreur lors du chargement des jeux: ', error);
     });
 }
-
+/**
+ * Initiates the process to play a game.
+ * Clears the chat, fetches the game details (HTML, CSS, JS), and sets up the game UI.
+ * Starts the game by making a request to '/game-start' and sets up the room waiting UI.
+ *
+ * @param {string} name - The name of the game to be played.
+ */
 function PlayGame(name) {
     let container = document.querySelector('.gamesContainer');
     let roomWaitContainer = document.querySelector('.popup_wait_users');
@@ -377,7 +388,12 @@ function PlayGame(name) {
         })
         .catch(error => console.error(`Erreur lors du chargement du ${name}:`, error));
 }
-
+/**
+ * Loads the game UI into the games container.
+ * Decodes and injects HTML, CSS, and JS for the game.
+ *
+ * @param {object} game - An object containing the game's HTML, CSS, and JS data.
+ */
 function loadGameUI(game) {
     let container = document.querySelector('.gamesContainer');
 
@@ -397,7 +413,13 @@ function loadGameUI(game) {
     window.username = username;
     document.body.appendChild(scriptTag);
 }
-
+/**
+ * Joins a game room based on the URL parts provided.
+ * Clears the chat and checks if the URL is valid for joining a game room.
+ * On success, sets up the UI for the game room.
+ *
+ * @param {array} urlParts - The parts of the URL, split by '/'.
+ */
 async function joinGameRoom(urlParts) {
     if (urlParts.length >= 3 && urlParts[1] === 'game') {
         clearChat();
@@ -433,7 +455,11 @@ async function joinGameRoom(urlParts) {
         }, 1000);
     }
 }
-
+/**
+ * Checks if the user should be redirected to a game room.
+ * If 'gameRedirect' data is present in localStorage, tries to join the game room.
+ * Otherwise, fetches the games to populate the games list.
+ */
 function mayjoinroom() {
     const gameRedirectData = localStorage.getItem('gameRedirect');
     if (gameRedirectData) {
@@ -446,6 +472,10 @@ function mayjoinroom() {
 }
 
 // Listens to logout button click to remove user from cookies
+/**
+ * Adds an event listener to the logout button.
+ * On click, deletes the 'username' cookie and redirects to the homepage.
+ */
 document.querySelector("#logout").addEventListener('click', () => {
     cookies.delete("username");
     window.location.href = "";
