@@ -97,10 +97,13 @@ class Database {
      * @param {string} nbPlayers Number of players playing in this game.
      */
     createGameRoom(gameName, gameOwner, nbPlayers) {
-        this.getPlayerId(gameOwner, (id) => {
-            let url = GameRooms.genURL(gameName);
-            //TODO ADD GAMEROOM TO DATABASE
-        })
+        return new Promise(async (resolve, reject) => {
+            this.getPlayerId(gameOwner, (id) => {
+                let url = GameRooms.genURL(gameName);
+                this._db.exec(`INSERT INTO game (gameownerid, gamename, nbplayers, gamestate, gameurl, lastplayed) VALUES (${id}, ${gameName}, ${nbPlayers}, 'WAITING', ${url}, ${new Date().getTime()})`);
+                resolve(true);
+            })
+        });
     }
 
 

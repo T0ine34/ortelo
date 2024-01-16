@@ -73,6 +73,8 @@ app.get('/game-start/:gameName/:username', async (req, res) => {
     gameRooms.set(roomUrl, room);
 
     res.json({ roomUrl: roomUrl, message: `Game ${gameName} initiated. Waiting for second player.` });
+    const creategame = await database.createGameRoom(gameName, username, 2);
+    logger.info(`Creation of game ${gameName}, with url ${roomUrl} : ${creategame}`)
 });
 
 /**
@@ -83,7 +85,7 @@ app.get('/game-start/:gameName/:username', async (req, res) => {
 app.get('/game-wait/game/:roomUrl', async (req, res) => {
     let roomUrl = req.params.roomUrl;
     let room = gameRooms.get("game/"+roomUrl);
-
+    
     if (!room) {
         return res.status(404).json({message : `The room ${roomUrl} does not exist.`});
     } else if (room.users.size < 2) {
@@ -174,6 +176,13 @@ app.get('/games-info', (req, res) => {
     res.json(gameInfos);
 });
 
+
+/**
+ * 
+ * @param {Game} game 
+ * @param {string} fields 
+ * @returns The information about the game
+ */
 function getGameInfo(game, fields) {
     let info = {};
     fields.forEach(field => {
