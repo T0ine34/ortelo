@@ -25,12 +25,18 @@ class Server {
         }
         return null;
     }
-
+    randomizePlayers(players) {
+        if (Math.random() < 0.5) {
+            [players.X, players.O] = [players.O, players.X];
+        }
+    }
     initializeBoard() {
         this.board = [["", "", ""], ["", "", ""], ["", "", ""]];
         this.currentPlayer = "X";
         this.isGameOver = false;
         this.winner = null;
+        this.randomizePlayers(this.players);
+
     }
     /**
      * Make a move on the game board.
