@@ -8,6 +8,8 @@ variables:
   IMAGE_TAG: $CI_COMMIT_SHA
   # other tags may be created on specific events, like the creation of a release
 
+  PREVIOUS_IMAGE_TAG: $CI_COMMIT_BEFORE_SHA
+
   VOLUME_NAME: s3a01_data
 
 
@@ -56,4 +58,5 @@ deploy-image:
     - echo "Deploying image"
     - apk add --no-cache sshpass
     - apk add --no-cache openssh-client
+    - sshpass -p $VPS_PASSWORD ssh -o StrictHostKeyChecking=no root@lila.vps.boxtoplay.com "docker stop $(docker ps -q --filter ancestor=$IMAGE_NAME:$PREVIOUS_IMAGE_TAG)"
     - sshpass -p $VPS_PASSWORD ssh -o StrictHostKeyChecking=no root@lila.vps.boxtoplay.com "docker run -d -p 5000:3000 -v $VOLUME_NAME:/data $IMAGE_NAME:$IMAGE_TAG"
