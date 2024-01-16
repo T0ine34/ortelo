@@ -160,8 +160,8 @@ function start() {
      * @description Handle the end of the game and display the winner.
      * @param {string} winner - The winner of the game ('B' for Black, 'W' for White, 'D' for Draw).
      */
-    
-    function handleGameOver(winner) {
+
+    /*function handleGameOver(winner) {
         isGameOver = true;
         let winnerText;
         if (winner === 'D') {
@@ -171,8 +171,47 @@ function start() {
         } else {
             winnerText = 'Blanc';
         }
-        alert(`Fin de Partie. Vainqueur: ${winnerText}`);
+    
+        // Mettre à jour et afficher la modale
+        document.getElementById('gameOverText').innerText = `Fin de Partie. Vainqueur: ${winnerText}`;
+        var modal = document.getElementById("gameOverModal");
+        var span = document.getElementsByClassName("close")[0];
+    
+        modal.style.display = "block";
+    
+        span.onclick = function() {
+            modal.style.display = "none";
+        }
+    
+        
+        window.onclick = function(event) {
+            if (event.target == modal) {
+                modal.style.display = "none";
+            }
+        }
+    }*/
+    
+    function handleGameOver(winner) {
+        let winnerText;
+        if (winner === 'D') {
+            winnerText = 'Match Nul';
+        } else if (winner === 'B') {
+            winnerText = 'Noir';
+        } else {
+            winnerText = 'Blanc';
+        }
+    
+        // Sélectionner l'élément pour l'annonce du gagnant
+        let winnerAnnouncement = document.getElementById('winnerAnnouncement');
+        winnerAnnouncement.innerHTML = `Fin de Partie. Vainqueur: ${winnerText}`;
+        winnerAnnouncement.style.display = 'block';
+    
+        // Faire disparaître l'annonce après la durée de l'animation
+        setTimeout(() => {
+            winnerAnnouncement.style.display = 'none';
+        }, 5000); // 5000 millisecondes = 5 secondes
     }
+    
 
     /**
      * @function updateGameStatus
