@@ -100,9 +100,16 @@ class Database {
         return new Promise(async (resolve, reject) => {
             this.getPlayerId(gameOwner, (id) => {
                 let url = GameRooms.genURL(gameName);
-                this._db.exec(`INSERT INTO game (gameownerid, gamename, nbplayers, gamestate, gameurl, lastplayed) VALUES (${id}, ${gameName}, ${nbPlayers}, 'WAITING', ${url}, ${new Date().getTime()})`);
+                this._db.exec(`INSERT INTO game (gameownerid, gamename, nbplayers, gamestate, gameurl, lastplayed) VALUES ("${id}", "${gameName}", "${nbPlayers}", "WAITING", "${url}", "${new Date().getTime()}")`);
                 resolve(true);
             })
+        });
+    }
+
+    addGameAction(gameId, playerId, action) {
+        return new Promise(async (resolve, reject) => {
+            this._db.exec(`INSERT INTO gameHistory (gameid, playerid, action) VALUES (${gameId}, ${playerId}, ${action})`);
+            resolve(true);
         });
     }
 
