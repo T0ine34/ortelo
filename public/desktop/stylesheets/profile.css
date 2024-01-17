@@ -29,18 +29,9 @@ html, body {
 }
 
 body{
+    padding: 0.75rem;
     background-color: var(--background-color);
     color: var(--border-color);
-}
-
-.root {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    margin: 0;
-    padding: 0;
-    min-height: 100vh;
-    width: 100%;
 }
 
 .profile {
@@ -59,7 +50,7 @@ body{
     margin: 0 auto; 
 }
 
-form {
+#displayForm {
     display: flex;
     flex-direction: column;
     align-items: start; 
@@ -76,4 +67,41 @@ form .password-group {
 
 form button[type="submit"] {
     align-self: center; 
+}
+
+
+.home-icon img, .logout-icon img {
+    width: 30px; 
+    height: auto;
+}
+
+form {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+button {
+    cursor: pointer;
+}
+
+.data-field{
+    border: 1px solid var(--border-color);
+    border-radius: 0.5em;
+    padding: 0.5em;
+    margin: 0.5em;
+    width: 50em;
+    font-size: 1em;
+}
+
+.data-button{
+    border: 1px solid var(--border-color);
+    border-radius: 0.5em;
+    padding: 0.5em;
+    margin: 0.5em;
+    width: 10em;
+}
+
+#Display-content{
+    margin-bottom: 0.5em;
 }

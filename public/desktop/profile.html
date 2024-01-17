@@ -3,53 +3,71 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="stylesheets/profile.css">
     <link rel="icon" type="image/x-icon" href="assets/images/Logo.svg">
     <link rel="stylesheet" href="stylesheets/style.css">
-    <link rel="stylesheet" href="stylesheets/login.css">
+    <link rel="stylesheet" href="stylesheets/profile.css">
     <title>Profil</title>
 </head>
 <body>
-    <div class="navigation">
-        <a href="index.html" class="home-icon">
-            <img src="assets/images/home_icon.png" alt="Home">
-        </a>
-        <a href="#" id="logout" class="logout-icon">
-            <img src="assets/images/logout.png" alt="Logout">
-        </a>
+    <div class="navbar">
+        <div class="ortelo_banner">
+            <figure>
+                <img src="assets/images/Banner.svg" class="color-ignore" alt="Ortelo Banner"/>
+            </figure>
+        </div>
+        <div class="top-navbar">
+            <figure>
+                <a href="/">
+                    <img src="assets/images/home.png" class="icon" alt="Accueil"/>
+                    <p> Accueil</p>
+                </a>
+            </figure>
+            <figure>
+                <div href="/" id="logout">
+                    <img src="assets/images/logout.png" class="icon" alt="Déconnexion"/>
+                    <p> Déconnexion </p>
+                </div>
+            </figure>
+        </div>
     </div>
 
     <div class="profile-container">
         <h1>Profil Utilisateur</h1>
 
-        <form id="displayForm">
-            <input type="text" id="usernameDisplay" name="usernameDisplay" placeholder="Pseudo" disabled>
-            <input type="email" id="emailDisplay" name="emailDisplay" placeholder="Email" disabled>
-            <input type="password" id="passwordDisplay" name="passwordDisplay" placeholder="Mot de passe" disabled>
-            <button type="button" id="editProfile">Modifier</button>
-        </form>
+        <div id="Display-content">
+            <div class="data-label">Nom d'utilisateur :</div>
+            <div class="data-field" id="usernameDisplay">Nom d'utilisateur</div>
+            <div class="data-label">Email :</div>
+            <div class="data-field" id="emailDisplay">Email</div>
+            <div class="data-label">Mot de passe :</div>
+            <div class="data-field" id="passwordDisplay">Mot de passe</div>
+        </div>
 
                 
-        <form id="editForm" style="display: none;">
-            <input type="text" id="usernameEdit" name="usernameEdit" placeholder="Pseudo">
-            <input type="email" id="emailEdit" name="emailEdit" placeholder="Email">
-            
-            <div class="password-group">
-                <input type="password" id="passwordEdit" name="passwordEdit" placeholder="Nouveau mot de passe">
-                <button type="button" id="showPassword">Afficher</button>
-            </div>
-            
-            <div class="password-group">
-                <input type="password" id="confirmPasswordEdit" name="confirmPasswordEdit" placeholder="Confirmer le mot de passe">
-                <button type="button" id="showConfirmPassword">Afficher</button>
-            </div>
+        <form id="Edit-content" style="display: none;">
+            <div class="data-label">Nom d'utilisateur :</div>
+            <input type="text" id="usernameEdit" class="data-field" name="usernameEdit" placeholder="Pseudo">
 
-            <button type="submit">Valider les modifications</button>
+            <div class="data-label">Email :</div>
+            <input type="email" id="emailEdit" class="data-field" name="emailEdit" placeholder="Email">
+            
+            <div class="data-label">Mot de passe :</div>
+            <div class="password-group">
+                <input type="password" id="passwordEdit" class="data-field" name="passwordEdit" placeholder="Nouveau mot de passe">
+                <button type="button" class="data-button" id="showPassword">Afficher</button>
+            </div>
+            
+            <div class="data-label">Confirmation :</div>
+            <div class="password-group">
+                <input type="password" id="confirmPasswordEdit" class="data-field" name="confirmPasswordEdit" placeholder="Confirmer le mot de passe">
+                <button type="button" class="data-button" id="showConfirmPassword">Afficher</button>
+            </div>
         </form>
+
+        <button type="button" class="data-button" id="editButton">Modifier</button>
 
     </div>
 
-    <script src="client.js"></script>
     <script src="profile.js"></script>
     <script src="/socket.io/socket.io.js"></script>
 </body>

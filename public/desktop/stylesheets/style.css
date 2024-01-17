@@ -186,13 +186,13 @@ body{
     color: var(--border-color);
 }
 
-.right-content header img {
+.top-navbar img {
     height: 30px;
     width: auto;
 }
 
 @media (prefers-color-scheme: dark){
-    .right-content header img{
+    .top-navbar img.icon{
         filter: invert(1);
     }
 }
@@ -338,22 +338,3 @@ body{
 .gamesContainer.dimmed {
     background-color: rgba(0, 0, 0, 0.5);
 }
-
-
-.home-icon img, .logout-icon img {
-    width: 30px; 
-    height: auto;
-}
-
-form {
-    display: flex;
-    flex-direction: column;
-    gap: 10px;
-}
-
-button {
-    cursor: pointer;
-}
-
-
-
