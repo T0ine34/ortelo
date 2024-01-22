@@ -352,19 +352,17 @@ function PlayGame(name) {
             roomUrlbrute.textContent = shareUrl;
 
             let urlQrCode = document.getElementById('roomUrlQrCode');
-            let qrResponse = await fetch(`https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=%22${shareUrl}%22&format=png`);
+            let qrResponse = await fetch(`https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=%22${shareUrl}%22&format=svg`);
             if(qrResponse.ok) {
-                let buffer = await qrResponse.arrayBuffer();
-                const blob = new Blob([buffer], { type: 'image/png' });
-                const imgURL = URL.createObjectURL(blob);
-                urlQrCode.src = imgURL;
+                let responseText = await qrResponse.text();
+                urlQrCode.innerHTML = responseText;
             } 
 
             roomWaitContainer.style.display = 'flex';
             waitingScreen.style.display = 'block';
             shareButton.style.display = 'inline-block';
             roomUrlbrute.style.display = 'block';
-            urlQrCode.style.display = 'block';
+            urlQrCode.style.display = 'flex';
 
             new ClipboardJS('.urlShareButton', {
                 text: function () {

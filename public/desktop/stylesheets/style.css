@@ -228,6 +228,16 @@ body{
     cursor: pointer;
 }
 
+#roomUrlQrCode {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+#roomUrlQrCode svg {
+    margin-top: 0.51rem;
+}
+
 .gamesContainer .GameItem:hover {
     background-color: #dddddd80;
 }
