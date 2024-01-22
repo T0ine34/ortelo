@@ -26,6 +26,7 @@ html-tests:
     - echo "Setting up html tests"
     - python -m pip install --upgrade pip
     - python -m pip install requests
+    - python -m pip install unidecode
   script:
     - echo "Running html tests"
     - python test/html-tests.py public

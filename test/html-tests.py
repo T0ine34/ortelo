@@ -2,6 +2,10 @@ from requests import get, post
 from os import listdir, path
 from json import loads
 from sys import argv
+from unidecode import unidecode
+
+def replace_non_ascii(text : str):
+    return unidecode(text)
 
 def get_html_files(folder):
     files = []
@@ -19,7 +23,7 @@ def get_html_files(folder):
 def check_html_file(file):
     with open(file, 'r') as f:
         html = f.read()
-    return post('https://validator.w3.org/nu/?out=json', data=html, headers={'Content-Type': 'text/html'}).json()
+    return post('https://validator.w3.org/nu/?out=json', data=replace_non_ascii(html), headers={'Content-Type': 'text/html'}).json()
 
 def analyze_result(html_result):
     errors = []
@@ -36,8 +40,6 @@ def check_html_files(folder):
     errors = {}
     for file in files:
         html_result = check_html_file(file)
-        print('Checking %s...' % file)
-        print(html_result)
         errors[file] = analyze_result(html_result)
     return errors
 
