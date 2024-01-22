@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html>
+<html lang="fr">
 
 <head>
     <title>Ortelo</title>
@@ -14,21 +14,19 @@
 
 <body>
     <div class="root">
-        </aside>
-
         <aside class="chat">
             <h3 class="title"> Discussion générale </h3>
             <ul id="messages" class="messages_list">
                 <!-- filled by javascript -->
             </ul>
-            <main>
+            <div>
                 <form class="form" id="message_form">
-                    <input type="text" id="sendMessage" class="textInput" autocomplete="off" placeholder="Message"/>
+                    <input type="text" id="sendMessage" class="textInput" autocomplete="off" placeholder="Message">
                     <button class="confirm">
-                        <img src="assets/images/send.png" alt="Envoyer"/>
+                        <img src="assets/images/send.png" alt="Envoyer">
                     </button>
                 </form>
-            </main>
+            </div>
         </aside>
 
         <main class="games">
@@ -52,16 +50,16 @@
 
     <div class="menubar">
         <div class="chat-toggle menu-item" onclick="switch_chat()">
-            <img src="images/icons/message.png" alt="Chat" />
+            <img src="images/icons/message.png" alt="Chat">
         </div>
         <div class="back-main-menu menu-item center">
             <a href="/">
-                <img src="images/icons/home.png" alt="Back" />
+                <img src="images/icons/home.png" alt="Back">
             </a>
         </div>
         <div class="user-profile menu-item">
             <a href="profile.html">
-                <img src="images/icons/profile.png" alt="Settings" />
+                <img src="images/icons/profile.png" alt="Settings">
             </a>
         </div>
     </div>
@@ -74,8 +72,7 @@
             document.querySelector('.chat-toggle').classList.toggle('open');
         }
     </script>
+    <script src="/socket.io/socket.io.js"></script>
+    <script src="client.js" type="module"></script>
 </body>
-<script src="/socket.io/socket.io.js"></script>
-<script src="client.js" type="module"></script>
-
 </html>
