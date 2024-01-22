@@ -5,7 +5,6 @@
 .vscode
 /docs
 *.db
-ftpAutoPush.config
 build.bat
 build.sh
 package-lock.json
