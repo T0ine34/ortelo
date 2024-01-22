@@ -23,10 +23,13 @@ def check_html_file(file):
 
 def analyze_result(html_result):
     errors = []
+    warnings = []
     for message in html_result['messages']:
         if message['type'] == 'error':
             errors.append(message['message'])
-    return errors
+        elif message['type'] == 'info':
+            warnings.append(message['message'])
+    return errors, warnings
 
 def check_html_files(folder):
     files = get_html_files(folder)
@@ -41,8 +44,8 @@ def print_summary(errors):
     print('Summary:')
     print('  %d files checked' % len(errors))
     for file in errors:
-        print('  %s: %d errors' % (file, len(errors[file])))
-    print("%d errors in total" % sum([len(errors[file]) for file in errors]))
+        print('  %s: %d errors, %d warnings' % (file, len(errors[file][0]), len(errors[file][1])))
+    print("%d errors, %d warnings" % (sum([len(errors[file][0]) for file in errors]), sum([len(errors[file][1]) for file in errors])))
     
 
 if __name__ == '__main__':
