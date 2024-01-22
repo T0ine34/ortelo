@@ -51,6 +51,8 @@ def print_summary(errors):
         print('  %s: %d errors, %d warnings' % (file, len(errors[file][0]), len(errors[file][1])))
     print("%d errors, %d warnings" % (sum([len(errors[file][0]) for file in errors]), sum([len(errors[file][1]) for file in errors])))
     
+def get_return_code(errors):
+    return sum([len(errors[file][0]) for file in errors]) + sum([len(errors[file][1]) for file in errors])
 
 if __name__ == '__main__':
     if len(argv) != 2:
@@ -59,4 +61,4 @@ if __name__ == '__main__':
         folder = argv[1]
         errors = check_html_files(folder)
         print_summary(errors)
-        exit(1 if sum([len(errors[file]) for file in errors]) > 0 else 0)
+        exit(get_return_code(errors))
