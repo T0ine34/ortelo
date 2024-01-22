@@ -36,6 +36,8 @@ def check_html_files(folder):
     errors = {}
     for file in files:
         html_result = check_html_file(file)
+        print('Checking %s...' % file)
+        print(html_result)
         errors[file] = analyze_result(html_result)
     return errors
 
