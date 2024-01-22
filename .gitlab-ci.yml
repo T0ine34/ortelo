@@ -13,10 +13,20 @@ variables:
 
 
 stages:
+  - html-tests
   - test
   - build
   - deploy
 
+
+html-tests:
+  stage: html-tests
+  image: python:3.11-alpine3.18
+  before_script:
+    - echo "Setting up html tests"
+  script:
+    - echo "Running html tests"
+    - make html-test
 
 server-tests:
   stage: test
