@@ -335,7 +335,7 @@ function PlayGame(name) {
             return fetch(`/game-start/${name}/${username}`);
         })
         .then(startResponse => startResponse.json())
-        .then(startData => {
+        .then(async startData => {
 
             let gamesContainer = document.querySelector('.gamesContainer');
             let menuBarExists = document.querySelector('.menubar') !== null;
@@ -349,13 +349,22 @@ function PlayGame(name) {
             let roomUrlbrute = document.querySelector('.roomUrlbrute');
 
             let shareUrl = window.location.href + startData.roomUrl;
-
             roomUrlbrute.textContent = shareUrl;
+
+            let urlQrCode = document.getElementById('roomUrlQrCode');
+            let qrResponse = await fetch(`https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=%22${shareUrl}%22&format=png`);
+            if(qrResponse.ok) {
+                let buffer = await qrResponse.arrayBuffer();
+                const blob = new Blob([buffer], { type: 'image/png' });
+                const imgURL = URL.createObjectURL(blob);
+                urlQrCode.src = imgURL;
+            } 
 
             roomWaitContainer.style.display = 'flex';
             waitingScreen.style.display = 'block';
             shareButton.style.display = 'inline-block';
             roomUrlbrute.style.display = 'block';
+            urlQrCode.style.display = 'block';
 
             new ClipboardJS('.urlShareButton', {
                 text: function () {
