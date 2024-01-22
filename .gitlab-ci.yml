@@ -28,7 +28,7 @@ html-tests:
     - python -m pip install requests
   script:
     - echo "Running html tests"
-    - python tests/html-tests.py public
+    - python test/html-tests.py public
 
 server-tests:
   stage: test
