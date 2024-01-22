@@ -68,7 +68,7 @@ body{
     font-weight: bold;
     margin-bottom: 0.5em;
 }
-.left-content main {
+.left-content div.main {
     display: flex;
     flex-direction: column;
     justify-content: space-between;
