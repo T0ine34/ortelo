@@ -10,9 +10,6 @@ server-test:
 client-test:
 	node test/client.js
 
-html-test:
-	python test/html_checker.py
-
 build-image:
 	docker build -t s3a01 .
 

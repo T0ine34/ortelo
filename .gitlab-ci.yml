@@ -24,9 +24,11 @@ html-tests:
   image: python:3.11-alpine3.18
   before_script:
     - echo "Setting up html tests"
+    - python -m pip install --upgrade pip
+    - python -m pip install requests
   script:
     - echo "Running html tests"
-    - make html-test
+    - python tests/html-tests.py public
 
 server-tests:
   stage: test
