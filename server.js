@@ -63,8 +63,8 @@ app.get('/game-start/:gameName/:username', async (req, res) => {
 
     room.addUser(user);
     user.socket.leave(rooms.get(general));
-    msg = `${username} joined the game chat.`;
-    room.emit(EVENTS.CHAT.MESSAGE, Date.now(), username, msg);
+    msg = `${username} à rejoint le chat du jeu.`;
+    room.emit(EVENTS.CHAT.MESSAGE, Date.now(), "système", msg);
     room.on(EVENTS.CHAT.MESSAGE, (timestamp, username, msg) => {
         room.transmit(EVENTS.CHAT.MESSAGE, Date.now(), username, msg);
     });
@@ -146,8 +146,8 @@ app.get('/gameUrl/:roomUrl/:username', (req, res) => {
         room.transmit(EVENTS.GAME.START, Date.now())
         room.addUser(user);
         user.socket.leave(rooms.get(general));
-        msg = `${username} joined the game chat.`;
-        room.emit(EVENTS.CHAT.MESSAGE, Date.now(), username, msg);
+        msg = `${username} à rejoint le chat du jeu.`;
+        room.emit(EVENTS.CHAT.MESSAGE, Date.now(), "système", msg);
         res.json({message : `${username} joined game room ${roomUrl} successfully`});
     }
 
