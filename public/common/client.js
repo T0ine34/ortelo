@@ -39,7 +39,7 @@ csocket.emit(EVENTS.MISC.USERNAME, Date.now(), username);
     Then sends a join message in chat.
 */
 csocket.on(EVENTS.CHAT.USER_JOIN, (timestamp, name) => {                                //catching the newUser event, triggered by the server when a new user joins the chat
-    receive_message(timestamp, "Information", name + " a rejoint le chat ! &#128075;"); //&#128075; = emoji "person raising hand"
+    receive_message(timestamp, "Information", name + " a rejoint le chat !"); //&#128075; = emoji "person raising hand"
 });
 
 
@@ -51,13 +51,17 @@ csocket.on(EVENTS.CHAT.MESSAGE, (timestamp, _username, msg) => {                
     receive_message(timestamp, _username, msg);
 });
 
+csocket.on(EVENTS.CHAT.SERVER_MESSAGE, (timestamp, msg) => {                           //catching the new_message event, triggered by the server when a user sends a message
+    receive_server_message(timestamp, msg);
+});
+
 
 /*
     Client listens for the event of a user leaving the chat
     Then sends a leave message in chat.
 */
 csocket.on(EVENTS.CHAT.USER_LEFT, (timestamp, _username) => {                   //catching the new_message event, triggered by the server when a user sends a message
-    receive_message(timestamp, "Information", _username + " a quitté le chat ! &#128078;"); //&#128078; = emoji "person leaving"
+    receive_message(timestamp, "Information", _username + " a quitté le chat !"); //&#128078; = emoji "person leaving"
 });
 
 
@@ -227,7 +231,11 @@ function format_message(timestamp, _username, msg){
     
     // Sets the content of the message div
     // Sets the message div class to "message" then appends the message div to the <li> tag
-    message.innerHTML = msg;
+    if (_username == "Système"){
+        message.innerHTML = msg;
+    } else{
+        message.textContent = msg;
+    }
     message.classList.add('message');
     item.appendChild(message);
 
@@ -253,6 +261,12 @@ function format_message(timestamp, _username, msg){
 */
 let receive_message = (timestamp, username, msg) => {
     let item = format_message(timestamp, username, msg);
+    messages.appendChild(item);
+    item.scrollIntoView();
+}
+
+let receive_server_message = (timestamp, msg) => {
+    let item = format_message(timestamp, "Système", msg);
     messages.appendChild(item);
     item.scrollIntoView();
 }
