@@ -1,5 +1,13 @@
 
+# #################################################################################################
+#                                               SETUP
+# #################################################################################################
+
+# =========================================== settings ============================================
 image: node:21-alpine3.18 # all jobs will use this image unless specified otherwise
+
+
+# =========================================== variables ===========================================
 
 variables:
   IMAGE_NAME: s3a01/$CI_COMMIT_REF_SLUG   # image tag is the commit hash of the branch (size: 40 chars)
@@ -8,6 +16,8 @@ variables:
   CONTAINER_NAME: s3a01_container         # name of the container, used to stop and remove the container before deploying a new version
 
 
+# ========================================= stages order ==========================================
+
 stages:
   - component-test
   - system-test
@@ -15,9 +25,69 @@ stages:
   - deploy
 
 
+
+# #################################################################################################
+#                                             TEMPLATES
+# #################################################################################################
+
+
+
 # ============================================= tests =============================================
 
+
+# -------------------------------------------- common ---------------------------------------------
+
+.test-common: &test-common #this template is used to run tests
+  rules:
+    - changes:
+        - .gitlab-ci.yml
+  stage: component-test
+  before_script:
+    - apk add --no-cache make
+    - npm install
+
 # ------------------------------------------- component -------------------------------------------
+
+.test-component: &test-component #this template is used to run component tests
+  <<: *test-common
+
+
+# -------------------------------------------- system --------------------------------------------
+
+.test-system: &test-system #this template is used to run system tests
+  <<: *test-common
+
+
+# ============================================= build =============================================
+
+.build: &build #this template is used to build the docker image
+  rules:
+    - if: $CI_COMMIT_BRANCH == "main"
+  stage: build
+  image: docker:stable
+  before_script:
+    - docker login -u $DOCKER_LOGIN -p $DOCKER_PASSWORD
+
+
+# ============================================= deploy ============================================
+
+.deploy: &deploy #this template is used to deploy the docker image
+  rules:
+    - if: $CI_COMMIT_BRANCH == "main"
+  stage: deploy
+
+
+
+
+# #################################################################################################
+#                                               JOBS
+# #################################################################################################
+
+
+
+# ============================================= tests =============================================
+
+# ------------------------------------------ no category ------------------------------------------
 
 html-tests: #this job test if the html files are conform to the w3c validator
   rules:
@@ -27,48 +97,37 @@ html-tests: #this job test if the html files are conform to the w3c validator
   stage: component-test
   image: python:3.11-alpine3.18
   before_script:
-    - echo "Setting up html tests"
     - python -m pip install --upgrade pip
     - python -m pip install requests
     - python -m pip install unidecode
   script:
-    - echo "Running html tests"
     - python test/html-tests.py public
 
+
+# ------------------------------------------- component -------------------------------------------
+
 server-tests: #this job run unit tests for the server
+  <<: *test-component
   rules:
     - changes:
         - server_modules/**/*
-        - .gitlab-ci.yml
         - test/server/**/*
         - test/server.js
     - exists:
         - test/server/**/* #only run if the folder exists and is not empty
-  stage: component-test
-  before_script:
-    - echo "Setting up server tests"
-    - apk add --no-cache make
-    - npm install
   script:
-    - echo "Running server tests"
     - make server-test
 
 client-tests: #this job run unit tests for the client
+  <<: *test-component
   rules:
     - changes:
         - public/**/*
-        - .gitlab-ci.yml
         - test/client/**/*
         - test/client.js
     - exists:
         - test/client/**/* #only run if the folder exists and is not empty
-  stage: component-test
-  before_script:
-    - echo "Setting up client tests"
-    - apk add --no-cache make
-    - npm install
   script:
-    - echo "Running client tests"
     - make client-test
 
 # -------------------------------------------- system --------------------------------------------
@@ -78,14 +137,8 @@ client-tests: #this job run unit tests for the client
 # ============================================= build =============================================
 
 docker-image-build:
-  rules:
-    - if: $CI_COMMIT_BRANCH == "main"
-  stage: build
-  image: docker:stable
-  before_script:
-    - docker login -u $DOCKER_LOGIN -p $DOCKER_PASSWORD
+  <<: *build
   script:
-    - echo "Building image"
     - docker build -t $IMAGE_NAME:$IMAGE_TAG -t $IMAGE_NAME:latest .
     - docker push $IMAGE_NAME:$IMAGE_TAG
     - docker push $IMAGE_NAME:latest
@@ -94,11 +147,8 @@ docker-image-build:
 # ============================================= deploy =============================================
 
 vps-deploy:
-  rules:
-    - if: $CI_COMMIT_BRANCH == "main"
-  stage: deploy 
+  <<: *deploy
   script:
-    - echo "Deploying image"
     - apk add --no-cache sshpass
     - apk add --no-cache openssh-client
     - sshpass -p $VPS_PASSWORD ssh -o StrictHostKeyChecking=no root@lila.vps.boxtoplay.com "docker stop $CONTAINER_NAME || true && docker rm $CONTAINER_NAME || true"
