@@ -147,5 +147,3 @@ function morpion(room) {
         }
     });
 }
-global.morpion = morpion;
-module.exports = { Server: Server, morpion };

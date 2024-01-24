@@ -9,14 +9,22 @@ variables:
 
 
 stages:
-  - test
+  - component-test
+  - system-test
   - build
   - deploy
 
 
 # ============================================= tests =============================================
-html-tests:
-  stage: test
+
+# ------------------------------------------- component -------------------------------------------
+
+html-tests: #this job test if the html files are conform to the w3c validator
+  rules:
+    - changes:
+        - public/**/*
+        - .gitlab-ci.yml
+  stage: component-test
   image: python:3.11-alpine3.18
   before_script:
     - echo "Setting up html tests"
@@ -27,8 +35,12 @@ html-tests:
     - echo "Running html tests"
     - python test/html-tests.py public
 
-server-tests:
-  stage: test
+server-tests: #this job run unit tests for the server
+  rules:
+    - changes:
+        - server/**/*
+        - .gitlab-ci.yml
+  stage: component-test
   before_script:
     - echo "Setting up server tests"
     - apk add --no-cache make
@@ -37,8 +49,12 @@ server-tests:
     - echo "Running server tests"
     - make server-test
 
-client-tests:
-  stage: test
+client-tests: #this job run unit tests for the client
+  rules:
+    - changes:
+        - client/**/*
+        - .gitlab-ci.yml
+  stage: component-test
   before_script:
     - echo "Setting up client tests"
     - apk add --no-cache make
@@ -47,10 +63,15 @@ client-tests:
     - echo "Running client tests"
     - make client-test
 
+# -------------------------------------------- system --------------------------------------------
+
+
 
 # ============================================= build =============================================
 
 docker-image-build:
+  rules:
+    - if: $CI_COMMIT_BRANCH == "main"
   stage: build
   image: docker:stable
   before_script:
@@ -65,7 +86,9 @@ docker-image-build:
 # ============================================= deploy =============================================
 
 vps-deploy:
-  stage: deploy  
+  rules:
+    - if: $CI_COMMIT_BRANCH == "main"
+  stage: deploy 
   script:
     - echo "Deploying image"
     - apk add --no-cache sshpass
