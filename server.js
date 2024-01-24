@@ -69,7 +69,12 @@ app.get('/game-start/:gameName/:username', async (req, res) => {
     room.on(EVENTS.CHAT.MESSAGE, (timestamp, username, msg) => {
         room.transmit(EVENTS.CHAT.MESSAGE, Date.now(), username, msg);
     });
-    let roomUrl = GameRooms.genURL(gameName);
+    let urlExist = true
+    let roomUrl;
+    while (urlExist) {
+        roomUrl = GameRooms.genURL(gameName);
+        urlExist = await database.doGameURLExists(roomUrl)
+    }
 
     gameRooms.set(roomUrl, room);
 
