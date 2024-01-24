@@ -1,8 +1,8 @@
 // Toggle between display and edit forms when the 'Edit' button is clicked
 
 function toggleEditDisplay() {
-    var displayForm = document.getElementById("Display-content");
-    var editForm = document.getElementById("Edit-content");
+    var displayForm = document.querySelector("#Display-content");
+    var editForm = document.querySelector("#Edit-content");
 
     if(displayForm.style.display === "none") {
         displayForm.style.display = "block";
@@ -15,15 +15,15 @@ function toggleEditDisplay() {
     }
 }
 
-document.getElementById("editButton").addEventListener("click", toggleEditDisplay);
+document.querySelector("#editButton").addEventListener("click", toggleEditDisplay);
 
 // Handle form submission for profile updates
-document.getElementById("Edit-content").addEventListener("submit", function(event){
+document.querySelector("#Edit-content").addEventListener("submit", function(event){
     event.preventDefault();
 
     // Validate the new password and its confirmation
-    var newPassword = document.getElementById("passwordEdit").value;
-    var confirmPassword = document.getElementById("confirmPasswordEdit").value;
+    var newPassword = document.querySelector("#passwordEdit").value;
+    var confirmPassword = document.querySelector("#confirmPasswordEdit").value;
 
     if(newPassword !== confirmPassword) {
         alert("Passwords do not match.");
@@ -33,14 +33,14 @@ document.getElementById("Edit-content").addEventListener("submit", function(even
     // TODO: Add code to send the updated data to the server...
 
     // Toggle the forms back to the display form after submission
-    document.getElementById("Edit-content").style.display = "none";
-    document.getElementById("Display-content").style.display = "block";
+    document.querySelector("#Edit-content").style.display = "none";
+    document.querySelector("#Display-content").style.display = "block";
 });
 
 // Function to toggle password visibility
 function togglePassword(buttonId, inputId) {
-    var passwordInput = document.getElementById(inputId);
-    var toggleButton = document.getElementById(buttonId);
+    var passwordInput = document.querySelector('#'+inputId);
+    var toggleButton = document.querySelector('#'+buttonId);
 
     // Toggle the type attribute between 'password' and 'text' to show/hide password
     if(passwordInput.type === "password") {
@@ -53,11 +53,11 @@ function togglePassword(buttonId, inputId) {
 }
 
 // Attach event listeners for the password show/hide buttons
-document.getElementById("showPassword").addEventListener("click", function() {
+document.querySelector("#showPassword").addEventListener("click", function() {
     togglePassword("showPassword", "passwordEdit");
     });
     
-    document.getElementById("showConfirmPassword").addEventListener("click", function() {
+    document.querySelector("#showConfirmPassword").addEventListener("click", function() {
     togglePassword("showConfirmPassword", "confirmPasswordEdit");
     });
     
@@ -79,8 +79,8 @@ document.getElementById("showPassword").addEventListener("click", function() {
     })
     .then(user => {
     // Populate the form fields with the user data
-    document.getElementById("usernameDisplay").value = user.username;
-    document.getElementById("emailDisplay").value = user.email;
+    document.querySelector("#usernameDisplay").value = user.username;
+    document.querySelector("#emailDisplay").value = user.email;
     // Password should never be retrieved or displayed for security reasons
     })
     .catch(error => {
