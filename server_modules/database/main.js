@@ -74,8 +74,6 @@ class Database {
     createPlayer(name, password, emailAddress){
         return new Promise(async (resolve, reject) => {
             let salt = BCrypt.genSaltSync(settings.get("database.bcryptRounds"));
-            //let key = this.#generateRandomKey(64);
-            //let hashedPassword = BCrypt.hashSync(CryptoJS.AES.encrypt(password, key).toString(), salt);
             let hashedPassword = BCrypt.hashSync(password, salt);
     
             const exists = await this.doPlayerExists(name);

@@ -6,8 +6,8 @@ document.addEventListener('DOMContentLoaded', function () {
     document.querySelector('#login-form').addEventListener('submit', (event) => {
         event.preventDefault();
 
-        const username = document.getElementById('username').value;
-        const password = document.getElementById('password').value;
+        const username = document.querySelector('#username').value;
+        const password = document.querySelector('#password').value;
 
         fetch(`/login`, {
             method: "POST",
@@ -38,10 +38,10 @@ document.addEventListener('DOMContentLoaded', function () {
     document.querySelector('#signup-form').addEventListener('submit', (event) => {
         event.preventDefault();
 
-        const username  = document.getElementById('signup_username').value;
-        const password  = document.getElementById('signup_password').value;
-        const password2 = document.getElementById('confirm_password').value;
-        const email     = document.getElementById('email').value;
+        const username  = document.querySelector('#signup_username').value;
+        const password  = document.querySelector('#signup_password').value;
+        const password2 = document.querySelector('#confirm_password').value;
+        const email     = document.querySelector('#email').value;
         if(password !== password2) {
             alert('Les mots de passe ne sont pas les mêmes');
             return;

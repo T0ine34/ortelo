@@ -20,9 +20,9 @@ function start() {
             players = state.players;
             updateGameStatus();
         } else if (state.restartCount !== undefined) {
-            document.getElementById('restartButton').textContent = `Redémarrer (${state.restartCount}/2)`;
+            document.querySelector('#restartButton').textContent = `Redémarrer (${state.restartCount}/2)`;
         } else {
-            document.getElementById('restartButton').textContent = 'Redémarrer';
+            document.querySelector('#restartButton').textContent = 'Redémarrer';
             players = state.players;
             gameBoard = state.board;
             currentPlayer = state.currentPlayer;
@@ -124,7 +124,7 @@ function start() {
         showHints = !showHints;
         renderBoard();
 
-        const hintButton = document.getElementById('hintButton');
+        const hintButton = document.querySelector('#hintButton');
         if (showHints) {
             hintButton.classList.add('active');
         } else {
@@ -139,7 +139,7 @@ function start() {
     function renderBoard() {
         gameBoard.forEach((row, rowIndex) => {
             row.forEach((cell, colIndex) => {
-                const tableCell = document.getElementById('gameBoard').rows[rowIndex].cells[colIndex];
+                const tableCell = document.querySelector('#gameBoard').rows[rowIndex].cells[colIndex];
                 tableCell.className = '';
                 if (cell === 'B') {
                     tableCell.classList.add('black');
@@ -172,7 +172,7 @@ function start() {
             winnerText = 'Blanc';
         }
     
-        let winnerAnnouncement = document.getElementById('winnerAnnouncement');
+        let winnerAnnouncement = document.querySelector('#winnerAnnouncement');
         winnerAnnouncement.innerHTML = `Fin de Partie. Vainqueur: ${winnerText}`;
         winnerAnnouncement.style.display = 'block';
     
@@ -188,7 +188,7 @@ function start() {
      * @description Update the game status display based on the current state.
      */
     function updateGameStatus() {
-        const statusElement = document.getElementById('gameStatus');
+        const statusElement = document.querySelector('#gameStatus');
 
         if (isGameOver) {
             let winnerText = winner === 'D' ? 'Match Nul' : (winner === 'B' ? 'Noir' : 'Blanc');
@@ -219,10 +219,10 @@ function start() {
     });
 
     // Add click event listener to the restart button
-    document.getElementById('restartButton').addEventListener('click', () => {
+    document.querySelector('#restartButton').addEventListener('click', () => {
         restartGame();
     });
-    document.getElementById('hintButton').addEventListener('click', toggleHints);
+    document.querySelector('#hintButton').addEventListener('click', toggleHints);
     csocket.emit(EVENTS.GAME.DATA, Date.now(), {ready: "ready"});
 }
 import('./modules/events/main.js').then(module => {

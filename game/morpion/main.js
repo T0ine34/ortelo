@@ -25,8 +25,8 @@ function start() {
         cell.addEventListener('click', cellClicked);
     });
 
-    document.getElementById("restartButton").style.display = 'none';
-    document.getElementById("restartButton").addEventListener('click', restartGame);
+    document.querySelector("#restartButton").style.display = 'none';
+    document.querySelector("#restartButton").addEventListener('click', restartGame);
     /**
      * Updates the game state based on the data received from the server.
      * @param {Object} state - The current state of the game from the server.
@@ -71,7 +71,7 @@ function start() {
      * @param {string[][]} board - The current state of the game board.
      */
     function updateBoardDisplay(board) {
-        const table = document.getElementById("gameBoard");
+        const table = document.querySelector("#gameBoard");
         board.forEach((row, rowIndex) => {
             row.forEach((cell, colIndex) => {
                 const tableCell = table.rows[rowIndex].cells[colIndex];
@@ -86,8 +86,8 @@ function start() {
         });
     }
     function updateTurnMessage() {
-        const statusElement = document.getElementById("gameStatus");
-        const restartButton = document.getElementById("restartButton");
+        const statusElement = document.querySelector("#gameStatus");
+        const restartButton = document.querySelector("#restartButton");
         let message;
         if (players) {
             if (players[currentPlayer] === username) {
@@ -105,8 +105,8 @@ function start() {
      * Updates the game status display, including current player and game over messages.
      */
     function updateGameStatusDisplay() {
-        const statusElement = document.getElementById("gameStatus");
-        const restartButton = document.getElementById("restartButton");
+        const statusElement = document.querySelector("#gameStatus");
+        const restartButton = document.querySelector("#restartButton");
         let message;
 
         if (isGameOver) {
@@ -130,15 +130,15 @@ function start() {
     }
 
     function resetFightersDisplay() {
-        const zombie = document.getElementById("fighterX");
-        const ghost = document.getElementById("fighterO");
+        const zombie = document.querySelector("#fighterX");
+        const ghost = document.querySelector("#fighterO");
         zombie.classList.remove("zombieFast", "zombie");
         ghost.classList.remove("ghostFast", "ghost");
     }
 
     function updateFightersDisplay() {
-        const zombie = document.getElementById("fighterX");
-        const ghost = document.getElementById("fighterO");
+        const zombie = document.querySelector("#fighterX");
+        const ghost = document.querySelector("#fighterO");
         zombie.classList.toggle("zombie", currentPlayer === "X");
         ghost.classList.toggle("ghost", currentPlayer === "O");
     }
@@ -154,7 +154,7 @@ function start() {
 
         for (let i = 0; i < 10; i++) {
             (function(i) {
-                let pumpkin = document.getElementById("victoryPumpkin" + i);
+                let pumpkin = document.querySelector("#victoryPumpkin" + i);
                 if (!victory) {
                     pumpkin.textContent = "❄️";
                 }
@@ -170,8 +170,8 @@ function start() {
                     return function() {
                         pumpkin.style.display = "none";
                         pumpkin.classList.remove("rotateAndFadeOut");
-                        let zombie = document.getElementById("fighterX");
-                        let ghost = document.getElementById("fighterO");
+                        let zombie = document.querySelector("#fighterX");
+                        let ghost = document.querySelector("#fighterO");
                         zombie.classList.remove("zombieFast");
                         ghost.classList.remove("ghostFast");
                     }
@@ -188,8 +188,8 @@ function start() {
     function restartGame() {
         csocket.emit(EVENTS.GAME.DATA, Date.now(), { "restartKey": "restart"});
         this.style.display = 'none';
-        let zombie = document.getElementById("fighterX");
-        let ghost = document.getElementById("fighterO");
+        let zombie = document.querySelector("#fighterX");
+        let ghost = document.querySelector("#fighterO");
         zombie.classList.remove("zombieFast");
         ghost.classList.remove("ghostFast");
         ghost.classList.remove("ghost");
