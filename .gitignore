@@ -1,5 +1,4 @@
 **node_modules
-**dist/main.js
 *.code-workspace
 /logs
 .vscode

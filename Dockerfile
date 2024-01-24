@@ -1,3 +1,6 @@
+# this dockerfile is used to build the deployment image for the server
+# please note the produced image will not be in debug mode, and will not contain tests files
+
 FROM alpine:3.18
 
 # Install dependencies
@@ -12,8 +15,7 @@ COPY game/ game/
 COPY json_structures/ json_structures/
 COPY server_modules/ server_modules/
 COPY public/ public/
-COPY package.json .
-COPY package-lock.json .
+COPY package.deploy.json ./package.json
 COPY server.deploy.config ./server.config
 COPY server.js .
 
