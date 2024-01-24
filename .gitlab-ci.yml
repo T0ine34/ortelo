@@ -22,7 +22,7 @@ stages:
 html-tests: #this job test if the html files are conform to the w3c validator
   rules:
     - changes:
-        - public/**/*
+        - public/**/*.html
         - .gitlab-ci.yml
   stage: component-test
   image: python:3.11-alpine3.18
@@ -38,8 +38,12 @@ html-tests: #this job test if the html files are conform to the w3c validator
 server-tests: #this job run unit tests for the server
   rules:
     - changes:
-        - server/**/*
+        - server_modules/**/*
         - .gitlab-ci.yml
+        - test/server/**/*
+        - test/server.js
+    - exists:
+        - test/server/**/* #only run if the folder exists and is not empty
   stage: component-test
   before_script:
     - echo "Setting up server tests"
@@ -52,8 +56,12 @@ server-tests: #this job run unit tests for the server
 client-tests: #this job run unit tests for the client
   rules:
     - changes:
-        - client/**/*
+        - public/**/*
         - .gitlab-ci.yml
+        - test/client/**/*
+        - test/client.js
+    - exists:
+        - test/client/**/* #only run if the folder exists and is not empty
   stage: component-test
   before_script:
     - echo "Setting up client tests"

@@ -84,6 +84,22 @@
             "server_to_client": true,
             "client_to_server": false,
             "description": "A player left the game. (this is triggered after the user leave; the user will not be able to see this message)"
+        },
+        "SERVER_MESSAGE":{
+            "type" : "event",
+            "payload": [
+                {
+                    "name": "timestamp",
+                    "type": "number"
+                },
+                {
+                    "name": "message",
+                    "type": "string"
+                }
+            ],
+            "server_to_client": true,
+            "client_to_server": false,
+            "description": "A message sent to someone by the server."
         }
     },
     "SYSTEM":{
