@@ -21,6 +21,7 @@ const { GameRooms }                                               = require('./s
 const path = require('path');
 const { log } = require('console');
 const bodyParser = require('body-parser');
+const vm = require('vm');
 
 let logger = new Logger();
 
@@ -96,13 +97,24 @@ app.get('/game-wait/game/:roomUrl', async (req, res) => {
     }
     const game = gameLoader.gamesData[room.name];
     const serverScriptContent = new TextDecoder('utf-8').decode(new Uint8Array(game.serverData));
-    eval(serverScriptContent);
-    if (typeof global[room.name] === 'function') {
-        global[room.name](room);
+    const sandbox = {
+        require: require,
+        console: console,
+        process: process,
+        Buffer: Buffer,
+        __dirname: __dirname,
+        __filename: __filename,
+        room,
+    };
+    const script = new vm.Script(serverScriptContent);
+    script.runInNewContext(sandbox);
+    if (typeof sandbox[room.name] === 'function') {
+        sandbox[room.name](room);
         room.run= true;
         res.json({ message: `Game ${room.name} started successfully.` });
     } else {
-        throw new Error('Starter function not found in server script.');
+        logger.error('Starter function not found in server script.')
+        res.status(500)
     }
 });
 

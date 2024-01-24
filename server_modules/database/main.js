@@ -171,17 +171,18 @@ class Database {
      * @author Lila BRANDON
      * @description Checks wether a gameroom already exists with the specified URL.
      * @param  {string} url The url to check if it exists.
-     * @param  {function} callback Function using returned boolean value for further use.
      * @return {boolean} True if the url already exists, false otherwise.
      */
-    doGameURLExists(url, callback) {
-        this._db.get(`SELECT gameurl FROM game WHERE gameurl='${url}';`, [], (err, row) => {
-            if(err) {
-                logger.error(`Can not retrieve wether the url '${url}' already exists or no : ${err.toString()}`);
-                callback(true);
-            }
-            if(row) callback(true);
-            else callback(false);
+    doGameURLExists(url) {
+        return new Promise(async (resolve, reject) => {
+            this._db.get(`SELECT gameurl FROM game WHERE gameurl='${url}';`, [], (err, row) => {
+                if(err) {
+                    logger.error(`Can not retrieve wether the url '${url}' already exists or no : ${err.toString()}`);
+                    reject(true);
+                }
+                if(row) resolve(true);
+                else resolve(false);
+            });
         });
     }
 

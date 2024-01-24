@@ -294,5 +294,3 @@
             }
         });
     }
-    global.reversi = reversi;
-    module.exports = { Server: ReversiGame, reversi };
