@@ -177,6 +177,11 @@ def get_game_list(folder):
         if os.path.exists(path):
             games.append(os.path.join(abs_folder, folder))
     return games
+
+def  build_game(game_path, output_folder):
+    game = Game(game_path)
+    game.build(output_folder)
+    return game.index["name"]
     
 def main(source_folder, output_folder):
     
@@ -184,9 +189,8 @@ def main(source_folder, output_folder):
     
     pb = ProgressBar(len(games), 100)
     for game_path in games:
-        game = Game(game_path)
-        game.build(output_folder)
-        pb.print("Game %s built" % game.index["name"])
+        gamename = build_game(game_path, output_folder)
+        pb.print("Game %s built" % gamename)
         pb.update(pb.current + 1)
     pb.finish()
     
@@ -195,4 +199,13 @@ if __name__ == "__main__":
     if len(sys.argv) < 2:
         print("Usage: python game-assemble.py <source_folder>")
         sys.exit(1)
-    main(sys.argv[1], sys.argv[2] if len(sys.argv) > 2 else Config("server.config")["games_dir"])
+        
+    if sys.argv[1] == "--game" or sys.argv[1] == "-g":
+        if len(sys.argv) < 3:
+            print("Usage: python game-assemble.py --game <game_folder>")
+            sys.exit(1)
+        name = build_game(os.path.join(os.getcwd(), sys.argv[2]), Config("server.config")["games_dir"])
+        print("Game %s built" % name)
+    
+    else:
+        main(sys.argv[1], Config("server.config")["games_dir"])
