@@ -12,7 +12,6 @@ const express                                                     = require('exp
 const { Logger }                                                  = require('./server_modules/logs/main');
 const { database }                                                = require('./server_modules/database/main');
 const { parseCMD }                                                = require('./server_modules/cmd/main');
-const { User }                                                    = require('./server_modules/user/main');
 const { EVENTS, Room, CIO }                                       = require('./server_modules/events/main');
 const { GameLoader }                                              = require('./server_modules/loader/main');
 const { get_404_url, is_special_url, get_special_url, build_url, getPlatform, is_common_ressource } = require('./server_modules/redirection/main');
@@ -380,10 +379,10 @@ function set_rooms(){
 
 // -------------------------------------------------------------------- SERVER EVENTS
 
-cio.on(EVENTS.INTERNAL.CONNECTION, (csocket) => {
+cio.on(EVENTS.INTERNAL.CONNECTION, (user) => {
     csocket.once(EVENTS.MISC.USERNAME, (timestamp, username) => {
-        let user = new User(csocket, username);    //building the user object
-        users.set(username, user);
+        user.username = username; //setting the username of the user
+        users.set(username, user); //registering the user in the users map
         user.emit(EVENTS.SYSTEM.INFO, Date.now(), "Vous êtes connecté en tant que " + username);   //sending a message to the user to inform him that he is connected
         rooms.get(general).emit(EVENTS.CHAT.USER_JOIN, Date.now(), username);               //broadcasting the newUser event to all the users of the general room, excepting the new one
         user.joinRoom(rooms.get(general));        //adding the user to the general room
