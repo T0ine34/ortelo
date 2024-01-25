@@ -139,6 +139,8 @@ client-tests: #this job run unit tests for the client
 docker-image-build:
   <<: *build
   script:
+    - make games
+
     - docker build -t $IMAGE_NAME:$IMAGE_TAG -t $IMAGE_NAME:latest .
     - docker push $IMAGE_NAME:$IMAGE_TAG
     - docker push $IMAGE_NAME:latest
