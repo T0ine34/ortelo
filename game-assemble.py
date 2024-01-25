@@ -162,6 +162,8 @@ class Game:
         if os.path.exists(path):
             os.remove(path)
         flat = self.index.flatten()
+        if not os.path.exists(output_folder):
+            os.makedirs(output_folder)
         with ZipFile(path, "w") as zip:
             for key, p in flat.items():
                 if key not in ["name", "version", "description"]:
