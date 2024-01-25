@@ -389,6 +389,10 @@
                 {
                     "name": "timestamp",
                     "type": "number"
+                },
+                {
+                    "name" : "username",
+                    "type" : "string"
                 }
             ],
             "server_to_client": true,
@@ -401,6 +405,10 @@
                 {
                     "name": "timestamp",
                     "type": "number"
+                },
+                {
+                    "name" : "username",
+                    "type" : "string"
                 }
             ],
             "server_to_client": true,

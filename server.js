@@ -62,7 +62,7 @@ app.get('/game-start/:gameName/:username', async (req, res) => {
     let room = new Room(gameName, username);
 
     room.addUser(user);
-    user.socket.leave(rooms.get(general));
+    user.leave(rooms.get(general));
     msg = `${username} à rejoint le chat du jeu.`;
     room.emit(EVENTS.CHAT.SERVER_MESSAGE, Date.now(), msg);
     room.on(EVENTS.CHAT.MESSAGE, (timestamp, username, msg) => {
@@ -150,7 +150,7 @@ app.get('/gameUrl/:roomUrl/:username', (req, res) => {
         room.removeUser(lastuser);
 
         room.addUser(user);
-        user.socket.leave(rooms.get(general));
+        user.leave(rooms.get(general));
 
         msg = `${username} is back in the game chat.`;
         room.emit(EVENTS.CHAT.SERVER_MESSAGE, Date.now(), msg);
@@ -161,7 +161,7 @@ app.get('/gameUrl/:roomUrl/:username', (req, res) => {
         }
         room.transmit(EVENTS.GAME.START, Date.now())
         room.addUser(user);
-        user.socket.leave(rooms.get(general));
+        user.leave(rooms.get(general));
         msg = `${username} à rejoint le chat du jeu.`;
         room.emit(EVENTS.CHAT.SERVER_MESSAGE, Date.now(), msg);
         res.json({message : `${username} joined game room ${roomUrl} successfully`});
@@ -380,7 +380,7 @@ function set_rooms(){
 // -------------------------------------------------------------------- SERVER EVENTS
 
 cio.on(EVENTS.INTERNAL.CONNECTION, (user) => {
-    csocket.once(EVENTS.MISC.USERNAME, (timestamp, username) => {
+    user.once(EVENTS.MISC.USERNAME, (timestamp, username) => {
         user.username = username; //setting the username of the user
         users.set(username, user); //registering the user in the users map
         user.emit(EVENTS.SYSTEM.INFO, Date.now(), "Vous êtes connecté en tant que " + username);   //sending a message to the user to inform him that he is connected
@@ -403,7 +403,7 @@ cio.on(EVENTS.INTERNAL.CONNECTION, (user) => {
         user.on(EVENTS.CHAT.MESSAGE, (timestamp, username, msg) => { //catching the send_message event, triggered by the client when he sends a message
             if (!parseCMD(msg, user, cio, rooms)) {
                 for(let room of user.rooms.values()){
-                    if(room.isIn(user.socket)){
+                    if(room.isIn(user)){
                         room.transmit(EVENTS.CHAT.MESSAGE, Date.now(), username, msg); //broadcasting the new_message event to all the users, including the sender
                     }
                 }

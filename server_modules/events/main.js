@@ -61,9 +61,9 @@ class Room{
         //return true if the user has been added, false otherwise
         if(!user instanceof CSocket) throw new Error("user is not a CSocket Object");
         if(this.can_join(user)){
-            this.emit(EVENTS.ROOM.USER_JOIN, user.username);
+            this.emit(EVENTS.ROOM.USER_JOIN, Date.now(), user.username);
             this._users.add(user);
-            this.emit(EVENTS.ROOM.USER_JOINED, user.username);
+            this.emit(EVENTS.ROOM.USER_JOINED, Date.now(), user.username);
             for(let listener of this._on_listeners){ //register the listeners for the user
                 user.on(listener.event, listener.callback);
             }
@@ -94,9 +94,9 @@ class Room{
         //remove the user from the room
         if(!user instanceof CSocket) throw new Error("user is not a CSocket Object");
         if(!this._users.has(user)) throw new Error("user is not in the room");
-        this.emit(EVENTS.ROOM.USER_LEAVE, user.username);
+        this.emit(EVENTS.ROOM.USER_LEAVE, Date.now(), user.username);
         this._users.delete(user);
-        this.emit(EVENTS.ROOM.USER_LEFT, user.username);
+        this.emit(EVENTS.ROOM.USER_LEFT, Date.now(), user.username);
         logger.debug("user " + user.id + " removed from room " + this._name);
     }
 
@@ -475,6 +475,8 @@ class CSocket{  //this is server side socket, merged with the user class
             throw new Error("unable to join room " + room.name);
         }
     }
+
+    joinRoom = this.join;
 
     /**
      * @description remove the socket from a room.
