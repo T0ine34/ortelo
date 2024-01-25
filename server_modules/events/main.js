@@ -61,7 +61,9 @@ class Room{
         //return true if the user has been added, false otherwise
         if(!user instanceof CSocket) throw new Error("user is not a CSocket Object");
         if(this.can_join(user)){
+            this.emit(EVENTS.ROOM.USER_JOIN, user.username);
             this._users.add(user);
+            this.emit(EVENTS.ROOM.USER_JOINED, user.username);
             for(let listener of this._on_listeners){ //register the listeners for the user
                 user.on(listener.event, listener.callback);
             }
@@ -92,7 +94,9 @@ class Room{
         //remove the user from the room
         if(!user instanceof CSocket) throw new Error("user is not a CSocket Object");
         if(!this._users.has(user)) throw new Error("user is not in the room");
+        this.emit(EVENTS.ROOM.USER_LEAVE, user.username);
         this._users.delete(user);
+        this.emit(EVENTS.ROOM.USER_LEFT, user.username);
         logger.debug("user " + user.id + " removed from room " + this._name);
     }
 
@@ -332,15 +336,21 @@ class Room{
 /**
  * @description This class represent a socket.
  */
-class CSocket{  //this is server side socket
+class CSocket{  //this is server side socket, merged with the user class
     /**
      * @description Create a new CSocket object.
      * @param {Socket} socket - The socket.io socket object.
      * @throws {Error} if the socket is undefined.
      */
-    constructor(socket){
+    constructor(socket, username=""){
+        if (typeof username !== "string") {
+            throw new Error("The username must be a string.");
+        }
         if(!socket) throw new Error("socket is undefined");
         this._socket = socket;
+
+        this._username = username;   // User name
+        this._rooms = new Map();      // Map of rooms the user is in
     }
 
     /**
@@ -459,6 +469,7 @@ class CSocket{  //this is server side socket
         if(!room instanceof Room) throw new Error("room is not a Room Object");
         if(room.addUser(this)){
             this._socket.join(room.name);
+            this._rooms.set(room.name, room);
         }
         else{
             throw new Error("unable to join room " + room.name);
@@ -472,6 +483,7 @@ class CSocket{  //this is server side socket
      */
     leave(room){
         room.removeUser(this);
+        this._socket.leave(room.name);
     }
 
     /**
@@ -481,6 +493,47 @@ class CSocket{  //this is server side socket
      */
     get id(){
         return this._socket.id;
+    }
+
+    /**
+     * @description An array of the rooms the user is in
+     * @type {Room[]}
+     * @readonly
+     */
+    get rooms() {
+        return this._rooms;
+    }
+
+    /**
+     * @description The username of the user
+     * @type {string}
+     * @throws {Error} If the username is empty
+     */
+    get username() {
+        if (this._username === "") {
+            throw new Error("The username is empty.");
+        }
+        return this._username;
+    }
+
+    /**
+     * @description Set the username of the user
+     * @type {string}
+     * @throws {Error} If the username is already set
+     * @throws {Error} If the username is not a string
+     * @throws {Error} If the username is empty
+     */
+    set username(value) {
+        if (this._username !== ""){
+            throw new Error("The username is already set.");
+        }
+        if (typeof value !== "string") {
+            throw new Error("The username must be a string.");
+        }
+        if (value === "") {
+            throw new Error("The username cannot be empty.");
+        }
+        this._username = value;
     }
 }
 
