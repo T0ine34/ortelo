@@ -22,6 +22,7 @@ const path = require('path');
 const { log } = require('console');
 const bodyParser = require('body-parser');
 const vm = require('vm');
+const mailer = require('@emailjs/browser');
 
 let logger = new Logger();
 
@@ -39,11 +40,14 @@ const gameLoader = new GameLoader();
 logger.debug("server initialized successfully");
 
 logger.debug("Using Body-Parser Json");
-app.use(bodyParser.json())
+app.use(bodyParser.json());
+app.use(bodyParser.urlencoded({ extended: false }));
+
+mailer.init("Oy9a9uSnZvDAnliA0");
+
 
 // -------------------------------------------------------------------- SERVER CONFIGURATION
 
-//app.use(express.static(settings.get("public_dir")));
 
 /**
  * Start a new game with the given game name and username.
@@ -79,7 +83,7 @@ app.get('/game-start/:gameName/:username', async (req, res) => {
     gameRooms.set(roomUrl, room);
 
     res.json({ roomUrl: roomUrl, message: `Game ${gameName} initiated. Waiting for second player.` });
-    const creategame = await database.createGameRoom(gameName, username, 2);
+    const creategame = await database.createGameRoom(gameName, username, roomUrl, 2);
     logger.info(`Creation of game ${gameName}, with url ${roomUrl} : ${creategame}`)
 });
 

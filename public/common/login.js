@@ -1,4 +1,5 @@
 import { cookies } from "./modules/cookies/main.js";
+emailjs.init("Oy9a9uSnZvDAnliA0");
 
 document.addEventListener('DOMContentLoaded', function () {
     
@@ -38,6 +39,7 @@ document.addEventListener('DOMContentLoaded', function () {
     document.querySelector('#signup-form').addEventListener('submit', (event) => {
         event.preventDefault();
 
+        
         const username  = document.getElementById('signup_username').value;
         const password  = document.getElementById('signup_password').value;
         const password2 = document.getElementById('confirm_password').value;
@@ -46,7 +48,7 @@ document.addEventListener('DOMContentLoaded', function () {
             alert('Les mots de passe ne sont pas les mêmes');
             return;
         }
-
+        
         fetch(`/register`, {
             method: "POST",
             body: JSON.stringify({
@@ -58,8 +60,21 @@ document.addEventListener('DOMContentLoaded', function () {
         })
         .then(response => response.text())
         .then(data => {  
-
+            
             if(data == "true") {
+                const templateParams = {
+                    to_mail: email,
+                    from_name: 'Ortello',
+                    link: 'href="https://youtube.com"',
+                    to_name: username
+                };
+                 
+                emailjs.send('gmail', 'register_confirmation', templateParams)
+                    .then(function(response) {
+                       console.log('SUCCESS!', response.status, response.text);
+                    }, function(error) {
+                       console.log('FAILED...', error);
+                    });
                 cookies.set("username", username, 1); //save the username for 1 hour
                 console.info("username set to " + username +" for 1 hour");
 
