@@ -288,11 +288,6 @@ app.post('/register', async (req, res) => {
 
 set_redirections();
 
-// app.get('/*',(req, res) => {
-//     let abs_url = __dirname + '/' + build_url(req.path, req);
-//     res.sendFile(abs_url);
-// });
-
 
 let rooms = new Map();
 let general = set_rooms(); //set default rooms, and get the main room name
