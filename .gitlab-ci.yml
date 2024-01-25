@@ -10,8 +10,8 @@ image: node:21-alpine3.18 # all jobs will use this image unless specified otherw
 # =========================================== variables ===========================================
 
 variables:
-  IMAGE_NAME: s3a01/$CI_COMMIT_REF_SLUG   # image tag is the commit hash of the branch (size: 40 chars)
-  IMAGE_TAG: $CI_COMMIT_SHA               # other tags can be created on specific events, like the creation of a release
+  IMAGE_NAME: s3a01/$CI_COMMIT_REF_SLUG   # image tag is the branch name ex: s3a01/main
+  IMAGE_TAG: $CI_COMMIT_SHA               # other tags can be created on specific events, like the creation of a release (size: 40 chars)
   VOLUME_NAME: s3a01_data                 # name of the volume to mount in the container, allowing data persistence between container restarts
   CONTAINER_NAME: s3a01_container         # name of the container, used to stop and remove the container before deploying a new version
 
