@@ -138,6 +138,9 @@ client-tests: #this job run unit tests for the client
 
 docker-image-build:
   <<: *build
+  before_script:
+    - apk add --no-cache make
+    - apk add --no-cache python3
   script:
     - make games
 
