@@ -23,10 +23,10 @@ run-image:
 	docker run -d -p 80:3000 -v s3a01_data:/data s3a01/main:latest
 
 games:
-	$(PYTHON) game-assemble.py game
+	$(PYTHON) building/game-assemble.py game
 
 reversi:
-	$(PYTHON) game-assemble.py --game game/reversi
+	$(PYTHON) building/game-assemble.py --game game/reversi
 
 morpion:
-	$(PYTHON) game-assemble.py --game game/morpion
+	$(PYTHON) building/game-assemble.py --game game/morpion
