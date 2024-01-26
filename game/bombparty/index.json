@@ -1,0 +1,12 @@
+{
+    "name": "Bomb Party",
+    "version": "0.0.1",
+    "description": "A syllab is given to a player, he has to find a word that contains it. The player who doesn't find a word in time loses.",
+    "mainscript": "main.js",
+    "html": "index.html",
+    "css": "style.css",
+    "server" : "server.js",
+    "images":{
+        "icon":"images/icon.png"
+    }
+}
