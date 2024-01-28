@@ -7,12 +7,15 @@ CREATE TABLE IF NOT EXISTS player (
     email TEXT,
     online NUMBER(1) DEFAULT 1,
     email_confirmed NUMBER(1) DEFAULT 0,
-    email_url TEXT,
     CONSTRAINT ck_OnlineBool CHECK (online IN (1,0)),
     CONSTRAINT ck_EmailConfirmedBool CHECK (email_confirmed IN (1,0))
 );
 
-
+CREATE TABLE IF NOT EXISTS unconfirmed_players (
+    playerid INTEGER PRIMARY KEY AUTOINCREMENT,
+    email_url TEXT,
+    CONSTRAINT fk_PlayerId FOREIGN KEY (playerid) REFERENCES player(playerid)
+);
 
 CREATE TABLE IF NOT EXISTS game (
     gameid INTEGER PRIMARY KEY AUTOINCREMENT,

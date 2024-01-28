@@ -84,15 +84,24 @@ class Database {
             if(exists == true) {
                 resolve(false);
             } else {
-                this._db.exec(`INSERT INTO player (playername, password, email, email_url) VALUES ('${name}', '${hashedPassword}','${emailAddress}','${email_url}')`, (err) => {
+                this._db.exec(`INSERT INTO player (playername, password, email) VALUES ('${name}', '${hashedPassword}','${emailAddress}')`, (err) => {
                     if(err) {
                         logger.error(`Can not create player : ${err.toString()}`);
                         resolve(false);
                     } else {
-                        logger.fine(`Successfully created ${name}'s account`);
+                        logger.fine(`Successfully created ${name}'s account in table players`);
+                    }
+                });
+                this._db.exec(`INSERT INTO unconfirmed_players (playerid, email_url) VALUES ((SELECT playerid FROM player WHERE playername='${name}'), '${email_url}')`, (err) => {
+                    if(err) {
+                        logger.error(`Can not create unconfirmed player : ${err.toString()}`);
+                        resolve(false);
+                    } else {
+                        logger.fine(`Successfully created ${name}'s account in unconfirmed players`);
                         resolve(true);
                     }
                 });
+
             }
         });
     }
@@ -133,7 +142,13 @@ class Database {
 
     confirmRegistration(username) {
         return new Promise(async (resolve, reject) => {
-            this._db.exec(`UPDATE player SET email_url=NULL, email_confirmed=1 WHERE playername='${username}'`, (err) => {
+            this._db.exec(`UPDATE player SET email_confirmed=1 WHERE playername='${username}'`, (err) => {
+                if(err) {
+                    logger.error(`Can not confirm registration : ${err.toString()}`);
+                    resolve(false);
+                }
+            });
+            this._db.exec(`DELETE FROM unconfirmed_players WHERE playerid=(SELECT playerid FROM player WHERE playername='${username}')`, (err) => {
                 if(err) {
                     logger.error(`Can not confirm registration : ${err.toString()}`);
                     resolve(false);
@@ -223,7 +238,7 @@ class Database {
     */
     isRegistrationUrlValid(username, url) {
         return new Promise(async (resolve, reject) => {
-            this._db.get(`SELECT email_url FROM player WHERE playername='${username}';`, [], (err, row) => {
+            this._db.get(`SELECT email_url FROM unconfirmed_players WHERE playerid=(SELECT playerid FROM player WHERE playername='${username}');`, [], (err, row) => {
                 if(err) {
                     logger.error(`Can not retrieve ${username}'s registration url : ${err.toString()}`);
                     resolve(false);
