@@ -58,16 +58,17 @@ document.addEventListener('DOMContentLoaded', function () {
                 "Content-Type": "application/json",
             },
         })
-        .then(response => response.text())
+        .then(response => response.json())
         .then(data => {  
-            
-            if(data == "true") {
+            if(data.created == true) {
+
                 const templateParams = {
                     to_mail: email,
                     from_name: 'Ortello',
-                    link: 'href="https://youtube.com"',
+                    message: `${data.host_url}/${data.email_url}`,
                     to_name: username
                 };
+
                  
                 emailjs.send('gmail', 'register_confirmation', templateParams)
                     .then(function(response) {
@@ -75,6 +76,7 @@ document.addEventListener('DOMContentLoaded', function () {
                     }, function(error) {
                        console.log('FAILED...', error);
                     });
+
                 cookies.set("username", username, 1); //save the username for 1 hour
                 console.info("username set to " + username +" for 1 hour");
 

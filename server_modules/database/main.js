@@ -4,7 +4,7 @@ const { Logger }            = require('../logs/main');
 const CryptoJS              = require('crypto-js');
 const BCrypt                = require("bcrypt");
 const { Settings }          = require('../settings/main');
-const { GameRooms }         = require("../gameRooms/main");
+const { URLGenerator }         = require("../url_generator/main");
 
 let logger = new Logger();
 var settings = new Settings("./server.config");
@@ -59,8 +59,12 @@ class Database {
     #createTables() {
         let createTables = fs.readFileSync(settings.get("database.createTablesPath"), 'utf8');
         logger.debug("Loaded SQL script to create Database tables : " + createTables);
-        this._db.exec(createTables);
-        logger.fine("Database state updated.");
+        this._db.exec(createTables, (err) => {
+            if(err) {
+                logger.error(`Can not create tables : ${err.toString()}`);
+                return;
+            } else logger.fine("Database state updated.");
+        });
     }
 
     /**
@@ -71,7 +75,7 @@ class Database {
      * @param {string} emailAddress is the player's email address, is not a must.
      * @returns wether the player has been created successfully or not.
      */
-    createPlayer(name, password, emailAddress){
+    createPlayer(name, password, emailAddress, email_url){
         return new Promise(async (resolve, reject) => {
             let salt = BCrypt.genSaltSync(settings.get("database.bcryptRounds"));
             let hashedPassword = BCrypt.hashSync(password, salt);
@@ -80,9 +84,15 @@ class Database {
             if(exists == true) {
                 resolve(false);
             } else {
-                this._db.exec(`INSERT INTO player (playername, password${emailAddress ? ", email" : ""}, online) VALUES ('${name}', '${hashedPassword}'${emailAddress ? `, '${emailAddress}'` : ""}, 1)`);
-                logger.fine(`Successfully created ${name}'s account`);
-                resolve(true);
+                this._db.exec(`INSERT INTO player (playername, password, email, email_url) VALUES ('${name}', '${hashedPassword}','${emailAddress}','${email_url}')`, (err) => {
+                    if(err) {
+                        logger.error(`Can not create player : ${err.toString()}`);
+                        resolve(false);
+                    } else {
+                        logger.fine(`Successfully created ${name}'s account`);
+                        resolve(true);
+                    }
+                });
             }
         });
     }
@@ -97,16 +107,38 @@ class Database {
     createGameRoom(gameName, gameOwner, roomUrl, nbPlayers) {
         return new Promise(async (resolve, reject) => {
             this.getPlayerId(gameOwner, (id) => {
-                this._db.exec(`INSERT INTO game (gameownerid, gamename, nbplayers, gamestate, gameurl, lastplayed) VALUES ("${id}", "${gameName}", "${nbPlayers}", "WAITING", "${roomUrl}", "${new Date().getTime()}")`);
-                resolve(true);
+                this._db.exec(`INSERT INTO game (gameownerid, gamename, nbplayers, gamestate, gameurl, lastplayed) VALUES ("${id}", "${gameName}", "${nbPlayers}", "WAITING", "${roomUrl}", "${new Date().getTime()}")`, (err) => {
+                    if(err) {
+                        logger.error(`Can not create game room : ${err.toString()}`);
+                        resolve(false);
+                    } else {
+                        logger.fine(`Successfully created game room for ${gameOwner}`);
+                        resolve(true);
+                    }
+                });
             })
         });
     }
 
     addGameAction(gameId, playerId, action) {
         return new Promise(async (resolve, reject) => {
-            this._db.exec(`INSERT INTO gameHistory (gameid, playerid, action) VALUES (${gameId}, ${playerId}, ${action})`);
-            resolve(true);
+            this._db.exec(`INSERT INTO gameHistory (gameid, playerid, action) VALUES (${gameId}, ${playerId}, ${action})`, (err) => {
+                if(err) {
+                    logger.error(`Can not add game action : ${err.toString()}`);
+                    resolve(false);
+                } else resolve(true);
+            });
+        });
+    }
+
+    confirmRegistration(username) {
+        return new Promise(async (resolve, reject) => {
+            this._db.exec(`UPDATE player SET email_url=NULL, email_confirmed=1 WHERE playername='${username}'`, (err) => {
+                if(err) {
+                    logger.error(`Can not confirm registration : ${err.toString()}`);
+                    resolve(false);
+                } else resolve(true);
+            });
         });
     }
 
@@ -179,6 +211,27 @@ class Database {
                 }
                 if(row) resolve(true);
                 else resolve(false);
+            });
+        });
+    }
+
+    /**
+     * @author Lila BRANDON
+     * @description Checks if a registration url is valid or not
+     * @param {string} username The username to check if url is valid.
+     * @param {string} url The url to check if it is valid.
+    */
+    isRegistrationUrlValid(username, url) {
+        return new Promise(async (resolve, reject) => {
+            this._db.get(`SELECT email_url FROM player WHERE playername='${username}';`, [], (err, row) => {
+                if(err) {
+                    logger.error(`Can not retrieve ${username}'s registration url : ${err.toString()}`);
+                    resolve(false);
+                }
+                if(row) {
+                    if(row.email_url == url) resolve(true);
+                    else resolve(false);
+                } else resolve(false);
             });
         });
     }
