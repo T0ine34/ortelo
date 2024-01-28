@@ -11,7 +11,6 @@ WORKDIR /usr/src/app
 
 # Install app dependencies
 COPY database/ database/
-COPY game/ game/
 COPY json_structures/ json_structures/
 COPY server_modules/ server_modules/
 COPY public/ public/

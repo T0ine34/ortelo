@@ -12,7 +12,6 @@ const express                                                     = require('exp
 const { Logger }                                                  = require('./server_modules/logs/main');
 const { database }                                                = require('./server_modules/database/main');
 const { parseCMD }                                                = require('./server_modules/cmd/main');
-const { User }                                                    = require('./server_modules/user/main');
 const { EVENTS, Room, CIO }                                       = require('./server_modules/events/main');
 const { GameLoader }                                              = require('./server_modules/loader/main');
 const { get_404_url, is_special_url, get_special_url, build_url, getPlatform, is_common_ressource } = require('./server_modules/redirection/main');
@@ -67,7 +66,7 @@ app.get('/game-start/:gameName/:username', async (req, res) => {
     let room = new Room(gameName, username);
 
     room.addUser(user);
-    user.socket.leave(rooms.get(general));
+    user.leave(rooms.get(general));
     msg = `${username} à rejoint le chat du jeu.`;
     room.emit(EVENTS.CHAT.SERVER_MESSAGE, Date.now(), msg);
     room.on(EVENTS.CHAT.MESSAGE, (timestamp, username, msg) => {
@@ -155,7 +154,7 @@ app.get('/gameUrl/:roomUrl/:username', (req, res) => {
         room.removeUser(lastuser);
 
         room.addUser(user);
-        user.socket.leave(rooms.get(general));
+        user.leave(rooms.get(general));
 
         msg = `${username} is back in the game chat.`;
         room.emit(EVENTS.CHAT.SERVER_MESSAGE, Date.now(), msg);
@@ -166,7 +165,7 @@ app.get('/gameUrl/:roomUrl/:username', (req, res) => {
         }
         room.transmit(EVENTS.GAME.START, Date.now())
         room.addUser(user);
-        user.socket.leave(rooms.get(general));
+        user.leave(rooms.get(general));
         msg = `${username} à rejoint le chat du jeu.`;
         room.emit(EVENTS.CHAT.SERVER_MESSAGE, Date.now(), msg);
         res.json({message : `${username} joined game room ${roomUrl} successfully`});
@@ -312,8 +311,6 @@ app.get('/confirm-register/:url', async (req, res) => {
     } else return res.send(false);
 });
 
-set_redirections();
-
 
 let rooms = new Map();
 let general = set_rooms(); //set default rooms, and get the main room name
@@ -406,10 +403,10 @@ function set_rooms(){
 
 // -------------------------------------------------------------------- SERVER EVENTS
 
-cio.on(EVENTS.INTERNAL.CONNECTION, (csocket) => {
-    csocket.once(EVENTS.MISC.USERNAME, (timestamp, username) => {
-        let user = new User(csocket, username);    //building the user object
-        users.set(username, user);
+cio.on(EVENTS.INTERNAL.CONNECTION, (user) => {
+    user.once(EVENTS.MISC.USERNAME, (timestamp, username) => {
+        user.username = username; //setting the username of the user
+        users.set(username, user); //registering the user in the users map
         user.emit(EVENTS.SYSTEM.INFO, Date.now(), "Vous êtes connecté en tant que " + username);   //sending a message to the user to inform him that he is connected
         rooms.get(general).emit(EVENTS.CHAT.USER_JOIN, Date.now(), username);               //broadcasting the newUser event to all the users of the general room, excepting the new one
         user.joinRoom(rooms.get(general));        //adding the user to the general room
@@ -430,7 +427,7 @@ cio.on(EVENTS.INTERNAL.CONNECTION, (csocket) => {
         user.on(EVENTS.CHAT.MESSAGE, (timestamp, username, msg) => { //catching the send_message event, triggered by the client when he sends a message
             if (!parseCMD(msg, user, cio, rooms)) {
                 for(let room of user.rooms.values()){
-                    if(room.isIn(user.socket)){
+                    if(room.isIn(user)){
                         room.transmit(EVENTS.CHAT.MESSAGE, Date.now(), username, msg); //broadcasting the new_message event to all the users, including the sender
                     }
                 }

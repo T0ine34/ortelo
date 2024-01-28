@@ -348,5 +348,72 @@
             "description": "Internal Event",
             "internal" : true
         }
+    },
+    "ROOM":{
+        "type" : "namespace",
+        "USER_JOIN":{
+            "type" : "event",
+            "payload": [
+                {
+                    "name": "timestamp",
+                    "type": "number"
+                },
+                {
+                    "name": "username",
+                    "type": "string"
+                }
+            ],
+            "server_to_client": true,
+            "client_to_server": false,
+            "description": "A player will join the room. (this is triggered before the user join; the user will not be able to see this message)"
+        },
+        "USER_JOINED":{
+            "type" : "event",
+            "payload": [
+                {
+                    "name": "timestamp",
+                    "type": "number"
+                },
+                {
+                    "name" : "username",
+                    "type" : "string"
+                }
+            ],
+            "server_to_client": true,
+            "client_to_server": false,
+            "description": "A player joined the room. (this is triggered after the user join; the user will be able to see this message)"
+        },
+        "USER_LEAVE":{  
+            "type" : "event",
+            "payload": [
+                {
+                    "name": "timestamp",
+                    "type": "number"
+                },
+                {
+                    "name" : "username",
+                    "type" : "string"
+                }
+            ],
+            "server_to_client": true,
+            "client_to_server": false,
+            "description": "A player will leave the room. (this is triggered before the user leave; the user will be able to see this message)"
+        },
+        "USER_LEFT":{
+            "type" : "event",
+            "payload": [
+                {
+                    "name": "timestamp",
+                    "type": "number"
+                },
+                {
+                    "name" : "username",
+                    "type" : "string"
+                }
+            ],
+            "server_to_client": true,
+            "client_to_server": false,
+            "description": "A player left the room. (this is triggered after the user leave; the user will not be able to see this message)"
+        }
     }
 }

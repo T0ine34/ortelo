@@ -6,8 +6,7 @@
  * @since 0.2.1
  */
 
-const { EVENTS, Room }  = require("../events/main");
-const { User }          = require("../user/main");
+const { EVENTS, Room, CSocket }  = require("../events/main");
 const { Settings }      = require("../settings/main.js");
 
 var settings = new Settings("server.config");
@@ -15,12 +14,11 @@ var settings = new Settings("server.config");
 /**
  * @description Parse a command and execute it. Read the "allow_chat_commands" setting to know if we should parse commands or not.
  * @param {string} str the command to parse
- * @param {User} user the user that sent the command
+ * @param {CSocket} user the user that sent the command
  * @param {io} io the socket.io server( used for broadcasting )
  * @param {Map} rooms the map of room names to room objects
  * @returns {boolean} true if we parsed a command (even if it's an invalid one), false otherwise
  * @see {@link module:CustomServerSocket}
- * @see {@link module:User}
  * @see {@link module:Settings}
  */
 function parseCMD(str, user, io, rooms){ //rooms is a map of room names to room objects
