@@ -142,12 +142,6 @@ class Database {
 
     confirmRegistration(username) {
         return new Promise(async (resolve, reject) => {
-            this._db.exec(`UPDATE player SET email_confirmed=1 WHERE playername='${username}'`, (err) => {
-                if(err) {
-                    logger.error(`Can not confirm registration : ${err.toString()}`);
-                    resolve(false);
-                }
-            });
             this._db.exec(`DELETE FROM unconfirmed_players WHERE playerid=(SELECT playerid FROM player WHERE playername='${username}')`, (err) => {
                 if(err) {
                     logger.error(`Can not confirm registration : ${err.toString()}`);
