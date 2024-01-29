@@ -4,6 +4,8 @@ from zipfile import ZipFile
 
 from config import Config
 
+PARENT_FOLDER = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+
 class ProgressBar:
     def __init__(self, total = 100, width = 50):
         self.total = total
@@ -138,4 +140,4 @@ if __name__ == "__main__":
         print("Game %s built" % name)
     
     else:
-        main(sys.argv[1], Config("../server.config")["games_dir"])
+        main(sys.argv[1], Config(PARENT_FOLDER+"/server.config")["games_dir"])

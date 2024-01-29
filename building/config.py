@@ -5,7 +5,7 @@ import os
 class Config:
     def __init__(self, path):
         if not os.path.exists(path):
-            raise FileNotFoundError("Config file not found: " + path)
+            raise FileNotFoundError("Config file not found: " + path+ " absolute path : "+os.path.abspath(path))
         with open(path) as f:
             self.data = load(f)
         self.path = path
