@@ -148,7 +148,7 @@
                         </Array>
                     </mxGeometry>
                 </mxCell>
-                <mxCell id="18" value="GameRooms" style="html=1;" parent="4" vertex="1">
+                <mxCell id="18" value="URLGenerator" style="html=1;" parent="4" vertex="1">
                     <mxGeometry x="20" y="220" width="110" height="50" as="geometry"/>
                 </mxCell>
                 <mxCell id="48" style="edgeStyle=none;html=1;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" parent="4" source="29" target="8" edge="1">

@@ -16,11 +16,12 @@ const { EVENTS, Room, CIO }                                       = require('./s
 const { GameLoader }                                              = require('./server_modules/loader/main');
 const { get_404_url, is_special_url, get_special_url, build_url, getPlatform, is_common_ressource } = require('./server_modules/redirection/main');
 const e = require('express');
-const { GameRooms }                                               = require('./server_modules/gameRooms/main');
+const { URLGenerator }                                               = require('./server_modules/url_generator/main');
 const path = require('path');
 const { log } = require('console');
 const bodyParser = require('body-parser');
 const vm = require('vm');
+const mailer = require('@emailjs/browser');
 
 let logger = new Logger();
 
@@ -38,11 +39,14 @@ const gameLoader = new GameLoader();
 logger.debug("server initialized successfully");
 
 logger.debug("Using Body-Parser Json");
-app.use(bodyParser.json())
+app.use(bodyParser.json());
+app.use(bodyParser.urlencoded({ extended: false }));
+
+mailer.init("Oy9a9uSnZvDAnliA0");
+
 
 // -------------------------------------------------------------------- SERVER CONFIGURATION
 
-//app.use(express.static(settings.get("public_dir")));
 
 /**
  * Start a new game with the given game name and username.
@@ -71,14 +75,14 @@ app.get('/game-start/:gameName/:username', async (req, res) => {
     let urlExist = true
     let roomUrl;
     while (urlExist) {
-        roomUrl = GameRooms.genURL(gameName);
+        roomUrl = URLGenerator.genURL('game', gameName);
         urlExist = await database.doGameURLExists(roomUrl)
     }
 
     gameRooms.set(roomUrl, room);
 
     res.json({ roomUrl: roomUrl, message: `Game ${gameName} initiated. Waiting for second player.` });
-    const creategame = await database.createGameRoom(gameName, username, 2);
+    const creategame = await database.createGameRoom(gameName, username, roomUrl, 2);
     logger.info(`Creation of game ${gameName}, with url ${roomUrl} : ${creategame}`)
 });
 
@@ -193,6 +197,7 @@ app.get('/games-info', (req, res) => {
 });
 
 
+
 /**
  * 
  * @param {Game} game 
@@ -221,10 +226,10 @@ function getGameInfo(game, fields) {
  * Retrieve game-specific HTML content.
  * @param {string} url - URL identifier for the game.
  * @returns {HTML} - HTML content for the game.
- */
+*/
 app.get('/game/:url', (req, res) => {
     const filePath = path.join(__dirname, "server_modules", "redirection", "gameRedirect.js");
-
+    
     const roomUrl = 'game/'+req.params.url;
     let room = gameRooms.get(roomUrl);
     if (!room) {
@@ -233,40 +238,40 @@ app.get('/game/:url', (req, res) => {
     /*if (room.users && room.users.size >= 2) {
         return res.status(403).json({ message : `The room ${roomUrl} is full.` });
     }*/
-
+    
     fs.readFile(filePath, 'utf8', (err, data) => {
         if (err) {
             console.error("Erreur lors de la lecture du fichier :", err);
             res.status(500).send('Erreur lors du chargement du script');
             return;
         }
-
+        
         res.send(`
-            <!DOCTYPE html>
-            <html>
-            <head>
-                <title>Redirection de Jeu</title>
-            </head>
-            <body>
-                <script>${data}</script>
-            </body>
-            </html>
+        <!DOCTYPE html>
+        <html>
+        <head>
+        <title>Redirection de Jeu</title>
+        </head>
+        <body>
+        <script>${data}</script>
+        </body>
+        </html>
         `);
     });
 });
+
 
 
 /**
  * Tries to log in the user with the given username and password
  * @param {String} username The player's username
  * @param {String} password The user's password
- * @return {boolean} True if the user is logged in
- */
+ * @returns {boolean} True if the user is logged in
+*/
 app.post('/login', async (req, res) => {
     const logged = await database.login(req.body.username, req.body.password);
     logger.info(`Logging player ${req.body.username} : ${logged}`);
-    if(logged == true) return res.send(true);
-    return res.send(false);
+    return res.send(logged);
 
 });
 
@@ -275,17 +280,36 @@ app.post('/login', async (req, res) => {
  * @param {String} username The player's username
  * @param {String} password The user's password
  * @param {String} email The user's email
- * @return {boolean} True if the user is logged in
- */
+ * @returns {boolean} True if the user is logged in
+*/
 app.post('/register', async (req, res) => {
-    const created = await database.createPlayer(req.body.username, req.body.password, req.body.email);
+    const email_url = URLGenerator.genURL('confirm-register', req.body.username);
+    const created = await database.createPlayer(req.body.username, req.body.password, req.body.email, email_url.replace('confirm-register/', ''));
     logger.info(`Creating player ${req.body.username} : ${created}`);
-    if(created) return res.send(true);
-    return res.send(false);
+
+    const host = req.get('host');
+    const protocol = req.protocol;
+    const fullUrl = `${protocol}://${host}`;
+    return res.send({ created: created, email_url: email_url, host_url: fullUrl });
 });
 
 
-set_redirections();
+/**
+ * Tries to confirm the registration of the user with the given username and url
+ * @param {String} username The player's username
+ * @param {String} url The url to confirm the registration
+ * @returns {boolean} True if the registration is confirmed
+ */
+app.get('/confirm-register/:url', async (req, res) => {
+    const randomUrl = req.params.url.replace('confirm-register/','');
+    const username = randomUrl.split('-')[0];
+    const isUrlValid = await database.isRegistrationUrlValid(username, randomUrl);
+    if(isUrlValid) {
+        const confirmed = await database.confirmRegistration(username);
+        logger.info(`Confirming registration of player ${username} : ${confirmed}`);
+        return res.redirect('/')
+    } else return res.send(false);
+});
 
 
 let rooms = new Map();

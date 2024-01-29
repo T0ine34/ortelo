@@ -1,4 +1,5 @@
 import { cookies } from "./modules/cookies/main.js";
+emailjs.init("Oy9a9uSnZvDAnliA0");
 
 document.addEventListener('DOMContentLoaded', function () {
     
@@ -38,15 +39,23 @@ document.addEventListener('DOMContentLoaded', function () {
     document.querySelector('#signup-form').addEventListener('submit', (event) => {
         event.preventDefault();
 
+<<<<<<< 3634af99d8c52be65f2c838a344b1ef2e25c1ef9
+        
+        const username  = document.getElementById('signup_username').value;
+        const password  = document.getElementById('signup_password').value;
+        const password2 = document.getElementById('confirm_password').value;
+        const email     = document.getElementById('email').value;
+=======
         const username  = document.querySelector('#signup_username').value;
         const password  = document.querySelector('#signup_password').value;
         const password2 = document.querySelector('#confirm_password').value;
         const email     = document.querySelector('#email').value;
+>>>>>>> c18d64c11c7803f112ededa7502dae55410144fa
         if(password !== password2) {
             alert('Les mots de passe ne sont pas les mêmes');
             return;
         }
-
+        
         fetch(`/register`, {
             method: "POST",
             body: JSON.stringify({
@@ -56,10 +65,25 @@ document.addEventListener('DOMContentLoaded', function () {
                 "Content-Type": "application/json",
             },
         })
-        .then(response => response.text())
+        .then(response => response.json())
         .then(data => {  
+            if(data.created == true) {
 
-            if(data == "true") {
+                const templateParams = {
+                    to_mail: email,
+                    from_name: 'Ortello',
+                    message: `${data.host_url}/${data.email_url}`,
+                    to_name: username
+                };
+
+                 
+                emailjs.send('gmail', 'register_confirmation', templateParams)
+                    .then(function(response) {
+                       console.log('SUCCESS!', response.status, response.text);
+                    }, function(error) {
+                       console.log('FAILED...', error);
+                    });
+
                 cookies.set("username", username, 1); //save the username for 1 hour
                 console.info("username set to " + username +" for 1 hour");
 

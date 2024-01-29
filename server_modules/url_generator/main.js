@@ -1,11 +1,11 @@
 /**
- * @module GameRooms
+ * @module URLGenerator
  * @category Server
  * @classdesc This module provides URL generation for games.
  * @static
  * @author Lila BRANDON
  */
-class GameRooms {
+class URLGenerator {
 
     /**
      * Generates a random URL for a room.
@@ -13,9 +13,9 @@ class GameRooms {
      * @returns a string of 25+(length of name) characters
      * @static
      */
-    static genURL(name) {
+    static genURL(prefix, name) {
         const characters = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
-        let key = `game/${name}-`;
+        let key = `${prefix}/${name}-`;
         
         for (let i = 0; i < 16; i++) {
           const randomIndex = Math.floor(Math.random() * characters.length);
@@ -26,4 +26,4 @@ class GameRooms {
 
 }
 
-module.exports = { GameRooms }
+module.exports = { URLGenerator }
