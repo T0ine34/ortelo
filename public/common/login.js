@@ -39,18 +39,10 @@ document.addEventListener('DOMContentLoaded', function () {
     document.querySelector('#signup-form').addEventListener('submit', (event) => {
         event.preventDefault();
 
-<<<<<<< 3634af99d8c52be65f2c838a344b1ef2e25c1ef9
-        
-        const username  = document.getElementById('signup_username').value;
-        const password  = document.getElementById('signup_password').value;
-        const password2 = document.getElementById('confirm_password').value;
-        const email     = document.getElementById('email').value;
-=======
         const username  = document.querySelector('#signup_username').value;
         const password  = document.querySelector('#signup_password').value;
         const password2 = document.querySelector('#confirm_password').value;
         const email     = document.querySelector('#email').value;
->>>>>>> c18d64c11c7803f112ededa7502dae55410144fa
         if(password !== password2) {
             alert('Les mots de passe ne sont pas les mêmes');
             return;

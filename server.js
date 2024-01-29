@@ -439,6 +439,8 @@ cio.on(EVENTS.INTERNAL.CONNECTION, (user) => {
 
 });
 
+set_redirections();
+
 server.on("error", (error) => {
     logger.error(`Server crashed,  ${error.message}`);
 });
