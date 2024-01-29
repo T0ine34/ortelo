@@ -19,7 +19,7 @@ var settings = new Settings("./server.config");
  */
 class GameLoader {
 
-    constructor(pathToGames="./"+settings.get("public_common_dir")+"/games/") {
+    constructor(pathToGames="./"+settings.get("games_dir")+"/") {
         this._pathToGames = pathToGames;
         this._gamesData = {};
     }

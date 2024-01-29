@@ -8,3 +8,8 @@ build.bat
 build.sh
 package-lock.json
 html_result.json
+*.game
+*.pdf
+*.docx
+*.pyc
+version.jsonc

@@ -12,16 +12,16 @@ const express                                                     = require('exp
 const { Logger }                                                  = require('./server_modules/logs/main');
 const { database }                                                = require('./server_modules/database/main');
 const { parseCMD }                                                = require('./server_modules/cmd/main');
-const { User }                                                    = require('./server_modules/user/main');
 const { EVENTS, Room, CIO }                                       = require('./server_modules/events/main');
 const { GameLoader }                                              = require('./server_modules/loader/main');
 const { get_404_url, is_special_url, get_special_url, build_url, getPlatform, is_common_ressource } = require('./server_modules/redirection/main');
 const e = require('express');
-const { GameRooms }                                               = require('./server_modules/gameRooms/main');
+const { URLGenerator }                                               = require('./server_modules/url_generator/main');
 const path = require('path');
 const { log } = require('console');
 const bodyParser = require('body-parser');
 const vm = require('vm');
+const mailer = require('@emailjs/browser');
 const rateLimit = require("express-rate-limit");
 
 let logger = new Logger();
@@ -40,11 +40,14 @@ const gameLoader = new GameLoader();
 logger.debug("server initialized successfully");
 
 logger.debug("Using Body-Parser Json");
-app.use(bodyParser.json())
+app.use(bodyParser.json());
+app.use(bodyParser.urlencoded({ extended: false }));
+
+mailer.init("Oy9a9uSnZvDAnliA0");
+
 
 // -------------------------------------------------------------------- SERVER CONFIGURATION
 
-//app.use(express.static(settings.get("public_dir")));
 
 /**
  * Start a new game with the given game name and username.
@@ -64,7 +67,7 @@ app.get('/game-start/:gameName/:username', async (req, res) => {
     let room = new Room(gameName, username);
 
     room.addUser(user);
-    user.socket.leave(rooms.get(general));
+    user.leave(rooms.get(general));
     msg = `${username} à rejoint le chat du jeu.`;
     room.emit(EVENTS.CHAT.SERVER_MESSAGE, Date.now(), msg);
     room.on(EVENTS.CHAT.MESSAGE, (timestamp, username, msg) => {
@@ -73,14 +76,14 @@ app.get('/game-start/:gameName/:username', async (req, res) => {
     let urlExist = true
     let roomUrl;
     while (urlExist) {
-        roomUrl = GameRooms.genURL(gameName);
+        roomUrl = URLGenerator.genURL('game', gameName);
         urlExist = await database.doGameURLExists(roomUrl)
     }
 
     gameRooms.set(roomUrl, room);
 
     res.json({ roomUrl: roomUrl, message: `Game ${gameName} initiated. Waiting for second player.` });
-    const creategame = await database.createGameRoom(gameName, username, 2);
+    const creategame = await database.createGameRoom(gameName, username, roomUrl, 2);
     logger.info(`Creation of game ${gameName}, with url ${roomUrl} : ${creategame}`)
 });
 
@@ -92,7 +95,7 @@ app.get('/game-start/:gameName/:username', async (req, res) => {
 app.get('/game-wait/game/:roomUrl', async (req, res) => {
     let roomUrl = req.params.roomUrl;
     let room = gameRooms.get("game/"+roomUrl);
-    
+
     if (!room) {
         return res.status(404).json({message : `The room ${roomUrl} does not exist.`});
     } else if (room.users.size < 2) {
@@ -152,7 +155,7 @@ app.get('/gameUrl/:roomUrl/:username', (req, res) => {
         room.removeUser(lastuser);
 
         room.addUser(user);
-        user.socket.leave(rooms.get(general));
+        user.leave(rooms.get(general));
 
         msg = `${username} is back in the game chat.`;
         room.emit(EVENTS.CHAT.SERVER_MESSAGE, Date.now(), msg);
@@ -163,7 +166,7 @@ app.get('/gameUrl/:roomUrl/:username', (req, res) => {
         }
         room.transmit(EVENTS.GAME.START, Date.now())
         room.addUser(user);
-        user.socket.leave(rooms.get(general));
+        user.leave(rooms.get(general));
         msg = `${username} à rejoint le chat du jeu.`;
         room.emit(EVENTS.CHAT.SERVER_MESSAGE, Date.now(), msg);
         res.json({message : `${username} joined game room ${roomUrl} successfully`});
@@ -195,10 +198,11 @@ app.get('/games-info', (req, res) => {
 });
 
 
+
 /**
- * 
- * @param {Game} game 
- * @param {string} fields 
+ *
+ * @param {Game} game
+ * @param {string} fields
  * @returns The information about the game
  */
 function getGameInfo(game, fields) {
@@ -244,15 +248,15 @@ app.get('/game/:url', (req, res) => {
         }
 
         res.send(`
-            <!DOCTYPE html>
-            <html>
-            <head>
-                <title>Redirection de Jeu</title>
-            </head>
-            <body>
-                <script>${data}</script>
-            </body>
-            </html>
+        <!DOCTYPE html>
+        <html>
+        <head>
+        <title>Redirection de Jeu</title>
+        </head>
+        <body>
+        <script>${data}</script>
+        </body>
+        </html>
         `);
     });
 });
@@ -267,17 +271,17 @@ const limiter = rateLimit({
         return `erreur:${secondsRemaining}`;
     },
 });
+
 /**
  * Tries to log in the user with the given username and password
  * @param {String} username The player's username
  * @param {String} password The user's password
- * @return {boolean} True if the user is logged in
+ * @returns {boolean} True if the user is logged in
  */
 app.post('/login', limiter, async (req, res) => {
     const logged = await database.login(req.body.username, req.body.password);
     logger.info(`Logging player ${req.body.username} : ${logged}`);
-    if(logged == true) return res.send(true);
-    return res.send(false);
+    return res.send(logged);
 
 });
 
@@ -286,22 +290,36 @@ app.post('/login', limiter, async (req, res) => {
  * @param {String} username The player's username
  * @param {String} password The user's password
  * @param {String} email The user's email
- * @return {boolean} True if the user is logged in
+ * @returns {boolean} True if the user is logged in
  */
 app.post('/register', async (req, res) => {
-    const created = await database.createPlayer(req.body.username, req.body.password, req.body.email);
+    const email_url = URLGenerator.genURL('confirm-register', req.body.username);
+    const created = await database.createPlayer(req.body.username, req.body.password, req.body.email, email_url.replace('confirm-register/', ''));
     logger.info(`Creating player ${req.body.username} : ${created}`);
-    if(created) return res.send(true);
-    return res.send(false);
+
+    const host = req.get('host');
+    const protocol = req.protocol;
+    const fullUrl = `${protocol}://${host}`;
+    return res.send({ created: created, email_url: email_url, host_url: fullUrl });
 });
 
 
-set_redirections();
-
-// app.get('/*',(req, res) => {
-//     let abs_url = __dirname + '/' + build_url(req.path, req);
-//     res.sendFile(abs_url);
-// });
+/**
+ * Tries to confirm the registration of the user with the given username and url
+ * @param {String} username The player's username
+ * @param {String} url The url to confirm the registration
+ * @returns {boolean} True if the registration is confirmed
+ */
+app.get('/confirm-register/:url', async (req, res) => {
+    const randomUrl = req.params.url.replace('confirm-register/','');
+    const username = randomUrl.split('-')[0];
+    const isUrlValid = await database.isRegistrationUrlValid(username, randomUrl);
+    if(isUrlValid) {
+        const confirmed = await database.confirmRegistration(username);
+        logger.info(`Confirming registration of player ${username} : ${confirmed}`);
+        return res.redirect('/')
+    } else return res.send(false);
+});
 
 
 let rooms = new Map();
@@ -395,10 +413,10 @@ function set_rooms(){
 
 // -------------------------------------------------------------------- SERVER EVENTS
 
-cio.on(EVENTS.INTERNAL.CONNECTION, (csocket) => {
-    csocket.once(EVENTS.MISC.USERNAME, (timestamp, username) => {
-        let user = new User(csocket, username);    //building the user object
-        users.set(username, user);
+cio.on(EVENTS.INTERNAL.CONNECTION, (user) => {
+    user.once(EVENTS.MISC.USERNAME, (timestamp, username) => {
+        user.username = username; //setting the username of the user
+        users.set(username, user); //registering the user in the users map
         user.emit(EVENTS.SYSTEM.INFO, Date.now(), "Vous êtes connecté en tant que " + username);   //sending a message to the user to inform him that he is connected
         rooms.get(general).emit(EVENTS.CHAT.USER_JOIN, Date.now(), username);               //broadcasting the newUser event to all the users of the general room, excepting the new one
         user.joinRoom(rooms.get(general));        //adding the user to the general room
@@ -419,7 +437,7 @@ cio.on(EVENTS.INTERNAL.CONNECTION, (csocket) => {
         user.on(EVENTS.CHAT.MESSAGE, (timestamp, username, msg) => { //catching the send_message event, triggered by the client when he sends a message
             if (!parseCMD(msg, user, cio, rooms)) {
                 for(let room of user.rooms.values()){
-                    if(room.isIn(user.socket)){
+                    if(room.isIn(user)){
                         room.transmit(EVENTS.CHAT.MESSAGE, Date.now(), username, msg); //broadcasting the new_message event to all the users, including the sender
                     }
                 }
@@ -430,6 +448,8 @@ cio.on(EVENTS.INTERNAL.CONNECTION, (csocket) => {
     });
 
 });
+
+set_redirections();
 
 server.on("error", (error) => {
     logger.error(`Server crashed,  ${error.message}`);
