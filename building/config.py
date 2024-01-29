@@ -1,4 +1,4 @@
-from json import load
+from json5 import load, dump
 from typing import Any
 import os
 
@@ -7,12 +7,16 @@ class Config:
         if not os.path.exists(path):
             raise FileNotFoundError("Config file not found: " + path+ " absolute path : "+os.path.abspath(path))
         with open(path) as f:
-            self.data = load(f)
+            data = load(f)
+            if type(data) == dict:
+                self.data = data
+            else:
+                raise ValueError("Invalid config file: " + path)
         self.path = path
     
-    def get(self, _key):
+    def get(self, _key) -> Any:
         keys = _key.split(".")
-        data = self.data
+        data = self.data # type: Any
         for i, key in enumerate(keys):
             try:
                 data = data[key]

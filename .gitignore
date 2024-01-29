@@ -12,3 +12,4 @@ html_result.json
 *.pdf
 *.docx
 *.pyc
+version.jsonc
