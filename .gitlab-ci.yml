@@ -111,8 +111,6 @@ server-tests: #this job run unit tests for the server
         - server_modules/**/*
         - test/server/**/*
         - test/server.js
-    - exists:
-        - test/server/**/* #only run if the folder exists and is not empty
   script:
     - make server-test
 
@@ -123,8 +121,6 @@ client-tests: #this job run unit tests for the client
         - public/**/*
         - test/client/**/*
         - test/client.js
-    - exists:
-        - test/client/**/* #only run if the folder exists and is not empty
   script:
     - make client-test
 
