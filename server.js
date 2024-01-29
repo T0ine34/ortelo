@@ -58,33 +58,40 @@ mailer.init("Oy9a9uSnZvDAnliA0");
 app.get('/game-start/:gameName/:username', async (req, res) => {
     const gameName = req.params.gameName.toLowerCase();
     const username = req.params.username;
-
-    const user = users.get(username);
-    if (!user) {
-        return res.status(404).json({ message : `${username} does not exist.` });
+    if (!gameName || typeof gameName !== 'string' || !username || typeof username !== 'string') {
+        return res.status(400).json({message: 'Invalid input.'});
     }
+    try {
+        const user = users.get(username);
+        if (!user) {
+            return res.status(404).json({message: `${username} does not exist.`});
+        }
 
-    let room = new Room(gameName, username);
+        let room = new Room(gameName, username);
 
-    room.addUser(user);
-    user.leave(rooms.get(general));
-    msg = `${username} à rejoint le chat du jeu.`;
-    room.emit(EVENTS.CHAT.SERVER_MESSAGE, Date.now(), msg);
-    room.on(EVENTS.CHAT.MESSAGE, (timestamp, username, msg) => {
-        room.transmit(EVENTS.CHAT.MESSAGE, Date.now(), username, msg);
-    });
-    let urlExist = true
-    let roomUrl;
-    while (urlExist) {
-        roomUrl = URLGenerator.genURL('game', gameName);
-        urlExist = await database.doGameURLExists(roomUrl)
+        room.addUser(user);
+        user.leave(rooms.get(general));
+        msg = `${username} à rejoint le chat du jeu.`;
+        room.emit(EVENTS.CHAT.SERVER_MESSAGE, Date.now(), msg);
+        room.on(EVENTS.CHAT.MESSAGE, (timestamp, username, msg) => {
+            room.transmit(EVENTS.CHAT.MESSAGE, Date.now(), username, msg);
+        });
+        let urlExist = true
+        let roomUrl;
+        while (urlExist) {
+            roomUrl = URLGenerator.genURL('game', gameName);
+            urlExist = await database.doGameURLExists(roomUrl)
+        }
+
+        gameRooms.set(roomUrl, room);
+
+        res.json({roomUrl: roomUrl, message: `Game ${gameName} initiated. Waiting for second player.`});
+        const creategame = await database.createGameRoom(gameName, username, roomUrl, 2);
+        logger.info(`Creation of game ${gameName}, with url ${roomUrl} : ${creategame}`)
+    } catch (error) {
+        logger.info(`Internal server error : ${error.message}`)
+        return res.status(500).json({ message: 'Internal server error.', error: error.message });
     }
-
-    gameRooms.set(roomUrl, room);
-
-    res.json({ roomUrl: roomUrl, message: `Game ${gameName} initiated. Waiting for second player.` });
-    const creategame = await database.createGameRoom(gameName, username, roomUrl, 2);
-    logger.info(`Creation of game ${gameName}, with url ${roomUrl} : ${creategame}`)
 });
 
 /**
@@ -93,37 +100,46 @@ app.get('/game-start/:gameName/:username', async (req, res) => {
  * @returns {JSON} - JSON object with a message about the room's status.
  */
 app.get('/game-wait/game/:roomUrl', async (req, res) => {
-    let roomUrl = req.params.roomUrl;
-    let room = gameRooms.get("game/"+roomUrl);
 
-    if (!room) {
-        return res.status(404).json({message : `The room ${roomUrl} does not exist.`});
-    } else if (room.users.size < 2) {
-        return res.status(200).json({message : `Waiting for players to fill the room.`});
+    let roomUrl = req.params.roomUrl;
+    if (!roomUrl || typeof roomUrl !== 'string') {
+        return res.status(400).json({ message : 'Invalid URL.' });
     }
-    if (room.run) {
-        return res.json({ message: `Game ${room.name} already running successfully.` });
-    }
-    const game = gameLoader.gamesData[room.name];
-    const serverScriptContent = new TextDecoder('utf-8').decode(new Uint8Array(game.serverData));
-    const sandbox = {
-        require: require,
-        console: console,
-        process: process,
-        Buffer: Buffer,
-        __dirname: __dirname,
-        __filename: __filename,
-        room,
-    };
-    const script = new vm.Script(serverScriptContent);
-    script.runInNewContext(sandbox);
-    if (typeof sandbox[room.name] === 'function') {
-        sandbox[room.name](room);
-        room.run= true;
-        res.json({ message: `Game ${room.name} started successfully.` });
-    } else {
-        logger.error('Starter function not found in server script.')
-        res.status(500)
+    try {
+        let room = gameRooms.get("game/"+roomUrl);
+
+        if (!room) {
+            return res.status(404).json({message : `The room ${roomUrl} does not exist.`});
+        } else if (room.users.size < 2) {
+            return res.status(200).json({message : `Waiting for players to fill the room.`});
+        }
+        if (room.run) {
+            return res.json({ message: `Game ${room.name} already running successfully.` });
+        }
+        const game = gameLoader.gamesData[room.name];
+        const serverScriptContent = new TextDecoder('utf-8').decode(new Uint8Array(game.serverData));
+        const sandbox = {
+            require: require,
+            console: console,
+            process: process,
+            Buffer: Buffer,
+            __dirname: __dirname,
+            __filename: __filename,
+            room,
+        };
+        const script = new vm.Script(serverScriptContent);
+        script.runInNewContext(sandbox);
+        if (typeof sandbox[room.name] === 'function') {
+            sandbox[room.name](room);
+            room.run= true;
+            res.json({ message: `Game ${room.name} started successfully.` });
+        } else {
+            logger.error('Starter function not found in server script.')
+            res.status(500)
+        }
+    } catch (error) {
+        logger.info(`Internal server error : ${error.message}`)
+        return res.status(500).json({message: 'Internal server error.', error: error.message});
     }
 });
 
@@ -136,42 +152,49 @@ app.get('/game-wait/game/:roomUrl', async (req, res) => {
 app.get('/gameUrl/:roomUrl/:username', (req, res) => {
     const roomUrl = 'game/'+req.params.roomUrl;
     const username = req.params.username;
-    const user = users.get(username);
-
-    if (!user) {
-        return res.status(404).json({ message : `User ${username} does not exist.` });
+    if (!roomUrl || typeof roomUrl !== 'string' || !username || typeof username !== 'string') {
+        return res.status(400).json({ message : 'Invalid input.' });
     }
+    try {
+        const user = users.get(username);
 
-    let room = gameRooms.get(roomUrl);
-
-    if (!room) {
-        return res.status(404).json({ message : `The room ${roomUrl} does not exist.` });
-    }
-
-    const usersArray = Array.from(room.users.values());
-    const usernameExists = usersArray.some(user => user.username === username);
-    if (usernameExists) {
-        const lastuser = usersArray.find(user => user.username === username);
-        room.removeUser(lastuser);
-
-        room.addUser(user);
-        user.leave(rooms.get(general));
-
-        msg = `${username} is back in the game chat.`;
-        room.emit(EVENTS.CHAT.SERVER_MESSAGE, Date.now(), msg);
-        res.json({message : `${username} joined game room ${roomUrl} successfully`});
-    } else {
-        if (room.users && room.users.size >= 2) {
-            return res.status(403).json({ message : `The room ${roomUrl} is full.` });
+        if (!user) {
+            return res.status(404).json({ message : `User ${username} does not exist.` });
         }
-        room.transmit(EVENTS.GAME.START, Date.now())
-        room.addUser(user);
-        user.leave(rooms.get(general));
-        msg = `${username} à rejoint le chat du jeu.`;
-        room.emit(EVENTS.CHAT.SERVER_MESSAGE, Date.now(), msg);
-        res.json({message : `${username} joined game room ${roomUrl} successfully`});
-    }
 
+        let room = gameRooms.get(roomUrl);
+
+        if (!room) {
+            return res.status(404).json({ message : `The room ${roomUrl} does not exist.` });
+        }
+
+        const usersArray = Array.from(room.users.values());
+        const usernameExists = usersArray.some(user => user.username === username);
+        if (usernameExists) {
+            const lastuser = usersArray.find(user => user.username === username);
+            room.removeUser(lastuser);
+
+            room.addUser(user);
+            user.leave(rooms.get(general));
+
+            msg = `${username} is back in the game chat.`;
+            room.emit(EVENTS.CHAT.SERVER_MESSAGE, Date.now(), msg);
+            res.json({message : `${username} joined game room ${roomUrl} successfully`});
+        } else {
+            if (room.users && room.users.size >= 2) {
+                return res.status(403).json({ message : `The room ${roomUrl} is full.` });
+            }
+            room.transmit(EVENTS.GAME.START, Date.now())
+            room.addUser(user);
+            user.leave(rooms.get(general));
+            msg = `${username} à rejoint le chat du jeu.`;
+            room.emit(EVENTS.CHAT.SERVER_MESSAGE, Date.now(), msg);
+            res.json({message : `${username} joined game room ${roomUrl} successfully`});
+        }
+    } catch (error) {
+        logger.info(`Internal server error : ${error.message}`)
+        return res.status(500).json({ message: 'Internal server error.', error: error.message });
+    }
 });
 
 /**
@@ -180,21 +203,26 @@ app.get('/gameUrl/:roomUrl/:username', (req, res) => {
  * @returns {JSON} - JSON array of game information.
  */
 app.get('/games-info', (req, res) => {
-    const gamesData = gameLoader.gamesData;
-    const fields = req.query.x ? req.query.x.split(',') : null;
-    const specificGameKey = Object.keys(req.query).find(key => key !== 'x' && gamesData[key]);
-    const specificGameData = specificGameKey ? gamesData[specificGameKey] : null;
+    try {
+        const gamesData = gameLoader.gamesData;
+        const fields = req.query.x ? req.query.x.split(',') : null;
+        const specificGameKey = Object.keys(req.query).find(key => key !== 'x' && gamesData[key]);
+        const specificGameData = specificGameKey ? gamesData[specificGameKey] : null;
 
-    let gameInfos = [];
-    if (fields) {
-        gameInfos = Object.values(gamesData).map(game => getGameInfo(game, fields));
-    } else if (specificGameData) {
-        const requestedFields = req.query[specificGameKey] ? req.query[specificGameKey].split(',') : [];
-        return res.json(getGameInfo(specificGameData, requestedFields));
-    } else if (specificGameKey) {
-        return res.json({});
+        let gameInfos = [];
+        if (fields) {
+            gameInfos = Object.values(gamesData).map(game => getGameInfo(game, fields));
+        } else if (specificGameData) {
+            const requestedFields = req.query[specificGameKey] ? req.query[specificGameKey].split(',') : [];
+            return res.json(getGameInfo(specificGameData, requestedFields));
+        } else if (specificGameKey) {
+            return res.json({});
+        }
+        res.json(gameInfos);
+    } catch (error) {
+        logger.info(`Internal server error : ${error.message}`)
+        return res.status(500).json({ message: 'Internal server error.', error: error.message });
     }
-    res.json(gameInfos);
 });
 
 
@@ -229,36 +257,44 @@ function getGameInfo(game, fields) {
  * @returns {HTML} - HTML content for the game.
  */
 app.get('/game/:url', (req, res) => {
-    const filePath = path.join(__dirname, "server_modules", "redirection", "gameRedirect.js");
-
-    const roomUrl = 'game/'+req.params.url;
-    let room = gameRooms.get(roomUrl);
-    if (!room) {
-        return res.status(404).json({ message : `The room ${roomUrl} does not exist.` });
+    if (!req.params.url || typeof req.params.url !== 'string') {
+        return res.status(400).json({ message : 'Invalid URL.' });
     }
-    /*if (room.users && room.users.size >= 2) {
-        return res.status(403).json({ message : `The room ${roomUrl} is full.` });
-    }*/
+    try {
+        const filePath = path.join(__dirname, "server_modules", "redirection", "gameRedirect.js");
 
-    fs.readFile(filePath, 'utf8', (err, data) => {
-        if (err) {
-            console.error("Erreur lors de la lecture du fichier :", err);
-            res.status(500).send('Erreur lors du chargement du script');
-            return;
+        const roomUrl = 'game/'+req.params.url;
+        let room = gameRooms.get(roomUrl);
+        if (!room) {
+            return res.status(404).json({ message : `The room ${roomUrl} does not exist.` });
         }
+        /*if (room.users && room.users.size >= 2) {
+            return res.status(403).json({ message : `The room ${roomUrl} is full.` });
+        }*/
 
-        res.send(`
-        <!DOCTYPE html>
-        <html>
-        <head>
-        <title>Redirection de Jeu</title>
-        </head>
-        <body>
-        <script>${data}</script>
-        </body>
-        </html>
-        `);
-    });
+        fs.readFile(filePath, 'utf8', (err, data) => {
+            if (err) {
+                console.error("Erreur lors de la lecture du fichier :", err);
+                res.status(500).send('Erreur lors du chargement du script');
+                return;
+            }
+
+            res.send(`
+            <!DOCTYPE html>
+            <html>
+            <head>
+            <title>Redirection de Jeu</title>
+            </head>
+            <body>
+            <script>${data}</script>
+            </body>
+            </html>
+            `);
+        });
+    } catch (error) {
+        logger.info(`Internal server error : ${error.message}`)
+        return res.status(500).json({ message: 'Internal server error.', error: error.message });
+    }
 });
 
 let loginAttempts = {};

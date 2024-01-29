@@ -58,31 +58,40 @@
          */
 
         makeMove(row, col, username) {
-            let player = this.currentPlayer;
-            if (this.board[row][col] !== '' || this.isGameOver || username !== this.players[this.currentPlayer]) {
-                return false;
-            }
-
-            let flipped = this.getFlippedPieces(row, col, player);
-            if (flipped.length === 0) {
-                return false;
-            }
-
-            flipped.forEach(pos => {
-                this.board[pos[0]][pos[1]] = player;
-            });
-
-            this.board[row][col] = player;
-
-            this.checkGameOver();
-            if (!this.isGameOver) {
-                this.switchPlayer();
-                if (!this.hasValidMove(this.currentPlayer)) {
-                    this.switchPlayer();
+            try {
+                if (row < 0 || row >= 8 || col < 0 || col >= 8) {
+                    console.error("Invalid row or column");
+                    return false;
                 }
+                let player = this.currentPlayer;
+                if (this.board[row][col] !== '' || this.isGameOver || username !== this.players[this.currentPlayer]) {
+                    return false;
+                }
+
+                let flipped = this.getFlippedPieces(row, col, player);
+                if (flipped.length === 0) {
+                    return false;
+                }
+
+                flipped.forEach(pos => {
+                    this.board[pos[0]][pos[1]] = player;
+                });
+
+                this.board[row][col] = player;
+
+                this.checkGameOver();
+                if (!this.isGameOver) {
+                    this.switchPlayer();
+                    if (!this.hasValidMove(this.currentPlayer)) {
+                        this.switchPlayer();
+                    }
+                }
+                this.restartRequests.delete(username);
+                return true;
+            } catch (error) {
+                console.error(`Error in makeMove: ${error}`);
+                return false;
             }
-            this.restartRequests.delete(username);
-            return true;
         }
 
         /**
@@ -274,23 +283,30 @@
         const joueur2 = usersArray[1].username;
         game.addPlayer(joueur2);
         room.on(EVENTS.GAME.DATA, (timestamp, data) => {
-            if (data && "row" in data && "col" in data && "username" in data) {
-                const moveValid = game.makeMove(data.row, data.col, data.username);
-                if (moveValid) {
-                    room.transmit(EVENTS.GAME.DATA, Date.now(), game.getGameState());
-                }
-            } else if (data && "restartKey" in data && data.restartKey === "restart") {
-                const restartCount = game.requestRestart(data.username);
-                if (restartCount === true) {
+            try {
+                if (data && "row" in data && "col" in data && "username" in data) {
+                    const moveValid = game.makeMove(data.row, data.col, data.username);
+                    if (moveValid) {
+                        room.transmit(EVENTS.GAME.DATA, Date.now(), game.getGameState());
+                    }
+                } else if (data && "restartKey" in data && data.restartKey === "restart") {
+                    const restartCount = game.requestRestart(data.username);
+                    if (restartCount === true) {
+                        room.transmit(EVENTS.GAME.DATA, Date.now(), game.getGameState());
+                    } else {
+                        room.transmit(EVENTS.GAME.DATA, Date.now(), {restartCount});
+                    }
+                } else if (data && "ready" in data) {
+                    room.transmit(EVENTS.GAME.DATA, Date.now(), {
+                        all_connected: "all_connected",
+                        players: game.players
+                    });
                     room.transmit(EVENTS.GAME.DATA, Date.now(), game.getGameState());
                 } else {
-                    room.transmit(EVENTS.GAME.DATA, Date.now(), { restartCount });
+                    console.error("Invalid data received:", data);
                 }
-            } else if (data && "ready" in data) {
-                room.transmit(EVENTS.GAME.DATA, Date.now(), {all_connected: "all_connected", players: game.players});
-                room.transmit(EVENTS.GAME.DATA, Date.now(), game.getGameState());
-            } else {
-                console.error("Invalid data received:", data);
+            } catch (error) {
+                console.error(`Error processing game data: ${error}`);
             }
         });
     }

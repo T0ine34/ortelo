@@ -32,6 +32,10 @@ function start() {
      * @param {Object} state - The current state of the game from the server.
      */
     function updateGameState(state) {
+        if (!state || typeof state !== 'object' || !state.board || !state.currentPlayer) {
+            console.error("Invalid game state received:", state);
+            return;
+        }
         currentPlayer = state.currentPlayer;
         isGameOver = state.isGameOver;
         gameBoard = state.board;
@@ -57,6 +61,7 @@ function start() {
         if (!isGameOver && gameBoard[row][col] === "") {
             csocket.emit(EVENTS.GAME.DATA, Date.now(), { row, col, username});
         }
+
     }
     /**
      * Renders the game board.
@@ -144,39 +149,42 @@ function start() {
     }
 
     function showVictoryAnimation(victory) {
+        try {
+            let pumpkinSize = 100;
+            let windowHeight = window.innerHeight;
+            let windowWidth = window.innerWidth;
 
-        let pumpkinSize = 100;
-        let windowHeight = window.innerHeight;
-        let windowWidth = window.innerWidth;
+            let centerY = (windowHeight / 2) - (pumpkinSize / 2);
+            let centerX = (windowWidth / 2) - (pumpkinSize / 2);
 
-        let centerY = (windowHeight / 2) - (pumpkinSize / 2);
-        let centerX = (windowWidth / 2) - (pumpkinSize / 2);
-
-        for (let i = 0; i < 10; i++) {
-            (function(i) {
-                let pumpkin = document.querySelector("#victoryPumpkin" + i);
-                if (!victory) {
-                    pumpkin.textContent = "❄️";
-                }
-                let randomOffsetY = (Math.random() - 0.5) * (windowHeight - pumpkinSize);
-                let randomOffsetX = (Math.random() - 0.5) * (windowWidth - pumpkinSize);
-
-                pumpkin.style.top = (centerY + randomOffsetY) + "px";
-                pumpkin.style.left = (centerX + randomOffsetX) + "px";
-                pumpkin.style.display = "block";
-                pumpkin.style.fontSize = pumpkinSize + "px";
-                pumpkin.classList.add("rotateAndFadeOut");
-                setTimeout((function(pumpkin) {
-                    return function() {
-                        pumpkin.style.display = "none";
-                        pumpkin.classList.remove("rotateAndFadeOut");
-                        let zombie = document.querySelector("#fighterX");
-                        let ghost = document.querySelector("#fighterO");
-                        zombie.classList.remove("zombieFast");
-                        ghost.classList.remove("ghostFast");
+            for (let i = 0; i < 10; i++) {
+                (function (i) {
+                    let pumpkin = document.querySelector("#victoryPumpkin" + i);
+                    if (!victory) {
+                        pumpkin.textContent = "❄️";
                     }
-                })(pumpkin), 5000);
-            })(i);
+                    let randomOffsetY = (Math.random() - 0.5) * (windowHeight - pumpkinSize);
+                    let randomOffsetX = (Math.random() - 0.5) * (windowWidth - pumpkinSize);
+
+                    pumpkin.style.top = (centerY + randomOffsetY) + "px";
+                    pumpkin.style.left = (centerX + randomOffsetX) + "px";
+                    pumpkin.style.display = "block";
+                    pumpkin.style.fontSize = pumpkinSize + "px";
+                    pumpkin.classList.add("rotateAndFadeOut");
+                    setTimeout((function (pumpkin) {
+                        return function () {
+                            pumpkin.style.display = "none";
+                            pumpkin.classList.remove("rotateAndFadeOut");
+                            let zombie = document.querySelector("#fighterX");
+                            let ghost = document.querySelector("#fighterO");
+                            zombie.classList.remove("zombieFast");
+                            ghost.classList.remove("ghostFast");
+                        }
+                    })(pumpkin), 5000);
+                })(i);
+            }
+        } catch (error) {
+            console.error("Error displaying victory animation:", error);
         }
     }
 

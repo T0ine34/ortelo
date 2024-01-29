@@ -46,21 +46,30 @@ class Server {
      * @returns {boolean} True if the move was successful, false otherwise.
      */
     makeMove(row, col, username) {
-        if (this.board[row][col] || this.isGameOver) {
-            return false;
-        }
-        if (username !== this.players[this.currentPlayer]) {
-            return false;
-        }
-        if (this.board[row][col] === "" && !this.isGameOver) {
-            this.board[row][col] = this.currentPlayer;
-            this.checkForWin();
-            if (!this.isGameOver) {
-                this.switchPlayer();
+        try {
+            if (row < 0 || row > 2 || col < 0 || col > 2) {
+                console.error(`Invalid row or column index: row=${row}, col=${col}`);
+                return false;
             }
-            return true;
+            if (this.board[row][col] || this.isGameOver) {
+                return false;
+            }
+            if (username !== this.players[this.currentPlayer]) {
+                return false;
+            }
+            if (this.board[row][col] === "" && !this.isGameOver) {
+                this.board[row][col] = this.currentPlayer;
+                this.checkForWin();
+                if (!this.isGameOver) {
+                    this.switchPlayer();
+                }
+                return true;
+            }
+            return false;
+        } catch (error) {
+            console.error(`Error in makeMove: ${error}`);
+            return false;
         }
-        return false;
     }
 
     switchPlayer() {
@@ -131,19 +140,23 @@ function morpion(room) {
     const joueur2 = usersArray[1].username;
     game.addPlayer(joueur2);
     room.on(EVENTS.GAME.DATA, (timestamp, data) => {
-        if (data && "row" in data && "col" in data && "username" in data) {
-            const moveValid = game.makeMove(data.row, data.col, data.username);
-            if (moveValid) {
+        try {
+            if (data && "row" in data && "col" in data && "username" in data) {
+                const moveValid = game.makeMove(data.row, data.col, data.username);
+                if (moveValid) {
+                    room.transmit(EVENTS.GAME.DATA, Date.now(), game.getGameState());
+                }
+            } else if (data && "restartKey" in data && data.restartKey === "restart") {
+                game.initializeBoard();
                 room.transmit(EVENTS.GAME.DATA, Date.now(), game.getGameState());
+            } else if (data && "ready" in data) {
+                room.transmit(EVENTS.GAME.DATA, Date.now(), {all_connected: "all_connected", players: game.players});
+                room.transmit(EVENTS.GAME.DATA, Date.now(), game.getGameState());
+            } else {
+                console.error("Invalid data received:", data);
             }
-        } else if (data && "restartKey" in data && data.restartKey === "restart") {
-            game.initializeBoard();
-            room.transmit(EVENTS.GAME.DATA, Date.now(), game.getGameState());
-        } else if (data && "ready" in data) {
-            room.transmit(EVENTS.GAME.DATA, Date.now(), {all_connected: "all_connected", players: game.players});
-            room.transmit(EVENTS.GAME.DATA, Date.now(), game.getGameState());
-        } else {
-            console.error("Invalid data received:", data);
+        } catch (error) {
+            console.error("Error handling socket event:", error);
         }
     });
 }

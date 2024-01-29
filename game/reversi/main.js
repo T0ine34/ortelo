@@ -16,6 +16,10 @@ function start() {
     let winner = null;
 
     csocket.on(EVENTS.GAME.DATA, (timestamp, state) => {
+        if (!state || typeof state !== 'object') {
+            console.error("Invalid game state received");
+            return;
+        }
         if (state && "all_connected" in state && "players" in state) {
             players = state.players;
             updateGameStatus();
