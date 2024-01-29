@@ -1,10 +1,7 @@
 from sqlite3 import connect
 import os
-
 from json5 import dump, load
-
 from config import Config
-
 from typing import Any
 
 def is_version_greater(v1, v2):
@@ -12,14 +9,6 @@ def is_version_greater(v1, v2):
     v1 = [int(x) for x in v1.split(".")]
     v2 = [int(x) for x in v2.split(".")]
     return v1 > v2
-
-def is_version_greater_or_equal(v1, v2):
-    """Check if version1 is greater or equal to version2."""
-    return is_version_greater(v1, v2) or v1 == v2
-
-def is_version_lower(v1, v2):
-    """Check if version1 is lower than version2."""
-    return not is_version_greater_or_equal(v1, v2)
 
 def is_version_lower_or_equal(v1, v2):
     """Check if version1 is lower or equal to version2."""
@@ -97,7 +86,6 @@ class VersionFile:
     def __str__(self):
         return str(self.data)
 
-
 class ServerDatabase:
     def __init__(self, config : Config|str):
         if isinstance(config, str):
@@ -148,7 +136,12 @@ class ServerDatabase:
 def main():
     config = Config("server.config")
     db = ServerDatabase(config)
-    db.update()
+    try:
+        db.update()
+    except Exception as e:
+        print("Error :", e)
+        return 1
+    return 0
     
 if __name__ == "__main__":
-    main()
+    exit(main())

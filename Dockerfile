@@ -6,6 +6,11 @@ FROM alpine:3.18
 # Install dependencies
 RUN apk add nodejs npm
 
+# Install python3 to run database update script
+RUN apk add --no-cache python3
+RUN apk add --no-cache py3-pip
+RUN pip3 install json5
+
 # Create app directory
 WORKDIR /usr/src/app
 
@@ -17,26 +22,15 @@ COPY public/ public/
 COPY package.deploy.json ./package.json
 COPY server.deploy.config ./server.config
 COPY server.js .
+COPY launcher.js .
+COPY building/database.py ./building/database.py
+COPY building/config.py ./building/config.py
 
+# Install app dependencies
 RUN npm install
 
 # Expose port
 EXPOSE 3000
 
 # Start server
-CMD [ "npm", "start" ]
-
-# Build image
-# docker build -t <image-name> .
-
-# Run container
-# docker run -p 3000:3000 <image-name>
-
-# Run container in background
-# docker run -d -p 3000:3000 <image-name>
-
-# Run container in background with name
-# docker run -d -p 3000:3000 --name <container-name> <image-name>
-
-# Stop container
-# docker stop <container-name>
+CMD [ "node", "launcher.js" ]
