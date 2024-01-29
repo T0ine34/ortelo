@@ -1,6 +1,6 @@
 const fs                            = require("fs");
 const {is_json, is_json_matching}   = require("../json_checker/main");
-
+const JSON5                         = require("json5");
 /**
  * @description Contain class to manage settings
  * @module Settings
@@ -61,7 +61,7 @@ class Settings{
         }
 
         try{
-            this._data = JSON.parse(fs.readFileSync(filepath));
+            this._data = JSON5.parse(fs.readFileSync(filepath));
         }
         catch(e){
             throw new Error("Error while reading settings file : " + e);
@@ -144,7 +144,7 @@ class Settings{
      */
     save(filepath = this._filepath){
         try{
-            fs.writeFileSync(filepath, JSON.stringify(this._data));
+            fs.writeFileSync(filepath, JSON5.stringify(this._data));
         }
         catch(e){
             throw new Error("Error while writing settings file : " + e);

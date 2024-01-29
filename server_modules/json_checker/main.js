@@ -1,4 +1,5 @@
 const fs       = require('fs');
+const JSON5    = require('json5');
 
 /**
  * @description contains JSON-related functions
@@ -18,7 +19,7 @@ const fs       = require('fs');
  */
 function is_json(filepath){
     try {
-        JSON.parse(fs.readFileSync(filepath));
+        JSON5.parse(fs.readFileSync(filepath));
     } catch (e) {
         return false;
     }
@@ -72,8 +73,8 @@ function is_json_matching(filepath, structure_filepath = null){
     let structure = fs.readFileSync(structure_filepath);
     
 
-    let file_json = JSON.parse(file);
-    let structure_json = JSON.parse(structure);
+    let file_json = JSON5.parse(file);
+    let structure_json = JSON5.parse(structure);
 
     /**
      * internal function that explores recursivly a node of the json file
