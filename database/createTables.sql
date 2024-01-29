@@ -6,8 +6,7 @@ CREATE TABLE IF NOT EXISTS player (
     password TEXT,
     email TEXT,
     online NUMBER(1) DEFAULT 1,
-    CONSTRAINT ck_OnlineBool CHECK (online IN (1,0)),
-    CONSTRAINT ck_EmailConfirmedBool CHECK (email_confirmed IN (1,0))
+    CONSTRAINT ck_OnlineBool CHECK (online IN (1,0))
 );
 
 CREATE TABLE IF NOT EXISTS unconfirmed_players (
