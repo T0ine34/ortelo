@@ -22,6 +22,7 @@ const path = require('path');
 const { log } = require('console');
 const bodyParser = require('body-parser');
 const vm = require('vm');
+const rateLimit = require("express-rate-limit");
 
 let logger = new Logger();
 
@@ -256,14 +257,23 @@ app.get('/game/:url', (req, res) => {
     });
 });
 
-
+let loginAttempts = {};
+const limiter = rateLimit({
+    windowMs: 1 * 60 * 1000,
+    max: 5,
+    message: function(req, res, next) {
+        const resetTime = req.rateLimit.resetTime;
+        const secondsRemaining = resetTime ? Math.ceil((resetTime - new Date().getTime()) / 1000) : 60;
+        return `erreur:${secondsRemaining}`;
+    },
+});
 /**
  * Tries to log in the user with the given username and password
  * @param {String} username The player's username
  * @param {String} password The user's password
  * @return {boolean} True if the user is logged in
  */
-app.post('/login', async (req, res) => {
+app.post('/login', limiter, async (req, res) => {
     const logged = await database.login(req.body.username, req.body.password);
     logger.info(`Logging player ${req.body.username} : ${logged}`);
     if(logged == true) return res.send(true);

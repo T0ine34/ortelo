@@ -27,7 +27,12 @@ document.addEventListener('DOMContentLoaded', function () {
 
                 this.location.href = "/";
             } else {
-                alert("Nom d'utilisateur ou mot de passe incorrect");
+                if (data.includes("erreur")) {
+                    const seconds = data.split(':')[1]; // This will parse out the number after "erreur:"
+                    alert(`Trop de tentatives, veuillez réessayer dans ${seconds} secondes`);
+                } else {
+                    alert("Nom d'utilisateur ou mot de passe incorrect");
+                }
             }
 
         })
