@@ -23,8 +23,11 @@ run-image:
 	docker run -d -p 80:3000 -v s3a01_data:/data s3a01/main:latest
 
 
+clear_games: #delete all .game files in public/commmon/games witch they are not a folder with the same name in game/
+	$(PYTHON) building/game-clear.py
 
-games: game/*
+
+games: game/* clear_games #build all games
 	$(PYTHON) building/game-assemble.py game
 
 # generic rule for all games
