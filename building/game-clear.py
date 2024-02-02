@@ -34,6 +34,10 @@ if __name__ == "__main__":
     import sys
     
     config = Config(PARENT_FOLDER+"/server.config")
+    gamedir = config['games_dir']
+    if not os.path.exists(gamedir):
+        print("Games directory not found, no games to remove.")
+        sys.exit(0)
     
     if len(sys.argv) > 1:
         if sys.argv[1] == "--game" or sys.argv[1] == "-g":
@@ -41,15 +45,15 @@ if __name__ == "__main__":
                 print("Usage: python game-clear.py --game <game_name> | --all")
                 sys.exit(1)
             game = sys.argv[2]
-            deleteGame(game, config['games_dir'])
+            deleteGame(game, gamedir)
             sys.exit(0)
         elif sys.argv[1] == "--all" or sys.argv[1] == "-a":
-            deleteAll(config['games_dir'])
+            deleteAll(gamedir)
             print("All games removed")
             sys.exit(0)
         else:
             print("Usage: python game-clear.py --game <game_name> | --all")
             sys.exit(1)
     else:
-        main(gamedir = config['games_dir'])
+        main(gamedir)
         sys.exit(0)
