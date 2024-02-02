@@ -1,6 +1,11 @@
 from sqlite3 import connect
 import os
-from json5 import dump, load
+try:
+    from json5 import load, dump
+except ImportError:
+    from install import install
+    install("json5")
+    from json5 import load, dump
 from config import Config
 from typing import Any
 

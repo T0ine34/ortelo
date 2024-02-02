@@ -1,4 +1,9 @@
-from json5 import load, dump
+try:
+    from json5 import load
+except ImportError:
+    from install import install
+    install("json5")
+    from json5 import load
 from typing import Any
 import os
 
