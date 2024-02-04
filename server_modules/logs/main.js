@@ -22,7 +22,14 @@ var settings = new Settings("./server.config");
  * @author Antoine Buirey
  */
 function indent(str, indent){
+    if(typeof str !== "string") str = str.toString();
     return str.replace(/\n/g, "\n"+"\t".repeat(indent));
+}
+
+function set_length(str, length, char = "0"){
+    if(typeof str !== "string") str = str.toString();
+    if(str.length > length) return str.substring(0, length);
+    return char.repeat(length - str.length) + str;
 }
 
 
@@ -67,7 +74,7 @@ class Logger {
         const currentDate = new Date();
         
         //** Updates filepath to output logs to */
-        const filePath = `${this._logFolder}/${currentDate.getDate()}_${currentDate.getMonth()+1}_${currentDate.getFullYear()}_at_${currentDate.getHours() < 10 ? "0" + currentDate.getHours() : currentDate.getHours()}h${currentDate.getMinutes() < 10 ? "0" + currentDate.getMinutes() : currentDate.getMinutes()}.log`;
+        const filePath = `${this._logFolder}/${set_length(currentDate.getDate(), 2) }_${set_length(currentDate.getMonth()+1, 2)}_${set_length(currentDate.getFullYear(), 4)}_at_${set_length(currentDate.getHours(), 2)}h${set_length(currentDate.getMinutes(), 2)}.log`;
         if(this._logFile && this._logFile != filePath){
             this.info("log file changed to " + filePath + "\n nothing will be added in this file anymore");
         }
@@ -139,7 +146,7 @@ class Logger {
      */
     getTimeString() {
         let date = new Date();
-        return `[${date.getFullYear()}/${date.getMonth()+1}/${date.getDate()} ${date.getHours() < 10 ? "0" + date.getHours() : date.getHours()}:${date.getMinutes() < 10 ? "0" + date.getMinutes() : date.getMinutes()}:${date.getSeconds() < 10 ? "0" + date.getSeconds() : date.getSeconds()}]`;
+        return `[${set_length(date.getFullYear(), 4)}/${set_length(date.getMonth()+1, 2)}/${set_length(date.getDate(), 2)} ${set_length(date.getHours(), 2)}:${set_length(date.getMinutes(), 2)}:${set_length(date.getSeconds(), 2)}]`;
     }
 
 
