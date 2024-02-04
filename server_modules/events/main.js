@@ -61,9 +61,9 @@ class Room{
         //return true if the user has been added, false otherwise
         if(!user instanceof CSocket) throw new Error("user is not a CSocket Object");
         if(this.can_join(user)){
-            this.emit(EVENTS.ROOM.USER_JOIN, Date.now(), user.username);
+            this.emit(EVENTS.ROOM.USER_JOIN, Date.now(), this.name, user.username);
             this._users.add(user);
-            this.emit(EVENTS.ROOM.USER_JOINED, Date.now(), user.username);
+            this.emit(EVENTS.ROOM.USER_JOINED, Date.now(), this.name, user.username);
             for(let listener of this._on_listeners){ //register the listeners for the user
                 user.on(listener.event, listener.callback);
             }

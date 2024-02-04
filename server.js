@@ -184,11 +184,9 @@ app.get('/gameUrl/:roomUrl/:username', (req, res) => {
             if (room.users && room.users.size >= 2) {
                 return res.status(403).json({ message : `The room ${roomUrl} is full.` });
             }
-            room.transmit(EVENTS.GAME.START, Date.now())
+            room.emit(EVENTS.GAME.START, Date.now())
             room.addUser(user);
             user.leave(rooms.get(general));
-            msg = `${username} à rejoint le chat du jeu.`;
-            room.emit(EVENTS.CHAT.SERVER_MESSAGE, Date.now(), msg);
             res.json({message : `${username} joined game room ${roomUrl} successfully`});
         }
     } catch (error) {
@@ -453,11 +451,8 @@ cio.on(EVENTS.INTERNAL.CONNECTION, (user) => {
     user.once(EVENTS.MISC.USERNAME, (timestamp, username) => {
         user.username = username; //setting the username of the user
         users.set(username, user); //registering the user in the users map
-        user.emit(EVENTS.SYSTEM.INFO, Date.now(), "Vous êtes connecté en tant que " + username);   //sending a message to the user to inform him that he is connected
-        rooms.get(general).emit(EVENTS.CHAT.USER_JOIN, Date.now(), username);               //broadcasting the newUser event to all the users of the general room, excepting the new one
         user.joinRoom(rooms.get(general));        //adding the user to the general room
-        rooms.get(general).emit(EVENTS.CHAT.USER_JOINED, Date.now(), username);             //broadcasting the newUser event to all the users of the general room, including the new one
-
+        
         user.on(EVENTS.INTERNAL.DISCONNECTING, (reason) => {
             for(let room of user.rooms.values()){
                 room.emit(EVENTS.CHAT.USER_LEAVE, Date.now(), user.username);
@@ -496,9 +491,11 @@ server.on("close", () => {
 });
 
 // -------------------------------------------------------------------- SERVER START
+let port = settings.get("port");
+
 loadGames().then(() => {
-    server.listen(settings.get("port"), () => {
-        console.log('http server opened, listening on *: ' + settings.get("port"));
+    server.listen(port, () => {
+        console.log('http server opened, listening on *: ' + server.address().port);
         logger.info('http server opened, listening on *:'+server.address().port);
     });
 });
