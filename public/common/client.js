@@ -501,8 +501,6 @@ function mayjoinroom() {
         const urlParts = JSON.parse(gameRedirectData);
         joinGameRoom(urlParts);
         localStorage.removeItem('gameRedirect');
-    } else {
-        fetchGames();
     }
 }
 
@@ -515,3 +513,5 @@ document.querySelector("#logout").addEventListener('click', () => {
     cookies.delete("username");
     window.location.href = "";
 })
+
+fetchGames();
