@@ -307,6 +307,7 @@ function fetchGames() {
                 let Item = document.createElement('div');
                 Item.addEventListener('click', () => PlayGame(game.name));
                 Item.classList.add('GameItem');
+                Item.setAttribute('id', `${game.name}`);
                 Item.innerHTML = `
                     <img src="${game.icon}" alt="${game.name}">
                     <h5>${game.name}</h5>`;
