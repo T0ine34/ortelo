@@ -94,9 +94,9 @@ class Room{
         //remove the user from the room
         if(!user instanceof CSocket) throw new Error("user is not a CSocket Object");
         if(!this._users.has(user)) throw new Error("user is not in the room");
-        this.emit(EVENTS.ROOM.USER_LEAVE, Date.now(), user.username);
+        this.emit(EVENTS.ROOM.USER_LEAVE, Date.now(), this.name, user.username);
         this._users.delete(user);
-        this.emit(EVENTS.ROOM.USER_LEFT, Date.now(), user.username);
+        this.emit(EVENTS.ROOM.USER_LEFT, Date.now(), this.name, user.username);
         logger.debug("user " + user.id + " removed from room " + this._name);
     }
 
@@ -242,7 +242,7 @@ class Room{
         if(!event instanceof EVENT) throw new Error("event is not an EVENT Object");
         if(!event.server_to_client){ throw new Error("event " + event + " cannot be initiated by the server (if he's just transmitting it, use 'transmit' instead)"); }
 
-        if(args.length != event.payload.length) throw new Error("invalid number of arguments, expected " + event.payload.length + " got " + args.length);
+        if(args.length != event.payload.length) throw new Error("invalid number of arguments, expected " + event.payload.length + " got " + args.length + " for event " + event);
         for(let i = 0; i < args.length; i++){
             if(typeof args[i] !== event.payload[i].type) throw new Error("invalid type for argument " + i + ", expected " + event.payload[i].type + " got " + typeof args[i]);
         }
@@ -269,7 +269,7 @@ class Room{
         if(!event instanceof EVENT) throw new Error("event is not an EVENT Object");
         //we are not checking if the event can be transmitted by the server because it's not the server that is transmitting it
 
-        if(args.length != event.payload.length) throw new Error("invalid number of arguments, expected " + event.payload.length + " got " + args.length);
+        if(args.length != event.payload.length) throw new Error("invalid number of arguments, expected " + event.payload.length + " got " + args.length + " for event " + event);
         for(let i = 0; i < args.length; i++){
             if(typeof args[i] !== event.payload[i].type) throw new Error("invalid type for argument " + i + ", expected " + event.payload[i].type + " got " + typeof args[i]);
         }
@@ -371,7 +371,7 @@ class CSocket{  //this is server side socket, merged with the user class
         if(!event instanceof EVENT) throw new Error("event is not an EVENT Object");
         if(!event.server_to_client){ throw new Error("event " + event + " cannot be initiated by the server (if he's just transmitting it, use 'transmit' instead)"); }
 
-        if(args.length != event.payload.length) throw new Error("invalid number of arguments, expected " + event.payload.length + " got " + args.length);
+        if(args.length != event.payload.length) throw new Error("invalid number of arguments, expected " + event.payload.length + " got " + args.length + " for event " + event);
         for(let i = 0; i < args.length; i++){
             if(typeof args[i] !== event.payload[i].type) throw new Error("invalid type for argument " + i + ", expected " + event.payload[i].type + " got " + typeof args[i]);
         }
@@ -397,7 +397,7 @@ class CSocket{  //this is server side socket, merged with the user class
         if(!event instanceof EVENT) throw new Error("event is not an EVENT Object");
         //we are not checking if the event can be transmitted by the server because it's not the server that is transmitting it
 
-        if(args.length != event.payload.length) throw new Error("invalid number of arguments, expected " + event.payload.length + " got " + args.length);
+        if(args.length != event.payload.length) throw new Error("invalid number of arguments, expected " + event.payload.length + " got " + args.length + " for event " + event);
         for(let i = 0; i < args.length; i++){
             if(typeof args[i] !== event.payload[i].type) throw new Error("invalid type for argument " + i + ", expected " + event.payload[i].type + " got " + typeof args[i]);
         }
@@ -606,7 +606,7 @@ class CIO{
         if(!event instanceof EVENT) throw new Error("event is not an EVENT Object");
         if(!event.server_to_client){ throw new Error("event " + event + " cannot be initiated by the server (if he's just transmitting it, use 'transmit' instead)"); }
 
-        if(args.length != event.payload.length) throw new Error("invalid number of arguments, expected " + event.payload.length + " got " + args.length);
+        if(args.length != event.payload.length) throw new Error("invalid number of arguments, expected " + event.payload.length + " got " + args.length + " for event " + event);
         for(let i = 0; i < args.length; i++){
             if(typeof args[i] !== event.payload[i].type) throw new Error("invalid type for argument " + i + ", expected " + event.payload[i].type + " got " + typeof args[i]);
         }
@@ -632,7 +632,7 @@ class CIO{
         if(!event instanceof EVENT) throw new Error("event is not an EVENT Object");
         //we are not checking if the event can be transmitted by the server because it's not the server that is transmitting it
         
-        if(args.length != event.payload.length) throw new Error("invalid number of arguments, expected " + event.payload.length + " got " + args.length);
+        if(args.length != event.payload.length) throw new Error("invalid number of arguments, expected " + event.payload.length + " got " + args.length + " for event " + event);
         for(let i = 0; i < args.length; i++){
             if(typeof args[i] !== event.payload[i].type) throw new Error("invalid type for argument " + i + ", expected " + event.payload[i].type + " got " + typeof args[i]);
         }

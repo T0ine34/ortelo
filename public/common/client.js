@@ -374,7 +374,8 @@ function PlayGame(name) {
             roomUrlbrute.textContent = shareUrl;
 
             let urlQrCode = document.querySelector('#roomUrlQrCode');
-            let qrResponse = await fetch(`https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=%22${shareUrl}%22&format=svg`);
+            let qrUrl = `https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=%22${shareUrl}%22&format=svg&qzone=1`;
+            let qrResponse = await fetch(qrUrl);
             if(qrResponse.ok) {
                 let responseText = await qrResponse.text();
                 urlQrCode.innerHTML = responseText;

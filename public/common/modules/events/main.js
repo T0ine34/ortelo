@@ -43,7 +43,7 @@ class CSocket{
         if(!event instanceof EVENT) throw new Error("event is not an EVENT Object");
         if(!event.client_to_server) throw new Error("event " + event + " cannot be sent by the client");
 
-        if(args.length != event.payload.length) throw new Error("invalid number of arguments, expected " + event.payload.length + " got " + args.length);
+        if(args.length != event.payload.length) throw new Error("invalid number of arguments, expected " + event.payload.length + " got " + args.length + " for event " + event);
         for(let i = 0; i < args.length; i++){
             if(typeof args[i] !== event.payload[i].type) throw new Error("invalid type for argument " + i + ", expected " + event.payload[i].type + " got " + typeof args[i]);
         }
