@@ -22,5 +22,15 @@
 	"scripts": {
 		"start": "npx nodemon server.js",
 		"document": "npx jsdoc -c jsdoc.config --verbose"
+	},
+
+	"nodemonConfig": {
+		"ignore": [
+			"game/",
+			"node_modules/",
+			"test/",
+			"docs/"
+		],
+		"ext": "js json game"
 	}
 }
