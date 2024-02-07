@@ -55,14 +55,6 @@ csocket.on(EVENTS.CHAT.SERVER_MESSAGE, (timestamp, msg) => {                    
     receive_server_message(timestamp, msg);
 });
 
-csocket.on(EVENTS.ROOM.USER_JOINED, (timestamp, _roomname, _username) => {                   //catching the new_message event, triggered by the server when a user sends a message
-    if(_roomname == "general"){
-        receive_message(timestamp, "Information", _username + " a rejoint le chat !");
-    }
-    else{
-        receive_message(timestamp, "Information", _username + " a rejoint la partie !");
-    }
-});
 
 /*
     Client listens for the event of a user leaving the chat

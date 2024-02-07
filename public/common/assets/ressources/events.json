@@ -359,10 +359,6 @@
                     "type": "number"
                 },
                 {
-                    "name": "roomname",
-                    "type": "string"
-                },
-                {
                     "name": "username",
                     "type": "string"
                 }
@@ -377,10 +373,6 @@
                 {
                     "name": "timestamp",
                     "type": "number"
-                },
-                {
-                    "name": "roomname",
-                    "type": "string"
                 },
                 {
                     "name" : "username",
@@ -399,10 +391,6 @@
                     "type": "number"
                 },
                 {
-                    "name": "roomname",
-                    "type": "string"
-                },
-                {
                     "name" : "username",
                     "type" : "string"
                 }
@@ -417,10 +405,6 @@
                 {
                     "name": "timestamp",
                     "type": "number"
-                },
-                {
-                    "name": "roomname",
-                    "type": "string"
                 },
                 {
                     "name" : "username",
