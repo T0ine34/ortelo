@@ -503,7 +503,7 @@ function mayjoinroom() {
  * Adds an event listener to the logout button.
  * On click, deletes the 'username' cookie and redirects to the homepage.
  */
-document.querySelector("#logout").addEventListener('click', () => {
+document.querySelector("#logoutBtn").addEventListener('click', () => {
     cookies.delete("username");
     window.location.href = "";
 })
