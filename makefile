@@ -25,6 +25,9 @@ server-test:
 client-test:
 	node test/client.js
 
+end-to-end-test:
+	$(PYTHON) test/end-to-end.py
+
 build-image:
 	docker build -t s3a01 .
 
