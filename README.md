@@ -15,6 +15,7 @@ This project is a part of the SAE-S3.A.01-2023 course at IUT AIX-MARSEILLE. It i
 - [Docker](https://www.docker.com/) for the deployment
 - [Bcrypt](https://www.npmjs.com/package/bcrypt) for the password encryption
 - [unit-test](https://www.npmjs.com/package/unit-test) for the tests
+- [Selenium](https://www.selenium.dev/) for the end-to-end tests
 
 
 
