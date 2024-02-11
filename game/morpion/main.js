@@ -9,6 +9,7 @@ function start() {
     let username = window.username;
     let players;
 
+
     csocket.on(EVENTS.GAME.DATA, (timestamp, state) => {
         if (state && "all_connected" in state && "players" in state) {
             players = state.players;
@@ -44,8 +45,14 @@ function start() {
         renderBoard(gameBoard);
         updateFightersDisplay();
     }
+
     /**
-     * Handles the click event on a cell of the game board.
+     * Handles the event when a cell is clicked.
+     *
+     * @function cellClicked
+     * @memberof window
+     *
+     * @returns {undefined} This function does not return any value.
      */
     function cellClicked() {
         const row = this.parentNode.rowIndex;
@@ -90,6 +97,12 @@ function start() {
             });
         });
     }
+
+    /**
+     * Updates the turn message displayed in the game status element.
+     *
+     * @return {void} This method does not return anything.
+     */
     function updateTurnMessage() {
         const statusElement = document.querySelector("#gameStatus");
         const restartButton = document.querySelector("#restartButton");
@@ -106,8 +119,14 @@ function start() {
         }
         restartButton.style.display = 'none';
     }
+
+
     /**
-     * Updates the game status display, including current player and game over messages.
+     * Updates the game status display based on the current game state.
+     * If the game is over, it displays the winner or a tie message.
+     * If the game is not over, it updates the turn message.
+     *
+     * @return {void}
      */
     function updateGameStatusDisplay() {
         const statusElement = document.querySelector("#gameStatus");
@@ -134,6 +153,15 @@ function start() {
         }
     }
 
+
+    /**
+     * Resets the display of fighters on the page.
+     * Removes the "X" class from the element with id "playerX" and
+     * removes the "O" class from the element with id "playerO".
+     * The classes "X" and "O" are used for visual styling purposes to represent the fighters.
+     *
+     * @return {void}
+     */
     function resetFightersDisplay() {
         const zombie = document.querySelector("#playerX");
         const ghost = document.querySelector("#playerO");
@@ -141,6 +169,13 @@ function start() {
         ghost.classList.remove("O");
     }
 
+
+    /**
+     * Updates the display of the fighters based on the current player's username.
+     * Adds the appropriate class to the player's fighter element and removes the class from the other player's fighter element.
+     *
+     * @return {void}
+     */
     function updateFightersDisplay() {
         const zombie = document.querySelector("#playerX");
         const ghost = document.querySelector("#playerO");
@@ -156,6 +191,12 @@ function start() {
         }
     }
 
+
+    /**
+     * Displays a victory animation on the screen.
+     *
+     * @param {boolean} victory - Determines whether it is a victory animation or a defeat animation. If true, displays the victory animation. If false, displays the defeat animation.
+     */
     function showVictoryAnimation(victory) {
         try {
             let pumpkinSize = 100;
@@ -192,11 +233,23 @@ function start() {
         }
     }
 
+
+    /**
+     * Switches the current player between "X" and "O".
+     * Updates the fighters' display accordingly.
+     *
+     * @return {void}
+     */
     function switchPlayer() {
         currentPlayer = currentPlayer === "X" ? "O" : "X";
         updateFightersDisplay();
     }
 
+    /**
+     * Restarts the game by emitting a restart event to the server and updating the UI.
+     *
+     * @return {void}
+     */
     function restartGame() {
         csocket.emit(EVENTS.GAME.DATA, Date.now(), { "restartKey": "restart"});
         this.style.display = 'none';

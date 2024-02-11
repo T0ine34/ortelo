@@ -268,9 +268,6 @@ app.get('/game/:url', (req, res) => {
         if (!room) {
             return res.status(404).json({ message : `The room ${roomUrl} does not exist.` });
         }
-        /*if (room.users && room.users.size >= 2) {
-            return res.status(403).json({ message : `The room ${roomUrl} is full.` });
-        }*/
 
         fs.readFile(filePath, 'utf8', (err, data) => {
             if (err) {
@@ -296,6 +293,14 @@ app.get('/game/:url', (req, res) => {
         return res.status(500).json({ message: 'Internal server error.', error: error.message });
     }
 });
+
+/**
+ * Object representing the login attempts.
+ * @typedef {Object} LoginAttempts
+ * @property {number} total - Total number of login attempts.
+ * @property {number} successful - Number of successful login attempts.
+ * @property {number} failed - Number of failed login attempts.
+ */
 
 let loginAttempts = {};
 const limiter = rateLimit({

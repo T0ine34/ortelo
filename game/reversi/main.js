@@ -124,6 +124,11 @@ function start() {
         return valid;
     }
 
+    /**
+     * Toggles the visibility of hints and updates the board display.
+     *
+     * @return {void}
+     */
     function toggleHints() {
         showHints = !showHints;
         renderBoard();

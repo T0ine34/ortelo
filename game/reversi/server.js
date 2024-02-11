@@ -40,6 +40,12 @@
             }
             return this.restartRequests.size;
         }
+
+        /**
+         * Initializes the game board.
+         *
+         * @returns {any[][]} The initialized game board represented as a 2D array.
+         */
         initializeBoard() {
             let board = [...Array(8)].map(() => Array(8).fill(''));
             board[3][3] = 'W';
@@ -131,7 +137,9 @@
         }
 
         /**
-         * Switches to the next player's turn.
+         * Method to switch the current player.
+         *
+         * @return {void} - This method does not return any value.
          */
 
         switchPlayer() {
@@ -139,7 +147,9 @@
         }
 
         /**
-         * Checks if the game is over and determines the winner.
+         * Checks if the game is over.
+         *
+         * @returns {void}
          */
 
         checkGameOver() {
@@ -156,10 +166,12 @@
                 this.room.transmit(EVENTS.GAME.DATA, Date.now(), this.getGameState());
             }
         }
-        
-        
+
+
         /**
-         * Determines the winner of the game.
+         * Determines the winner of the game based on the current state of the board.
+         *
+         * @returns {void} This method does not return any value.
          */
 
         determineWinner() {
@@ -227,13 +239,26 @@
         isReadyToStart() {
             return this.players.length === 2;
         }
+
+        /**
+         * Randomizes the players.
+         *
+         * @param {Object} players - The players object.
+         * @param {string} players.B - The first player.
+         * @param {string} players.W - The second player.
+         */
         randomizePlayers(players) {
             if (Math.random() < 0.5) {
                 [players.B, players.W] = [players.W, players.B];
             }
         }
+
         /**
-         * Resets the game state to the initial state.
+         * Resets the game to its initial state.
+         * This method is used to reset the game board, current player, game over status, winner, and restart requests.
+         * It also randomizes the players order.
+         *
+         * @return {void} Nothing is returned from this method.
          */
 
         resetGame() {
@@ -270,6 +295,12 @@
         let game = new ReversiGame();
         game.resetGame();
 
+
+        /**
+         * Shuffles the elements of an array in place.
+         *
+         * @param {any[]} array - The array to be shuffled.
+         */
         function shuffleArray(array) {
             for (let i = array.length - 1; i > 0; i--) {
                 const j = Math.floor(Math.random() * (i + 1));

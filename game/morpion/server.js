@@ -1,8 +1,15 @@
 const { EVENTS, Room, CIO } = require('./server_modules/events/main.js');
+
 /**
- * Class representing the server logic for a Tic-Tac-Toe game.
+ * Represents a game server for a Tic Tac Toe game.
  */
 class Server {
+    /**
+     * Create a new instance of the game board.
+     *
+     * @constructor
+     * @returns {object} - An instance of the game board.
+     */
     constructor() {
         this.board = [["", "", ""], ["", "", ""], ["", "", ""]];
         this.players = { X: null, O: null };
@@ -25,11 +32,24 @@ class Server {
         }
         return null;
     }
+
+    /**
+     * Randomizes the players' order.
+     *
+     * @param {Object} players - The object containing the players.
+     */
     randomizePlayers(players) {
         if (Math.random() < 0.5) {
             [players.X, players.O] = [players.O, players.X];
         }
     }
+
+    /**
+     * Initializes the game board and sets up initial game state.
+     *
+     * @method initializeBoard
+     * @returns {void}
+     */
     initializeBoard() {
         this.board = [["", "", ""], ["", "", ""], ["", "", ""]];
         this.currentPlayer = "X";
@@ -72,10 +92,25 @@ class Server {
         }
     }
 
+
+    /**
+     * Switches the current player between "X" and "O".
+     *
+     * @return {void}
+     */
     switchPlayer() {
         this.currentPlayer = this.currentPlayer === "X" ? "O" : "X";
     }
 
+    /**
+     * Check for a win in the Tic Tac Toe game.
+     *
+     * This method checks all possible winning combinations on the game board and determines if there is a winner or if the game is a draw.
+     * If there is a winner, it sets the `isGameOver` property to true and assigns the `currentPlayer` as the `winner` property.
+     * If the game is a draw, it sets the `isGameOver` property to true and assigns 'D' as the `winner` property.
+     *
+     * @return {void}
+     */
     checkForWin() {
         const winningCombinations = [
             [[0, 0], [0, 1], [0, 2]],
@@ -127,6 +162,12 @@ function morpion(room) {
     let game = new Server();
     game.initializeBoard();
 
+
+    /**
+     * Shuffles the elements in the given array in-place.
+     *
+     * @param {Array} array - The array to be shuffled.
+     */
     function shuffleArray(array) {
         for (let i = array.length - 1; i > 0; i--) {
             const j = Math.floor(Math.random() * (i + 1));
