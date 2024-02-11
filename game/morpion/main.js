@@ -100,7 +100,7 @@ function start() {
             } else {
                 message = "Au tour de l'adversaire";
             }
-            statusElement.innerHTML = `${message} <span class='${currentPlayer === 'X' ? 'red-color' : 'blue-color'}'>(${currentPlayer})</span>`;
+            statusElement.innerHTML = `${message} <span class='${currentPlayer === 'X' ? 'red-color' : 'blue-color'}'>${currentPlayer}</span>`;
         } else {
             statusElement.innerHTML = `Tour de <span class='${currentPlayer === 'X' ? 'red-color' : 'blue-color'}'>${currentPlayer}</span>`;
         }
@@ -135,17 +135,25 @@ function start() {
     }
 
     function resetFightersDisplay() {
-        const zombie = document.querySelector("#fighterX");
-        const ghost = document.querySelector("#fighterO");
-        zombie.classList.remove("zombieFast", "zombie");
-        ghost.classList.remove("ghostFast", "ghost");
+        const zombie = document.querySelector("#playerX");
+        const ghost = document.querySelector("#playerO");
+        zombie.classList.remove("X");
+        ghost.classList.remove("O");
     }
 
     function updateFightersDisplay() {
-        const zombie = document.querySelector("#fighterX");
-        const ghost = document.querySelector("#fighterO");
-        zombie.classList.toggle("zombie", currentPlayer === "X");
-        ghost.classList.toggle("ghost", currentPlayer === "O");
+        const zombie = document.querySelector("#playerX");
+        const ghost = document.querySelector("#playerO");
+
+        if (players) {
+            if (players["X"] === username) {
+                zombie.classList.add("X");
+                ghost.classList.remove("O");
+            } else if (players["O"] === username) {
+                ghost.classList.add("O");
+                zombie.classList.remove("X");
+            }
+        }
     }
 
     function showVictoryAnimation(victory) {
@@ -159,7 +167,7 @@ function start() {
 
             for (let i = 0; i < 10; i++) {
                 (function (i) {
-                    let pumpkin = document.querySelector("#victoryPumpkin" + i);
+                    let pumpkin = document.querySelector("#victory" + i);
                     if (!victory) {
                         pumpkin.textContent = "❄️";
                     }
@@ -175,10 +183,6 @@ function start() {
                         return function () {
                             pumpkin.style.display = "none";
                             pumpkin.classList.remove("rotateAndFadeOut");
-                            let zombie = document.querySelector("#fighterX");
-                            let ghost = document.querySelector("#fighterO");
-                            zombie.classList.remove("zombieFast");
-                            ghost.classList.remove("ghostFast");
                         }
                     })(pumpkin), 5000);
                 })(i);
@@ -196,11 +200,8 @@ function start() {
     function restartGame() {
         csocket.emit(EVENTS.GAME.DATA, Date.now(), { "restartKey": "restart"});
         this.style.display = 'none';
-        let zombie = document.querySelector("#fighterX");
-        let ghost = document.querySelector("#fighterO");
-        zombie.classList.remove("zombieFast");
-        ghost.classList.remove("ghostFast");
-        ghost.classList.remove("ghost");
+        let ghost = document.querySelector("#playerO");
+        ghost.classList.remove("O");
     }
 }
 

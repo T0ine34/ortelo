@@ -71,13 +71,13 @@ td:hover {
     color: blue;
 }
 
-#fighters {
+#players {
     margin-top: 30px;
     display: flex;
     justify-content: center;
     align-items: center;
 }
-#fighters .fighter {
+#players .player {
     font-size: 50px;
     margin: 0 20px;
 }
@@ -119,20 +119,12 @@ td:hover {
         transform: translateY(-20px);
     }
 }
-.zombie {
+.X {
     animation: bounceSlow 0.5s infinite alternate;
 }
 
-.ghost {
+.O {
     animation: bounceSlow 0.5s infinite alternate;
-}
-
-.zombieFast {
-    animation: bounceFast 0.1s infinite alternate;
-}
-
-.ghostFast {
-    animation: bounceFast 0.1s infinite alternate;
 }
 
 @keyframes rotateAndFadeOut {
@@ -149,7 +141,7 @@ td:hover {
     animation: rotateAndFadeOut 5s;
 }
 
-.victoryPumpkin {
+.victory {
     position: fixed;
     top: 50%;
     left: 50%;
