@@ -12,12 +12,13 @@ const args = process.argv.slice(2);
 const command = args[0];
 function obfuscation (command){
     try {
+        let files;
         if (command == "public") {
             const path = "public/common/**/*.js"
-            const files = globSync([path]);
+            files = globSync([path]);
         } else if (command == "game") {
             const file = args[1];
-            const files = [file]
+            files = [file]
         } else {
             return
         }
