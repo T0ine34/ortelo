@@ -47,6 +47,10 @@ class Database:
         """Execute a SQL query."""
         return self.cursor.execute(*args, **kwargs)
     
+    def executescript(self, *args, **kwargs):
+        """Execute a SQL script."""
+        return self.cursor.executescript(*args, **kwargs)
+    
     def commit(self):
         self.conn.commit()
         
@@ -57,7 +61,7 @@ class Database:
     def run_file(self, path):
         """Run a SQL file."""
         with open(path) as f:
-            self.execute(f.read())
+            self.executescript(f.read())
         return self.fetchall()
         
     def fetchall(self):
@@ -125,8 +129,7 @@ class ServerDatabase:
         for update in updates:
             print("Applying update:", update)
             try:
-                # self.db.run_file(os.path.join(update_dir, update))
-                pass
+                self.db.run_file(os.path.join(update_dir, update))
             except Exception as e:
                 print("Error while applying update %s: %s" % (update, e))
                 break
