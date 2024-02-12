@@ -8,6 +8,7 @@ const fs= require('fs');
  *
  * @throws {Error} If an error occurs while executing globSync or manipulating files.
  */
+const args = process.argv.slice(2);
 const command = args[0];
 function obfuscation (command){
     try {
