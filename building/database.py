@@ -230,10 +230,10 @@ class ServerDatabase:
         # while is_version_lower_or_equal(remove_extension(updates[0]), current_version):
         while version <= current_version: #skip the updates that are already applied
             updates.pop(0) # remove the updates that are already applied
-            version = Version(remove_extension(updates[0])) # the version of the next candidate update
             if len(updates) == 0:
                 print("Database is already up to date")
                 return
+            version = Version(remove_extension(updates[0])) # the version of the next candidate update
         print("Updates to apply:", updates)
         for update in updates:
             print("Applying update:", update)
@@ -256,7 +256,8 @@ def main():
     try:
         db.update()
     except Exception as e:
-        print("Error :", e)
+        print("Error :", e, "on line", e.__traceback__.tb_next.tb_lineno if hasattr(e, "__traceback__") else 0,
+                "in file", e.__traceback__.tb_next.tb_frame.f_code.co_filename if hasattr(e, "__traceback__") else "unknown")
         return 1
     return 0
     
