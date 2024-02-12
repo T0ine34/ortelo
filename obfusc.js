@@ -1,6 +1,6 @@
 const { globSync } = require("glob");
 const JavaScriptObfuscator = require('javascript-obfuscator');
-
+const fs= require('fs');
 /**
  * Obfuscates JavaScript files located in the specified directory.
  *
