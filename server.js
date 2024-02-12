@@ -294,6 +294,15 @@ app.get('/game/:url', (req, res) => {
     }
 });
 
+
+/**
+ * Retrieves the oidc js file
+ */
+app.get('/oidc', (req, res) => {
+    return res.send(fs.readFileSync(path.join(__dirname, "node_modules", "oidc-client", "dist", "oidc-client.js"), 'utf8'));
+});
+
+
 /**
  * Object representing the login attempts.
  * @typedef {Object} LoginAttempts

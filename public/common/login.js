@@ -1,6 +1,38 @@
 import { cookies } from "./modules/cookies/main.js";
 emailjs.init("Oy9a9uSnZvDAnliA0");
 
+
+// IdP configuration
+const config = {
+    authority: 'https://accounts.google.com',
+    client_id: '51873909339-6n41as7geb9le4cg77m3l18e88pv51j7.apps.googleusercontent.com',
+    redirect_uri: 'http://localhost:3000',
+    response_type: 'id_token token',
+    scope: 'openid profile email',
+  };
+  
+const userManager = new Oidc.UserManager(config);
+
+document.getElementById('login-button').addEventListener('click', async () => {
+    try {
+        const signIn = await userManager.signinRedirect();
+    } catch (error) {
+        console.error('Erreur lors de l\'ouverture de la fenêtre popup pour l\'autorisation:', error);
+    }
+});
+
+userManager.signinRedirectCallback().then((user) => {
+    if (user) {
+        alert('Utilisateur authentifié avec Google:', user);
+        cookies.set("username", "boo", 1);
+    }
+}).catch((error) => {
+    console.error('Erreur lors de la récupération des informations de l\'utilisateur:', error);
+});
+  
+  
+
+
 document.addEventListener('DOMContentLoaded', function () {
 
     // Event listener for login form
