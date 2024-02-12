@@ -12,6 +12,7 @@ CREATE TABLE IF NOT EXISTS player (
 CREATE TABLE IF NOT EXISTS unconfirmed_players (
     playerid INTEGER PRIMARY KEY AUTOINCREMENT,
     email_url TEXT,
+    confirmed boolean DEFAULT 0,
     CONSTRAINT fk_PlayerId FOREIGN KEY (playerid) REFERENCES player(playerid)
 );
 

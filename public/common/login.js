@@ -77,14 +77,15 @@ document.addEventListener('DOMContentLoaded', function () {
                     emailjs.send('gmail', 'register_confirmation', templateParams)
                         .then(function(response) {
                             console.log('SUCCESS!', response.status, response.text);
-                        }, function(error) {
+                            
+                            cookies.set("username", username, 1); //save the username for 1 hour
+                            console.info("username set to " + username +" for 1 hour");
+
+                            this.location.href = "/";
+                        })
+                        .catch(function(error) {
                             console.log('FAILED...', error);
                         });
-
-                    cookies.set("username", username, 1); //save the username for 1 hour
-                    console.info("username set to " + username +" for 1 hour");
-
-                    this.location.href = "/";
                 }
 
             })
