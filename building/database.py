@@ -9,15 +9,121 @@ except ImportError:
 from config import Config
 from typing import Any
 
-def is_version_greater(v1, v2):
+
+class Version:
+    class Tag:
+        def __init__(self, string):
+            self.string = string
+            self.parts = string.split(".")
+            if not all(map(lambda x: str.isdigit(x) or x.isalpha() or x == "", self.parts)):
+                raise ValueError("Invalid tag: " + string)
+            
+        def __str__(self):
+            return self.string
+        
+        def __eq__(self, other):
+            return self.string == other.string
+        
+        def __lt__(self, other):
+            for i in range(min(len(self.parts), len(other.parts))):
+                if str.isdigit(self.parts[i]) and str.isdigit(other.parts[i]): # compare as integers
+                    if int(self.parts[i]) < int(other.parts[i]):
+                        return True
+                    elif int(self.parts[i]) > int(other.parts[i]):
+                        return False
+                else: # compare as strings using the ASCII order
+                    if self.parts[i] < other.parts[i]:
+                        return True
+                    elif self.parts[i] > other.parts[i]:
+                        return False
+            return len(self.parts) < len(other.parts) # if all parts are equal, the shorter one is lesser
+        
+        def __gt__(self, other):
+            return not self.__lt__(other)
+        
+        def __le__(self, other):
+            return self.__lt__(other) or self.__eq__(other)
+        
+        def __ge__(self, other):
+            return not self.__lt__(other)
+        
+        def __ne__(self, other):
+            return not self.__eq__(other)
+    
+    
+    def __init__(self, string):
+        self.string = string
+        tokens = string.split("-")
+        if len(tokens) == 1: # no tag
+            self.tag = Version.Tag("")
+            self.version = tokens[0].split(".")
+        elif len(tokens) == 2:
+            self.tag = Version.Tag(tokens[1])
+            self.version = tokens[0].split(".")
+        else:
+            raise ValueError("Invalid version string: " + string + " (version must be in the form major.minor.patch[-tag])")
+        
+        if len(self.version) != 3:
+            raise ValueError("Invalid version string: " + string + " (version must be in the form major.minor.patch[-tag])")
+        
+        if not all(map(lambda x: str.isdigit(x) and int(x)>=0, self.version)):
+            raise ValueError("Invalid version string: " + string + " (version must be in the form major.minor.patch[-tag] and each part must be a positive integer)")
+        
+        self.version = [int(x) for x in self.version]
+    
+    def __str__(self):
+        return self.string
+    
+    def __eq__(self, other): # ==
+        return self.string == other.string
+    
+    def __lt__(self, other): # <
+        #compare the version first
+        if self.version < other.version:
+            return True
+        elif self.version > other.version:
+            return False
+        # if the version is the same, compare the tag
+        return self.tag < other.tag
+    
+    def __gt__(self, other): # >
+        return not self.__lt__(other)
+    
+    def __le__(self, other): # <=
+        return self.__lt__(other) or self.__eq__(other)
+    
+    def __ge__(self, other): # >=
+        return not self.__lt__(other)
+    
+    def __ne__(self, other): # !=
+        return not self.__eq__(other)
+    
+    def same_version(self, other):
+        """Check if two versions have the same version number (excluding the tag)."""
+        return self.version == other.version
+
+
+def _is_version_greater(v1, v2):
     """Check if version1 is greater than version2."""
     v1 = [int(x) for x in v1.split(".")]
     v2 = [int(x) for x in v2.split(".")]
     return v1 > v2
 
-def is_version_lower_or_equal(v1, v2):
-    """Check if version1 is lower or equal to version2."""
-    return not is_version_greater(v1, v2)
+def is_tag_greater(t1, t2):
+    t1 = t1.split(".")
+    t2 = t2.split(".")
+    for i in range(min(len(t1), len(t2))):
+        if str(t1[i]).isdigit() and str(t2[i]).isdigit(): # compare as integers
+            if int(t1[i]) > int(t2[i]):
+                return True
+            elif int(t1[i]) < int(t2[i]):
+                return False
+        else:                                             # compare as strings
+            if t1[i] > t2[i]:
+                return True
+            elif t1[i] < t2[i]:
+                return False
+    return len(t1) > len(t2) # if all tags are equal, the longer one is greater
     
 def remove_extension(path):
     """Remove the extension of a file."""
@@ -118,10 +224,13 @@ class ServerDatabase:
         update_dir = self.config["database.updateTablesFolder"]
         if not os.path.isdir(update_dir):
             raise FileNotFoundError("Update directory not found: " + update_dir)
-        updates = sorted(os.listdir(update_dir), key=lambda s: s.split(".")[:-1])
-        current_version = versionFile["database"]
-        while is_version_lower_or_equal(remove_extension(updates[0]), current_version):
-            updates.pop(0)
+        updates = sorted(os.listdir(update_dir), key=lambda s: s.split(".")[:-1]) # contains the list of updates available in the update directory
+        current_version = Version(versionFile["database"]) #the current version of the database
+        version = Version(remove_extension(updates[0])) # the version of the first update
+        # while is_version_lower_or_equal(remove_extension(updates[0]), current_version):
+        while version <= current_version: #skip the updates that are already applied
+            updates.pop(0) # remove the updates that are already applied
+            version = Version(remove_extension(updates[0])) # the version of the next candidate update
             if len(updates) == 0:
                 print("Database is already up to date")
                 return
