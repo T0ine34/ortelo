@@ -1,8 +1,9 @@
 import sys
 import os
 from zipfile import ZipFile
-
+import subprocess
 from config import Config
+import shutil
 
 PARENT_FOLDER = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
@@ -97,7 +98,16 @@ class Game:
         with ZipFile(path, "w") as zip:
             for key, p in flat.items():
                 if key not in ["name", "version", "description"]:
-                    zip.write(os.path.join(self.path, p), p)
+                    if ".js" == key[:-3]:
+                        tmp_value = os.environ.get('TMP')
+                        tmp_path = os.path.join(tmp_value, p)
+                        shutil.copytree(os.path.join(self.path, p), tmp_path)
+
+                        subprocess.check_all(["node", "obfusc.js", "game", f"{tmp_path}"])
+                        zip.write(tmp_path, p)
+                        shutil.rmtree(tmp_path)
+                    else:
+                        zip.write(os.path.join(self.path, p), p)
             zip.write(os.path.join(self.path, "index.json"), "index.json")
     
     

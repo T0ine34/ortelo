@@ -30,7 +30,7 @@ COPY building/config.py ./building/config.py
 # Install app dependencies
 RUN npm install
 
-RUN node obfusc.js
+RUN node obfusc.js public
 
 # Expose port
 EXPOSE 3000

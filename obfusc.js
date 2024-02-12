@@ -8,9 +8,18 @@ const fs= require('fs');
  *
  * @throws {Error} If an error occurs while executing globSync or manipulating files.
  */
-function simpleObfuscation (){
+const command = args[0];
+function obfuscation (command){
     try {
-        const files = globSync("public/common/**/*.js");
+        if (command == "public") {
+            const path = "public/common/**/*.js"
+            const files = globSync([path]);
+        } else if (command == "game") {
+            const file = args[1];
+            const files = [file]
+        } else {
+            return
+        }
 
         files.forEach(function (jsFilePath) {
             const data = fs.readFileSync(jsFilePath, 'UTF-8');
@@ -27,4 +36,4 @@ function simpleObfuscation (){
         console.error("Erreur lors de l'exécution de globSync ou de la manipulation de fichiers : ", err);
     }
 }
-simpleObfuscation();
+obfuscation(command)
