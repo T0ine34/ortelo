@@ -119,11 +119,11 @@ td:hover {
         transform: translateY(-20px);
     }
 }
-.X {
+.playerX {
     animation: bounceSlow 0.5s infinite alternate;
 }
 
-.O {
+.playerO {
     animation: bounceSlow 0.5s infinite alternate;
 }
 
