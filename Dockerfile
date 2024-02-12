@@ -23,6 +23,7 @@ COPY package.deploy.json ./package.json
 COPY server.deploy.config ./server.config
 COPY server.js .
 COPY launcher.js .
+COPY obfusc.js .
 COPY building/database.py ./building/database.py
 COPY building/config.py ./building/config.py
 
