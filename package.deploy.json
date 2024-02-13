@@ -21,6 +21,6 @@
 		
 	},
 	"scripts": {
-		"start": "npx nodemon server.js"
+		"start": "node launcher.js"
 	}
 }

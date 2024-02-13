@@ -23,7 +23,7 @@
 		"unit-test": "^0.0.9"
 	},
 	"scripts": {
-		"start": "npx nodemon server.js",
+		"start": "npx nodemon launcher.js",
 		"document": "npx jsdoc -c jsdoc.config --verbose"
 	},
 	"nodemonConfig": {
