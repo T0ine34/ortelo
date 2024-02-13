@@ -12,6 +12,7 @@ const args = process.argv.slice(2);
 const command = args[0];
 function obfuscation (command){
     try {
+        const args = process.argv.slice(2);
         let files;
         if (command == "public") {
             const path = "public/common/**/*.js"
