@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Redirected by Google</title>
+</head>
+
+    <style>
+        html, body {
+            width: 100vw;
+            height: 100vh;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            flex-direction: column;
+        }
+
+        .loader {
+            border: 16px solid #f3f3f3; /* Light grey */
+            border-top: 16px solid #3498db; /* Blue */
+            border-radius: 50%;
+            width: 120px;
+            height: 120px;
+            animation: spin 2s linear infinite;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+    </style>
+    
+    <body>
+        <h1>You are being redirected</h1> 
+        <h3> This might take some time </br> Please wait... </h3>
+        <div class="loader"></div>
+    </body>
+
+    <script src="/oidc"></script>
+    <script type="module">
+        import { cookies } from "./modules/cookies/main.js";
+
+        // IdP configuration
+        const config = {
+            authority: 'https://accounts.google.com',
+            client_id: '51873909339-6n41as7geb9le4cg77m3l18e88pv51j7.apps.googleusercontent.com',
+            redirect_uri: 'http://localhost:3000/oidcredirect.html',
+            response_type: 'id_token token',
+            scope: 'openid profile email',
+        };
+        
+        const userManager = new Oidc.UserManager(config);
+        userManager.signinRedirectCallback().then((user) => {
+            if (user) {
+                cookies.set("username", user.profile.name, 1);
+            }
+        }).catch((error) => {
+            console.error('Erreur lors de la récupération des informations de l\'utilisateur:', error);
+        });
+    </script>
+</html>
