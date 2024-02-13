@@ -133,10 +133,12 @@ client-tests: #this job run unit tests for the client
 docker-image-build:
   <<: *build
   before_script:
+    - apk update
     - apk add --no-cache make
     - apk add --no-cache python3
     - apk add --no-cache py3-pip
-    - apk add --update nodejs npm
+    - apk add --no-cache nodejs
+    - apk add --no-cache nodejs-npm
     - npm install javascript-obfuscator
     - npm install glob
     - pip3 install json5
