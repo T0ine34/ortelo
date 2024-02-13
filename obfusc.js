@@ -10,13 +10,34 @@ const fs= require('fs');
  */
 const args = process.argv.slice(2);
 const command = args[0];
+
+const root = 'public/common';
+const filtre = new RegExp('.*\\.js');
+function find_all_files(root_path, filtre) {
+    let results = [];
+
+    if (!fs.existsSync(root_path)) {
+        console.log("no dir ", root_path);
+        return;
+    }
+
+    const files = fs.readdirSync(root_path);
+    for(let i = 0; i < files.length; i++) {
+        const filename = path.join(root_path, files[i]);
+        const stat = fs.lstatSync(filename);
+        if (stat.isDirectory()) {
+            results = results.concat(findFilesInDir(filename, filtre));
+        } else if (filtre.test(filename)) results.push(filename);
+    }
+    return results;
+}
+
 function obfuscation (command){
     try {
         const args = process.argv.slice(2);
         let files;
         if (command == "public") {
-            const path = "public/common/**/*.js"
-            files = globSync([path]);
+            files = find_all_files(root, filtre);
         } else if (command == "game") {
             const file = args[1];
             files = [file]
