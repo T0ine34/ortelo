@@ -256,8 +256,8 @@ def main():
     try:
         db.update()
     except Exception as e:
-        print("Error :", e, "on line", e.__traceback__.tb_next.tb_lineno if hasattr(e, "__traceback__") else 0,
-                "in file", e.__traceback__.tb_next.tb_frame.f_code.co_filename if hasattr(e, "__traceback__") else "unknown")
+        print("Error :", e, "on line", e.__traceback__.tb_next.tb_lineno if hasattr(e, "__traceback__") else 0, #type: ignore
+                "in file", e.__traceback__.tb_next.tb_frame.f_code.co_filename if hasattr(e, "__traceback__") else "unknown") #type: ignore
         return 1
     return 0
     
