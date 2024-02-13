@@ -42,7 +42,6 @@ function obfuscation (command){
         let files;
         if (command == "public") {
             files = find_all_files(root, filtre);
-            console.log(files)
         } else if (command == "game") {
             const file = args[1];
             files = [file]
@@ -51,6 +50,7 @@ function obfuscation (command){
         }
 
         files.forEach(function (jsFilePath) {
+            console.log("Fichier a obfusquer :", jsFilePath);
             const data = fs.readFileSync(jsFilePath, 'UTF-8');
 
             const obfuscationResult = JavaScriptObfuscator.obfuscate(data, {
