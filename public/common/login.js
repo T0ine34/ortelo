@@ -1,5 +1,4 @@
 import { loginPlayer, registerPlayer } from "./login/main.js";
-import { cookies } from "./modules/cookies/main.js";
 
 // EmailJS configuration for sending emails
 emailjs.init("Oy9a9uSnZvDAnliA0");  

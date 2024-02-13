@@ -102,7 +102,7 @@ class Database {
                     }
                 });
                 if(hasIdp == true) {
-                    let playerId = this.getPlayerIdentifier(name);
+                    let playerId = await this.getPlayerIdentifier(name);
                     logger.fine(`Successfully created ${name}'s account as an IdP user`);
                     resolve({"created": true, "playerid": playerId});
                 } else {
