@@ -75,7 +75,7 @@ class Database {
      * @param {string} emailAddress is the player's email address, is not a must.
      * @returns wether the player has been created successfully or not.
      */
-    createPlayer(name, password, emailAddress, email_url){
+    createPlayer(name, password, emailAddress, email_url, hasIdp = false){
         return new Promise(async (resolve, reject) => {
             let salt = BCrypt.genSaltSync(settings.get("database.bcryptRounds"));
             let hashedPassword = BCrypt.hashSync(password, salt);
@@ -85,7 +85,11 @@ class Database {
                 resolve({"created" : false, "reason": "Player already exists"});
             } else {
                 let identifier = this.#generateRandomKey(64);
-                this._db.exec(`INSERT INTO player (playername, password, email, identifier) VALUES ('${name}', '${hashedPassword}','${emailAddress}', '${identifier}')`, (err) => {
+                let sql;
+                if(hasIdp == true) {
+                    sql = `INSERT INTO player (playername, email, identifier, hasIdP) VALUES ('${name}', '${emailAddress}', '${identifier}', ${hasIdp})`;
+                } else sql = `INSERT INTO player (playername, password, email, identifier, hasIdP) VALUES ('${name}', '${hashedPassword}','${emailAddress}', '${identifier}', '${hasIdp}')`;
+                this._db.exec(sql, (err) => {
                     if(err) {
                         logger.error(`Can not create player : ${err.toString()}`);
                         resolve({"created": false, "reason": "Can not create player"});
@@ -93,17 +97,22 @@ class Database {
                         logger.fine(`Successfully created ${name}'s account in table players`);
                     }
                 });
-                this._db.exec(`INSERT INTO unconfirmed_players (playerid, email_url) VALUES ((SELECT playerid FROM player WHERE playername='${name}'), '${email_url}')`, (err) => {
-                    if(err) {
-                        logger.error(`Can not create unconfirmed player : ${err.toString()}`);
-                        resolve({"created": false, "reason": "Can not create unconfirmed player"});
-                    } else {
-                        logger.fine(`Successfully created ${name}'s account in unconfirmed players`);
-                        let playerId = this.getPlayerIdentifier(name);
-                        resolve({"created": true, "playerid": playerId});
-                    }
-                });
-
+                if(hasIdp == true) {
+                    let playerId = this.getPlayerIdentifier(name);
+                    logger.fine(`Successfully created ${name}'s account as an IdP user`);
+                    resolve({"created": true, "playerid": playerId});
+                } else {
+                    this._db.exec(`INSERT INTO unconfirmed_players (playerid, email_url) VALUES ((SELECT playerid FROM player WHERE playername='${name}'), '${email_url}')`, (err) => {
+                        if(err) {
+                            logger.error(`Can not create unconfirmed player : ${err.toString()}`);
+                            resolve({"created": false, "reason": "Can not create unconfirmed player"});
+                        } else {
+                            logger.fine(`Successfully created ${name}'s account in unconfirmed players`);
+                            let playerId = this.getPlayerIdentifier(name);
+                            resolve({"created": true, "playerid": playerId});
+                        }
+                    });
+                }
             }
         });
     }
@@ -327,6 +336,32 @@ class Database {
                 } else {
                     resolve(result);
                 }
+            });
+        });
+    }
+
+    isPlayerOnline(username) {
+        return new Promise(async (resolve, reject) => {
+            this._db.get(`SELECT online FROM player WHERE playername='${username}';`, [], (err, row) => {
+                if(err) {
+                    logger.error(`Can not retrieve wether ${username} is online or not : ${err.toString()}`);
+                    reject(false);
+                }
+                if(row.online == 1) resolve(true);
+                else resolve(false);
+            });
+        });
+    }
+
+    isPlayerConfirmed(username) {
+        return new Promise(async (resolve, reject) => {
+            this._db.get(`SELECT email FROM player WHERE playername='${username}';`, [], (err, row) => {
+                if(err) {
+                    logger.error(`Can not retrieve wether ${username} is confirmed or not : ${err.toString()}`);
+                    reject(false);
+                }
+                if(row.email) resolve(true);
+                else resolve(false);
             });
         });
     }
