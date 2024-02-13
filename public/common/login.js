@@ -19,12 +19,17 @@ document.addEventListener('DOMContentLoaded', function () {
                 "Content-Type": "application/json",
             },
         })
-            .then(response => response.text())
+            .then(response => response.json())
             .then(data => {
 
-                if(data == "true") {
-                    cookies.set("username", username, 1); //save the username for 1 hour
-                    console.info("username set to " + username +" for 1 hour");
+                if(data.logged == true) {
+                    if(data.identifier){
+                        cookies.set("playerid", data.identifier, 1); //save the username for 1 hour
+                        console.info("connection cookie set for " + username +" for 1 hour");
+                    }
+                    else{
+                        console.error("no identifier found");
+                    }
 
                     this.location.href = "/";
                 } else {
@@ -73,6 +78,8 @@ document.addEventListener('DOMContentLoaded', function () {
                         to_name: username
                     };
 
+                    const playerId = data.playerId;
+
 
                     emailjs.send('gmail', 'register_confirmation', templateParams)
                         .then(function(response) {
@@ -81,8 +88,8 @@ document.addEventListener('DOMContentLoaded', function () {
                             console.log('FAILED...', error);
                         });
 
-                    cookies.set("username", username, 1); //save the username for 1 hour
-                    console.info("username set to " + username +" for 1 hour");
+                    cookies.set("playerid", playerId, 1); //save the username for 1 hour
+                    console.info("cookie set for user " + username +" for 1 hour");
 
                     this.location.href = "/";
                 }

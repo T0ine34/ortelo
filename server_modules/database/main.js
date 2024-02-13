@@ -82,12 +82,12 @@ class Database {
     
             const exists = await this.doPlayerExists(name);
             if(exists == true) {
-                resolve(false);
+                resolve({"created" : false, "reason": "Player already exists"});
             } else {
                 this._db.exec(`INSERT INTO player (playername, password, email) VALUES ('${name}', '${hashedPassword}','${emailAddress}')`, (err) => {
                     if(err) {
                         logger.error(`Can not create player : ${err.toString()}`);
-                        resolve(false);
+                        resolve({"created": false, "reason": "Can not create player"});
                     } else {
                         logger.fine(`Successfully created ${name}'s account in table players`);
                     }
@@ -95,10 +95,11 @@ class Database {
                 this._db.exec(`INSERT INTO unconfirmed_players (playerid, email_url) VALUES ((SELECT playerid FROM player WHERE playername='${name}'), '${email_url}')`, (err) => {
                     if(err) {
                         logger.error(`Can not create unconfirmed player : ${err.toString()}`);
-                        resolve(false);
+                        resolve({"created": false, "reason": "Can not create unconfirmed player"});
                     } else {
                         logger.fine(`Successfully created ${name}'s account in unconfirmed players`);
-                        resolve(true);
+                        let playerId = this.getPlayerIdentifier(name);
+                        resolve({"created": true, "playerid": playerId});
                     }
                 });
 
@@ -151,6 +152,17 @@ class Database {
         });
     }
 
+    getPlayerIdentifier(username){
+        return new Promise(async (resolve, reject) => {
+            this._db.get(`SELECT identifier FROM player WHERE playername='${username}'`, [], (err, row) => {
+                if(err) {
+                    logger.error(`Can not retrieve ${username}'s identifier : ${err.toString()}`);
+                    resolve(null);
+                } else resolve(row.identifier);
+            });
+        });
+    }
+
 
     /**
      * @author Lila BRANDON
@@ -162,8 +174,12 @@ class Database {
     login(name, password) {
         return new Promise(async (resolve, reject) => {
             const dbpassword = await this.getPassword(name).catch( (err) => logger.error(err.toString()));
-            const compareResult = await this.comparePassword(password, dbpassword).catch( (err) => logger.error(err.toString()));;
-            resolve(compareResult);
+            const compareResult = await this.comparePassword(password, dbpassword).catch( (err) => logger.error(err.toString()));
+            let identifier = null;
+            if(compareResult) { //only get the identifier if the password is correct
+                identifier = await this.getPlayerIdentifier(name).catch( (err) => logger.error(err.toString()));
+            }
+            resolve({"logged": compareResult, "identifier": identifier});
         });
     }
 
@@ -261,6 +277,17 @@ class Database {
             if(row) callback(row.playerid);
             else callback("null");
         })
+    }
+
+    getUsername(playerid, callback){
+        this._db.get(`SELECT playername FROM player WHERE identifier='${playerid}';`, [], (err, row) => {
+            if(err) {
+                logger.error(`Can not retrieve ${playerid}'s username : ${err.toString()}`);
+                callback("null");
+            }
+            if(row) callback(row.playername);
+            else callback("null");
+        });
     }
 
     /**

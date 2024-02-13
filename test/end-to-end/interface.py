@@ -170,10 +170,11 @@ class Interface():
         sleep(1)
         
     def is_connected(self):
-        for cookie in self.get_cookies():
-            if cookie["name"] == "username": #check if the username cookie is present
-                return True
-        return False
+        try:
+            self.driver.find_element(By.ID, "logoutBtn")
+            return True
+        except:
+            return False
         
     def send_chat_message(self, message: str):
         if not self.connected: raise NotConnectedException()
