@@ -137,7 +137,8 @@ docker-image-build:
     - apk add --no-cache python3
     - apk add --no-cache py3-pip
     - apk add --update nodejs npm
-    - npm install javascript-obfuscator glob
+    - npm install javascript-obfuscator
+    - npm install glob
     - pip3 install json5
     - docker login -u $DOCKER_LOGIN -p $DOCKER_PASSWORD
   script:
