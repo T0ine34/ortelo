@@ -77,9 +77,7 @@ class Database {
      */
     createPlayer(name, password, emailAddress, email_url, hasIdp = false){
         return new Promise(async (resolve, reject) => {
-            let salt = BCrypt.genSaltSync(settings.get("database.bcryptRounds"));
-            let hashedPassword = BCrypt.hashSync(password, salt);
-    
+            
             const exists = await this.doPlayerExists(name);
             if(exists == true) {
                 resolve({"created" : false, "reason": "Player already exists"});
@@ -88,13 +86,19 @@ class Database {
                 let sql;
                 if(hasIdp == true) {
                     sql = `INSERT INTO player (playername, email, identifier, hasIdP) VALUES ('${name}', '${emailAddress}', '${identifier}', ${hasIdp})`;
-                } else sql = `INSERT INTO player (playername, password, email, identifier, hasIdP) VALUES ('${name}', '${hashedPassword}','${emailAddress}', '${identifier}', '${hasIdp}')`;
+                } else {
+                    let salt = BCrypt.genSaltSync(settings.get("database.bcryptRounds"));
+                    let hashedPassword = BCrypt.hashSync(password, salt);
+                    sql = `INSERT INTO player (playername, password, email, identifier, hasIdP) VALUES ('${name}', '${hashedPassword}','${emailAddress}', '${identifier}', FALSE)`;
+                }
+                
                 this._db.exec(sql, (err) => {
                     if(err) {
                         logger.error(`Can not create player : ${err.toString()}`);
                         resolve({"created": false, "reason": "Can not create player"});
                     } else {
                         logger.fine(`Successfully created ${name}'s account in table players`);
+                        resolve({"created": true, "playerid": identifier});
                     }
                 });
                 if(hasIdp == true) {

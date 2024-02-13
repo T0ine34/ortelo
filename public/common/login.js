@@ -1,7 +1,8 @@
+import { loginPlayer, registerPlayer } from "./login/main.js";
 import { cookies } from "./modules/cookies/main.js";
 
 // EmailJS configuration for sending emails
-emailjs.init("Oy9a9uSnZvDAnliA0");
+emailjs.init("Oy9a9uSnZvDAnliA0");  
 
 /* ------------------- Google Identity Provider ------------------- */
 
@@ -40,43 +41,12 @@ document.addEventListener('DOMContentLoaded', function () {
         const username = document.querySelector('#username').value;
         const password = document.querySelector('#password').value;
 
-        fetch(`/login`, {
-            method: "POST",
-            body: JSON.stringify({
-                username, password
-            }),
-            headers: {
-                "Content-Type": "application/json",
-            },
-        })
-            .then(response => response.json())
-            .then(data => {
-
-                if(data.logged == true) {
-                    if(data.identifier){
-                        cookies.set("playerid", data.identifier, 1); //save the username for 1 hour
-                        console.info("connection cookie set for " + username +" for 1 hour");
-                    }
-                    else{
-                        console.error("no identifier found");
-                    }
-
-                    this.location.href = "/";
-                } else {
-                    if (data.includes("erreur")) {
-                        const seconds = data.split(':')[1];
-                        alert(`Trop de tentatives, veuillez réessayer dans ${seconds} secondes`);
-                    } else {
-                        alert("Nom d'utilisateur ou mot de passe incorrect");
-                    }
-                }
-
-            })
-            .catch(error => console.error('Can not retrieve data from login', error));
+        loginPlayer(username, password);
+        
     });
 
     // Event listener for sign up form
-    document.querySelector('#signup-form').addEventListener('submit', (event) => {
+    document.querySelector('#signup-form').addEventListener('submit', async (event) => {
         event.preventDefault();
 
         const username  = document.querySelector('#signup_username').value;
@@ -87,45 +57,13 @@ document.addEventListener('DOMContentLoaded', function () {
             alert('Les mots de passe ne sont pas les mêmes');
             return;
         }
+        const registered = await registerPlayer(emailjs, username, password, email);
+        if(registered) {
+            location.href = "/";
+        } else {
+            alert("Erreur lors de l'inscription");
+        }
 
-        fetch(`/register`, {
-            method: "POST",
-            body: JSON.stringify({
-                username, password, email
-            }),
-            headers: {
-                "Content-Type": "application/json",
-            },
-        })
-            .then(response => response.json())
-            .then(data => {
-                if(data.created == true) {
-
-                    const templateParams = {
-                        to_mail: email,
-                        from_name: 'Ortello',
-                        message: `${data.host_url}/${data.email_url}`,
-                        to_name: username
-                    };
-
-                    const playerId = data.playerId;
-
-
-                    emailjs.send('gmail', 'register_confirmation', templateParams)
-                        .then(function(response) {
-                            console.log('SUCCESS!', response.status, response.text);
-                        }, function(error) {
-                            console.log('FAILED...', error);
-                        });
-
-                    cookies.set("playerid", playerId, 1); //save the username for 1 hour
-                    console.info("cookie set for user " + username +" for 1 hour");
-
-                    this.location.href = "/";
-                }
-
-            })
-            .catch(error => console.error('Can not retrieve data from register', error));
     });
 
     document.querySelector('#forgot-password button').addEventListener('submit', sendResetEmail);
@@ -139,6 +77,8 @@ document.addEventListener('DOMContentLoaded', function () {
     document.querySelector('#show_signup_password').addEventListener('click', () => togglePasswordVisibility('#signup_password', '#show_signup_password'));
     document.querySelector('#show_confirm_password').addEventListener('click', () => togglePasswordVisibility('#confirm_password', '#show_confirm_password'));
 });
+
+
 
 
 
