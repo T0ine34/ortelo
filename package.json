@@ -18,8 +18,7 @@
 		"sqlite3": "^5.1.6",
 		"taffydb": "^2.7.3",
 		"unit-test": "^0.0.9",
-		"javascript-obfuscator": "^4.1.0",
-		"glob": "^10.3.10"
+		"javascript-obfuscator": "^4.1.0"
 	},
 	"scripts": {
 		"start": "npx nodemon server.js",
