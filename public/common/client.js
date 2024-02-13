@@ -515,7 +515,7 @@ function mayjoinroom() {
  * On click, deletes the 'username' cookie and redirects to the homepage.
  */
 document.querySelector("#logoutBtn").addEventListener('click', () => {
-    cookies.delete("username");
+    cookies.delete("playerid");
     window.location.href = "";
 })
 
