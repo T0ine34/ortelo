@@ -85,10 +85,10 @@ class Game:
 
     def obfusc(self, tmp_path=None):
         if tmp_path is None:
-            subprocess.check_all(["node", "obfusc.js", "public"])
+            subprocess.check_call(["node", "obfusc.js", "public"])
         else:
             shutil.copytree(os.path.join(self.path, p), tmp_path)
-            subprocess.check_all(["node", "obfusc.js", "game", f"{tmp_path}"])
+            subprocess.check_call(["node", "obfusc.js", "game", f"{tmp_path}"])
     
     def build(self, output_folder):
         # compress all files listed in index.json in a zip file name name.game
