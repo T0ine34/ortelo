@@ -134,13 +134,13 @@ docker-image-build:
   <<: *build
   before_script:
     - apk update
+    - apk upgrade
     - apk add --no-cache make
     - apk add --no-cache python3
     - apk add --no-cache py3-pip
     - apk add --no-cache nodejs
     - apk add --no-cache nodejs-npm
     - npm install javascript-obfuscator
-    - npm install glob
     - pip3 install json5
     - docker login -u $DOCKER_LOGIN -p $DOCKER_PASSWORD
   script:

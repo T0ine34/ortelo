@@ -1,11 +1,12 @@
 const JavaScriptObfuscator = require('javascript-obfuscator');
 const fs= require('fs');
+const path = require('path');
 /**
  * Obfuscates JavaScript files located in the specified directory.
  *
  * @return {void}
  *
- * @throws {Error} If an error occurs while executing globSync or manipulating files.
+ * @throws {Error} If an error occurs while manipulating files.
  */
 const args = process.argv.slice(2);
 const command = args[0];
@@ -25,8 +26,12 @@ function find_all_files(root_path, filtre) {
         const filename = path.join(root_path, files[i]);
         const stat = fs.lstatSync(filename);
         if (stat.isDirectory()) {
-            results = results.concat(findFilesInDir(filename, filtre));
-        } else if (filtre.test(filename)) results.push(filename);
+            results = results.concat(find_all_files(filename, filtre));
+        } else if (filtre.test(filename)) {
+            if (filename.endsWith(".js")) {
+                results.push(filename);
+            }
+        }
     }
     return results;
 }
@@ -37,6 +42,7 @@ function obfuscation (command){
         let files;
         if (command == "public") {
             files = find_all_files(root, filtre);
+            console.log(files)
         } else if (command == "game") {
             const file = args[1];
             files = [file]
@@ -56,7 +62,7 @@ function obfuscation (command){
             console.log("Fichier obfusqué avec succès :", jsFilePath);
         });
     } catch (err) {
-        console.error("Erreur lors de l'exécution de globSync ou de la manipulation de fichiers : ", err);
+        console.error("Erreur lors de la manipulation de fichiers : ", err);
     }
 }
 obfuscation(command)
