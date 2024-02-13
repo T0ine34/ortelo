@@ -84,7 +84,8 @@ class Database {
             if(exists == true) {
                 resolve({"created" : false, "reason": "Player already exists"});
             } else {
-                this._db.exec(`INSERT INTO player (playername, password, email) VALUES ('${name}', '${hashedPassword}','${emailAddress}')`, (err) => {
+                let identifier = this.#generateRandomKey(64);
+                this._db.exec(`INSERT INTO player (playername, password, email, identifier) VALUES ('${name}', '${hashedPassword}','${emailAddress}', '${identifier}')`, (err) => {
                     if(err) {
                         logger.error(`Can not create player : ${err.toString()}`);
                         resolve({"created": false, "reason": "Can not create player"});
