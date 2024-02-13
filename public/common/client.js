@@ -18,7 +18,7 @@ if(cookies.exists("playerid")){
     console.info("playerid read from cookies : " + playerid);
 } else {
     console.info("player not found in cookies");
-    location.href = "connection.html?redirected-from-client.js"; // Will redirect user to log in page
+    location.href = "connection.html"; // Will redirect user to log in page
 }
 
 
