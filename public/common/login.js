@@ -1,20 +1,26 @@
 import { cookies } from "./modules/cookies/main.js";
+
+// EmailJS configuration for sending emails
 emailjs.init("Oy9a9uSnZvDAnliA0");
 
+/* ------------------- Google Identity Provider ------------------- */
 
-// IdP configuration
+// Google Identity Provider configuration
 const config = {
     authority: 'https://accounts.google.com',
     client_id: '51873909339-6n41as7geb9le4cg77m3l18e88pv51j7.apps.googleusercontent.com',
-    redirect_uri: 'http://localhost:3000/oidcredirect.html',
+    redirect_uri: 'http://localhost:3000/identityprovider_login/oidcredirect.html',
     response_type: 'id_token token',
     scope: 'openid profile email',
-  };
-  
+};
+
+// Create a UserManager instance with the configuration
 const userManager = new Oidc.UserManager(config);
 
-document.getElementById('login-button').addEventListener('click', async () => {
+// Event listener for the login with google button
+document.getElementById('login-google-button').addEventListener('click', async () => {
     try {
+        // Redirect the user to the Google Identity Provider for authentication
         const signIn = await userManager.signinRedirect();
     } catch (error) {
         console.error('Erreur lors de l\'ouverture de la fenêtre popup pour l\'autorisation:', error);
@@ -23,7 +29,7 @@ document.getElementById('login-button').addEventListener('click', async () => {
 
 
   
-
+/* ------------------- Login and Sign Up forms ------------------- */
 
 document.addEventListener('DOMContentLoaded', function () {
 
@@ -126,6 +132,10 @@ document.addEventListener('DOMContentLoaded', function () {
     document.querySelector('#show_signup_password').addEventListener('click', () => togglePasswordVisibility('#signup_password', '#show_signup_password'));
     document.querySelector('#show_confirm_password').addEventListener('click', () => togglePasswordVisibility('#confirm_password', '#show_confirm_password'));
 });
+
+
+
+/* ------------------- Functions Toggling forms ------------------- */
 
 function showLogin() {
     document.querySelector("#login").style.display = "block";

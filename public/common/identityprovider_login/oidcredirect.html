@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Redirected by Google</title>
+    <title>Redirected...</title>
 </head>
 
     <style>
@@ -41,25 +41,5 @@
     </body>
 
     <script src="/oidc"></script>
-    <script type="module">
-        import { cookies } from "./modules/cookies/main.js";
-
-        // IdP configuration
-        const config = {
-            authority: 'https://accounts.google.com',
-            client_id: '51873909339-6n41as7geb9le4cg77m3l18e88pv51j7.apps.googleusercontent.com',
-            redirect_uri: 'http://localhost:3000/oidcredirect.html',
-            response_type: 'id_token token',
-            scope: 'openid profile email',
-        };
-        
-        const userManager = new Oidc.UserManager(config);
-        userManager.signinRedirectCallback().then((user) => {
-            if (user) {
-                cookies.set("username", user.profile.name, 1);
-            }
-        }).catch((error) => {
-            console.error('Erreur lors de la récupération des informations de l\'utilisateur:', error);
-        });
-    </script>
+    <script type="module" src="idp_redirect.js"></script>
 </html>
