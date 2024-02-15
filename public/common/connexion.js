@@ -1,35 +1,5 @@
-import { loginPlayer, registerPlayer } from "./login/main.js";
-
-// EmailJS configuration for sending emails
-emailjs.init("Oy9a9uSnZvDAnliA0");  
-
-/* ------------------- Google Identity Provider ------------------- */
-
-// Google Identity Provider configuration
-const config = {
-    authority: 'https://accounts.google.com',
-    client_id: '51873909339-6n41as7geb9le4cg77m3l18e88pv51j7.apps.googleusercontent.com',
-    redirect_uri: 'http://localhost:3000/identityprovider_login/oidcredirect.html',
-    response_type: 'id_token token',
-    scope: 'openid profile email',
-};
-
-// Create a UserManager instance with the configuration
-const userManager = new Oidc.UserManager(config);
-
-// Event listener for the login with google button
-document.getElementById('login-google-button').addEventListener('click', async () => {
-    try {
-        // Redirect the user to the Google Identity Provider for authentication
-        const signIn = await userManager.signinRedirect();
-    } catch (error) {
-        console.error('Erreur lors de l\'ouverture de la fenêtre popup pour l\'autorisation:', error);
-    }
-});
-
-
-  
-/* ------------------- Login and Sign Up forms ------------------- */
+import { cookies } from "./modules/cookies/main.js";
+emailjs.init("Oy9a9uSnZvDAnliA0");
 
 document.addEventListener('DOMContentLoaded', function () {
 
@@ -40,12 +10,38 @@ document.addEventListener('DOMContentLoaded', function () {
         const username = document.querySelector('#username').value;
         const password = document.querySelector('#password').value;
 
-        loginPlayer(username, password);
-        
+        fetch(`/login`, {
+            method: "POST",
+            body: JSON.stringify({
+                username, password
+            }),
+            headers: {
+                "Content-Type": "application/json",
+            },
+        })
+            .then(response => response.text())
+            .then(data => {
+
+                if(data == "true") {
+                    cookies.set("username", username, 1); //save the username for 1 hour
+                    console.info("username set to " + username +" for 1 hour");
+
+                    this.location.href = "/";
+                } else {
+                    if (data.includes("erreur")) {
+                        const seconds = data.split(':')[1];
+                        alert(`Trop de tentatives, veuillez réessayer dans ${seconds} secondes`);
+                    } else {
+                        alert("Nom d'utilisateur ou mot de passe incorrect");
+                    }
+                }
+
+            })
+            .catch(error => console.error('Can not retrieve data from login', error));
     });
 
     // Event listener for sign up form
-    document.querySelector('#signup-form').addEventListener('submit', async (event) => {
+    document.querySelector('#signup-form').addEventListener('submit', (event) => {
         event.preventDefault();
 
         const username  = document.querySelector('#signup_username').value;
@@ -56,13 +52,43 @@ document.addEventListener('DOMContentLoaded', function () {
             alert('Les mots de passe ne sont pas les mêmes');
             return;
         }
-        const registered = await registerPlayer(emailjs, username, password, email);
-        if(registered) {
-            location.href = "/";
-        } else {
-            alert("Erreur lors de l'inscription");
-        }
 
+        fetch(`/register`, {
+            method: "POST",
+            body: JSON.stringify({
+                username, password, email
+            }),
+            headers: {
+                "Content-Type": "application/json",
+            },
+        })
+            .then(response => response.json())
+            .then(data => {
+                if(data.created == true) {
+
+                    const templateParams = {
+                        to_mail: email,
+                        from_name: 'Ortello',
+                        message: `${data.host_url}/${data.email_url}`,
+                        to_name: username
+                    };
+
+
+                    emailjs.send('gmail', 'register_confirmation', templateParams)
+                        .then(function(response) {
+                            console.log('SUCCESS!', response.status, response.text);
+                        }, function(error) {
+                            console.log('FAILED...', error);
+                        });
+
+                    cookies.set("username", username, 1); //save the username for 1 hour
+                    console.info("username set to " + username +" for 1 hour");
+
+                    this.location.href = "/";
+                }
+
+            })
+            .catch(error => console.error('Can not retrieve data from register', error));
     });
 
     document.querySelector('#forgot-password button').addEventListener('submit', sendResetEmail);
@@ -76,12 +102,6 @@ document.addEventListener('DOMContentLoaded', function () {
     document.querySelector('#show_signup_password').addEventListener('click', () => togglePasswordVisibility('#signup_password', '#show_signup_password'));
     document.querySelector('#show_confirm_password').addEventListener('click', () => togglePasswordVisibility('#confirm_password', '#show_confirm_password'));
 });
-
-
-
-
-
-/* ------------------- Functions Toggling forms ------------------- */
 
 function showLogin() {
     document.querySelector("#login").style.display = "block";

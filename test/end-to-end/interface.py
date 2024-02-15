@@ -45,6 +45,19 @@ class Morpion:
     def get_case(self, x, y) -> WebElement:
         return self.grid.find_elements(By.TAG_NAME, "tr")[y].find_elements(By.TAG_NAME, "td")[x]
     
+    def get_grid(self) -> list[list[str]]:
+        grid = []
+        for x in range(3):
+            row = []
+            for y in range(3):
+                case = self.get_case(x, y)
+                if case.text == "":
+                    row.append(None)
+                else:
+                    row.append(case.text)
+            grid.append(row)
+        return grid
+    
     def get_winner(self) -> str|None:
         statusElement =  self.element.find_element(By.ID, "gameStatus")
         if statusElement.text.endswith("a gagné !"):
@@ -68,6 +81,19 @@ class Morpion:
         sleep(0.25)
         if self.is_finished():
             return self.get_winner()
+        
+    def playRandomMove(self) -> str|None:
+        if self.finished: raise Exception("Game is finished")
+        cases = self.get_grid()
+        emptyCases = []
+        for x in range(3):
+            for y in range(3):
+                if cases[x][y] == None:
+                    emptyCases.append((x, y))
+        if len(emptyCases) == 0:
+            return None
+        case = choice(emptyCases)
+        return self.play(*case)
         
     def restart(self):
         if not self.finished: raise Exception("Game is not finished")
@@ -119,6 +145,129 @@ class Morpion:
         scenarionId = randint(0, len(Morpion.Scenario) - 1)
         print("Scenario", scenarionId, " expected result:", Morpion.ExpectedResults[scenarionId])
         return Morpion.playScenario(morpion1, morpion2, Morpion.Scenario[scenarionId])
+    
+    @staticmethod
+    def playRandomGame(morpion1, morpion2):
+        while not morpion1.is_finished() and not morpion2.is_finished():
+            if morpion1.IsMyTurn():
+                if not morpion1.playRandomMove():
+                    morpion2.playRandomMove()
+            elif morpion2.IsMyTurn():
+                if not morpion2.playRandomMove():
+                    morpion1.playRandomMove()
+            else:
+                raise Exception("No one's turn")
+        return morpion1.get_winner()
+
+
+class Reversi:
+    def __init__(self, element : WebElement):
+        self.element = element
+        gameBoard = element.find_element(By.ID, "gameBoard")
+        self.grid = gameBoard.find_element(By.TAG_NAME, "tbody")
+        self.gameStatus = element.find_element(By.ID, "gameStatus")
+        self.finished = False
+        
+        self.myTurn = False
+        self.isItMyTurn()
+        
+        self.color = "black" if self.myTurn else "white"
+        
+        print("You are", self.color, "and it's your turn:", self.myTurn, '(', self.gameStatus.text, ')')
+        
+        self.element.find_element(By.ID, "hintButton").click() #show the playable cases
+        
+    def isItMyTurn(self) -> bool:
+        text = self.gameStatus.text
+        while text == "En attente de tous les joueurs":
+            sleep(0.25)
+            text = self.gameStatus.text
+        self.myTurn = text.startswith("C'est votre tour")
+        return self.myTurn
+        
+    def get_case(self, x, y) -> WebElement:
+        return self.grid.find_elements(By.TAG_NAME, "tr")[y].find_elements(By.TAG_NAME, "td")[x]
+    
+    def play(self, x, y) -> bool:
+        if self.finished: raise Exception("Game is finished")
+        self.get_case(x, y).click()
+        sleep(0.25)
+        if self.is_finished():
+            return True
+        return False
+    
+    def get_possible_moves(self) -> list[tuple[int, int]]:
+        moves = []
+        for x in range(8):
+            for y in range(8):
+                classes = self.get_case(x, y).get_attribute("class")
+                if classes == "playable-"+self.color:
+                    moves.append((x, y))
+        return moves
+        
+    def is_finished(self) -> bool:
+        # the game is finished if the popup with the id "winnerAnnouncement" is visible
+        winnerAnnouncement = self.element.find_element(By.ID, "winnerAnnouncement")
+        self.finished = winnerAnnouncement.is_displayed()
+        return self.finished
+    
+    def restart(self):
+        self.element.find_element(By.ID, "restartButton").click()
+    
+    def playRandomMove(self):
+        """Play a random move. Return True if a move has been played, False otherwise."""
+        moves = self.get_possible_moves()
+        print(self.color, "moves:", moves)
+        if len(moves) == 0:
+            return False
+        move = choice(moves)
+        self.play(*move)
+        return True
+    
+    def waitForMyTurn(self):
+        while not self.isItMyTurn():
+            sleep(0.25)
+        return True
+    
+    def HaveIWon(self):
+        if self.is_finished():
+            return self.element.find_element(By.ID, "winnerAnnouncement").text.endswith("Noir") if self.color == "black" else self.element.find_element(By.ID, "winnerAnnouncement").text.endswith("Blanc")
+    
+    
+    def getGrid(self) -> list[list[str]]:
+        grid = []
+        for x in range(8):
+            row = []
+            for y in range(8):
+                classes = self.get_case(x, y).get_attribute("class")
+                if classes == "black":
+                    row.append("black")
+                elif classes == "white":
+                    row.append("white")
+                else:
+                    row.append("empty")
+            grid.append(row)
+        return grid
+    
+    @staticmethod
+    def playRandomGame(reversi1, reversi2):
+        """Play a random game. Return True if the first player has won, False otherwise."""
+        while not reversi1.is_finished() and not reversi2.is_finished():
+            if reversi1.isItMyTurn():
+                if not reversi1.playRandomMove():
+                    reversi2.playRandomMove()
+            elif reversi2.isItMyTurn():
+                if not reversi2.playRandomMove():
+                    reversi1.playRandomMove()
+            else:
+                raise Exception("No one's turn")
+        return reversi1.HaveIWon()
+    
+    
+    @staticmethod
+    def countColor(grid, color):
+        return sum([row.count(color) for row in grid])
+
 
 
 class Reversi:
