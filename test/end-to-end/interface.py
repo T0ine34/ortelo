@@ -45,6 +45,19 @@ class Morpion:
     def get_case(self, x, y) -> WebElement:
         return self.grid.find_elements(By.TAG_NAME, "tr")[y].find_elements(By.TAG_NAME, "td")[x]
     
+    def get_grid(self) -> list[list[str]]:
+        grid = []
+        for x in range(3):
+            row = []
+            for y in range(3):
+                case = self.get_case(x, y)
+                if case.text == "":
+                    row.append(None)
+                else:
+                    row.append(case.text)
+            grid.append(row)
+        return grid
+    
     def get_winner(self) -> str|None:
         statusElement =  self.element.find_element(By.ID, "gameStatus")
         if statusElement.text.endswith("a gagné !"):
@@ -68,6 +81,19 @@ class Morpion:
         sleep(0.25)
         if self.is_finished():
             return self.get_winner()
+        
+    def playRandomMove(self) -> str|None:
+        if self.finished: raise Exception("Game is finished")
+        cases = self.get_grid()
+        emptyCases = []
+        for x in range(3):
+            for y in range(3):
+                if cases[x][y] == None:
+                    emptyCases.append((x, y))
+        if len(emptyCases) == 0:
+            return None
+        case = choice(emptyCases)
+        return self.play(*case)
         
     def restart(self):
         if not self.finished: raise Exception("Game is not finished")
@@ -119,6 +145,19 @@ class Morpion:
         scenarionId = randint(0, len(Morpion.Scenario) - 1)
         print("Scenario", scenarionId, " expected result:", Morpion.ExpectedResults[scenarionId])
         return Morpion.playScenario(morpion1, morpion2, Morpion.Scenario[scenarionId])
+    
+    @staticmethod
+    def playRandomGame(morpion1, morpion2):
+        while not morpion1.is_finished() and not morpion2.is_finished():
+            if morpion1.IsMyTurn():
+                if not morpion1.playRandomMove():
+                    morpion2.playRandomMove()
+            elif morpion2.IsMyTurn():
+                if not morpion2.playRandomMove():
+                    morpion1.playRandomMove()
+            else:
+                raise Exception("No one's turn")
+        return morpion1.get_winner()
 
 
 class Reversi:
