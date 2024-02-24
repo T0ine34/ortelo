@@ -14,7 +14,7 @@ const config = {
 const userManager = new Oidc.UserManager(config);
 
 // Event listener for the login with google button
-document.getElementById('login-google-button').addEventListener('click', async () => {
+document.querySelector('.login-google-button').addEventListener('click', async () => {
     try {
         // Redirect the user to the Google Identity Provider for authentication
         const signIn = await userManager.signinRedirect();
