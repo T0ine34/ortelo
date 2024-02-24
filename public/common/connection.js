@@ -19,7 +19,7 @@ document.querySelector('.login-google-button').addEventListener('click', async (
         // Redirect the user to the Google Identity Provider for authentication
         const signIn = await userManager.signinRedirect();
     } catch (error) {
-        console.error('Erreur lors de l\'ouverture de la fenêtre popup pour l\'autorisation:', error);
+        console.error('Error when opening login with google popup:', error);
     }
 });
 

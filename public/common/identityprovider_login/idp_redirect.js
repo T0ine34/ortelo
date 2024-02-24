@@ -31,7 +31,7 @@ userManager.signinRedirectCallback().then(async (user) => {
             if(registerData.success == true) {
                 cookies.set("playerid", registerData.playerId, 1);
             } else {
-                console.error("Erreur lors de l'enregistrement du joueur");
+                console.error("Error when registering player");
             }
         }
 
@@ -39,5 +39,5 @@ userManager.signinRedirectCallback().then(async (user) => {
         
     }
 }).catch((error) => {
-    console.error('Erreur lors de la récupération des informations de l\'utilisateur:', error);
+    console.error('Error when gathering user information:', error);
 });
