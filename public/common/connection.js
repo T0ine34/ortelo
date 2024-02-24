@@ -1,6 +1,29 @@
 import { cookies } from "./modules/cookies/main.js";
 emailjs.init("Oy9a9uSnZvDAnliA0");
 
+// Google Identity Provider configuration
+const config = {
+    authority: 'https://accounts.google.com',
+    client_id: '51873909339-6n41as7geb9le4cg77m3l18e88pv51j7.apps.googleusercontent.com',
+    redirect_uri: 'http://localhost:3000/identityprovider_login/oidcredirect.html',
+    response_type: 'id_token token',
+    scope: 'openid profile email',
+};
+
+// Create a UserManager instance with the configuration
+const userManager = new Oidc.UserManager(config);
+
+// Event listener for the login with google button
+document.querySelector('.login-google-button').addEventListener('click', async () => {
+    try {
+        // Redirect the user to the Google Identity Provider for authentication
+        const signIn = await userManager.signinRedirect();
+    } catch (error) {
+        console.error('Error when opening login with google popup:', error);
+    }
+});
+
+
 document.addEventListener('DOMContentLoaded', function () {
 
     // Event listener for login form
@@ -19,17 +42,12 @@ document.addEventListener('DOMContentLoaded', function () {
                 "Content-Type": "application/json",
             },
         })
-            .then(response => response.json())
+            .then(response => response.text())
             .then(data => {
 
-                if(data.logged == true) {
-                    if(data.identifier){
-                        cookies.set("playerid", data.identifier, 1); //save the username for 1 hour
-                        console.info("connection cookie set for " + username +" for 1 hour");
-                    }
-                    else{
-                        console.error("no identifier found");
-                    }
+                if(data == "true") {
+                    cookies.set("username", username, 1); //save the username for 1 hour
+                    console.info("username set to " + username +" for 1 hour");
 
                     this.location.href = "/";
                 } else {
@@ -78,8 +96,6 @@ document.addEventListener('DOMContentLoaded', function () {
                         to_name: username
                     };
 
-                    const playerId = data.playerId;
-
 
                     emailjs.send('gmail', 'register_confirmation', templateParams)
                         .then(function(response) {
@@ -88,8 +104,8 @@ document.addEventListener('DOMContentLoaded', function () {
                             console.log('FAILED...', error);
                         });
 
-                    cookies.set("playerid", playerId, 1); //save the username for 1 hour
-                    console.info("cookie set for user " + username +" for 1 hour");
+                    cookies.set("username", username, 1); //save the username for 1 hour
+                    console.info("username set to " + username +" for 1 hour");
 
                     this.location.href = "/";
                 }

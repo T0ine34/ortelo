@@ -294,6 +294,19 @@ app.get('/game/:url', (req, res) => {
     }
 });
 
+
+/**
+ * Retrieves the oidc js file
+ */
+app.get('/oidc', (req, res) => {
+    return res.send(fs.readFileSync(path.join(__dirname, "node_modules", "oidc-client", "dist", "oidc-client.js"), 'utf8'));
+});
+
+app.get('/emailjs', (req, res) => {
+    return res.send(fs.readFileSync(path.join(__dirname, "node_modules", "@emailjs", "browser", "dist", "email.js"), 'utf8'));
+});
+
+
 /**
  * Object representing the login attempts.
  * @typedef {Object} LoginAttempts
@@ -314,6 +327,38 @@ const limiter = rateLimit({
 });
 
 /**
+ * Checks the status of the user with the given username
+ * @param {String} username The player's username
+ * @returns {json} With most data available and free to see
+ */
+app.get('/status/:username', async (req, res) => {
+    const found = await database.doPlayerExists(req.params.username);
+    if(!found) { return res.send( { success: false, reason: "player not found" }); }
+    const online = await database.isPlayerOnline(req.params.username);
+    const confirmed = await database.isPlayerConfirmed(req.params.username);
+    res.send({ 
+        success: true,
+        online: online,
+        isConfirmed: confirmed
+    });
+    
+    return res.send({ created: created, email_url: email_url, host_url: fullUrl });
+});
+
+
+
+/**
+ * Gets the playerId from an IdP user.
+ * @param {String} username The player's username
+ * @returns {String} The playerId
+ */
+app.get('/getId/:username', limiter, async (req, res) => {
+    const id = await database.getPlayerIdentifier(req.params.username);
+    return res.send({identifier: id});
+});
+
+
+/**
  * Tries to log in the user with the given username and password
  * @param {String} username The player's username
  * @param {String} password The user's password
@@ -325,6 +370,7 @@ app.post('/login', limiter, async (req, res) => {
     return res.send(logged);
 });
 
+
 /**
  * Tries to register the user with the given username and password
  * @param {String} username The player's username
@@ -334,12 +380,11 @@ app.post('/login', limiter, async (req, res) => {
  */
 app.post('/register', async (req, res) => {
     const email_url = URLGenerator.genURL('confirm-register', req.body.username);
-    const response = await database.createPlayer(req.body.username, req.body.password, req.body.email, email_url.replace('confirm-register/', ''));
+    const response = await database.createPlayer(req.body.username, req.body.password, req.body.email, email_url.replace('confirm-register/', ''), req.body.hasIdp == true ? req.body.hasIdp : false);
     const created = response.created;
-    // logger.info(`Creating player ${req.body.username} : ${created}`);
-    if(created){
+    if(created) {
         logger.info(`Player ${req.body.username} created successfully`);
-    }else{
+    } else {
         logger.warning(`Cannot create player ${req.body.username}; reason: ${response.reason}`);
     }
 
