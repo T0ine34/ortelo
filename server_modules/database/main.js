@@ -82,25 +82,41 @@ class Database {
             if(exists == true) {
                 resolve({"created" : false, "reason": "Player already exists"});
             } else {
-                this._db.exec(`INSERT INTO player (playername, password, email) VALUES ('${name}', '${hashedPassword}','${emailAddress}')`, (err) => {
+                let identifier = this.#generateRandomKey(64);
+                let sql;
+                if(hasIdp == true) {
+                    sql = `INSERT INTO player (playername, email, identifier, hasIdP) VALUES ('${name}', '${emailAddress}', '${identifier}', ${hasIdp})`;
+                } else {
+                    let salt = BCrypt.genSaltSync(settings.get("database.bcryptRounds"));
+                    let hashedPassword = BCrypt.hashSync(password, salt);
+                    sql = `INSERT INTO player (playername, password, email, identifier, hasIdP) VALUES ('${name}', '${hashedPassword}','${emailAddress}', '${identifier}', FALSE)`;
+                }
+                this._db.exec(sql, (err) => {
                     if(err) {
                         logger.error(`Can not create player : ${err.toString()}`);
                         resolve({"created": false, "reason": "Can not create player"});
-                    } else {
-                        logger.fine(`Successfully created ${name}'s account in table players`);
-                        resolve({"created": true, "playerid": identifier});
-                    }
-                });
-                this._db.exec(`INSERT INTO unconfirmed_players (playerid, email_url) VALUES ((SELECT playerid FROM player WHERE playername='${name}'), '${email_url}')`, (err) => {
-                    if(err) {
-                        logger.error(`Can not create unconfirmed player : ${err.toString()}`);
-                        resolve(false);
-                    } else {
-                        logger.fine(`Successfully created ${name}'s account in unconfirmed players`);
-                        resolve(true);
+                        resolve({"created": true, "playerId": identifier});
                     }
                 });
 
+
+                if(hasIdp == true) {
+                    let playerId = await this.getPlayerIdentifier(name);
+                    logger.fine(`Successfully created ${name}'s account as an IdP user`);
+                    logger.fine('Id of the player is ' + playerId);
+                    resolve({"created": true, "playerId": playerId});
+                } else {
+                    this._db.exec(`INSERT INTO unconfirmed_players (playerid, email_url) VALUES ((SELECT playerid FROM player WHERE playername='${name}'), '${email_url}')`, (err) => {
+                        if(err) {
+                            logger.error(`Can not create unconfirmed player : ${err.toString()}`);
+                            resolve({"created": false, "reason": "Can not create unconfirmed player"});
+                        } else {
+                            logger.fine(`Successfully created ${name}'s account in unconfirmed players`);
+                            let playerId = this.getPlayerIdentifier(name);
+                            resolve({"created": true, "playerId": playerId});
+                        }
+                    });
+                }
             }
         });
     }

@@ -28,11 +28,16 @@ userManager.signinRedirectCallback().then(async (user) => {
         
         } else {
             const registerData = await registerPlayer(emailjs, username, null, user.profile.email, true);
+            if(registerData.success == true) {
+                cookies.set("playerid", registerData.playerId, 1);
+            } else {
+                console.error("Error when registering player");
+            }
         }
 
         window.location.href = "/";
         
     }
 }).catch((error) => {
-    console.error('Erreur lors de la récupération des informations de l\'utilisateur:', error);
+    console.error('Error when gathering user information:', error);
 });

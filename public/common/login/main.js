@@ -69,7 +69,7 @@ function registerPlayer(emailjs, username, password, email, hasIdp = false) {
                 cookies.set("playerid", playerId, 1); //save the username for 1 hour
                 console.info("cookie set for user " + username +" for 1 hour");
                 
-                resolve( {success: true, playerid: playerId} );
+                resolve( {success: true, playerId: playerId} );
             }
             
         })
