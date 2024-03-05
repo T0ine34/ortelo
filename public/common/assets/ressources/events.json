@@ -309,9 +309,25 @@
                     "type": "string"
                 }
             ],
+            "server_to_client": true,
+            "client_to_server": false,
+            "description": "The username of the client. (this is sent by the server to the client when the client join the application)"
+        },
+        "PLAYERID":{
+            "type" : "event",
+            "payload": [
+                {
+                    "name": "timestamp",
+                    "type": "number"
+                },
+                {
+                    "name": "playerid",
+                    "type": "string"
+                }
+            ],
             "server_to_client": false,
             "client_to_server": true,
-            "description": "The username of the client. (this is sent by the client to the server when the client join the game)"
+            "description": "The playerid of the client. (this is sent by the client to the server when the client join the application)"
         }
     },
     "INTERNAL":{
