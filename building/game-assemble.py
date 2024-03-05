@@ -105,7 +105,7 @@ class Game:
             for key, p in flat.items():
                 if key not in ["name", "version", "description"]:
                     if ".js" == p[-3:]:
-                        tmp_value = os.environ.get('TMP')
+                        tmp_value = os.environ.get('TMP', '/tmp')
                         tmp_path = os.path.join(tmp_value, p)
                         open(tmp_path, "w", encoding="utf8").close()
                         self.obfusc(p, tmp_path)
