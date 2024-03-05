@@ -371,7 +371,26 @@ app.post('/register', async (req, res) => {
     const host = req.get('host');
     const protocol = req.protocol;
     const fullUrl = `${protocol}://${host}`;
-    return res.send({ created: created, email_url: email_url, host_url: fullUrl });
+    return res.send({ created: created, email_url: email_url, host_url: fullUrl, playerId: response.playerid });
+});
+
+
+/**
+ * Checks the status of the user with the given username
+ * @param {String} username The player's username
+ * @returns {json} With most data available and free to see
+ */
+app.get('/status/:username', async (req, res) => {
+    const found = await database.doPlayerExists(req.params.username);
+    if(!found) { return res.send( { success: false, reason: "player not found" }); }
+    const online = await database.isPlayerOnline(req.params.username);
+    const confirmed = await database.isPlayerConfirmed(req.params.username);
+    res.send({ 
+        success: true,
+        online: online,
+        isConfirmed: confirmed
+    });
+    
 });
 
 
