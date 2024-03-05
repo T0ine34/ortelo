@@ -13,6 +13,15 @@ const command = args[0];
 
 const root = 'public/common';
 const filtre = new RegExp('.*\\.js');
+
+
+
+/**
+ * searches for JavaScript files in a directory.
+ * @param {string} root_path - The starting directory path.
+ * @param {RegExp} filtre - A regular expression to match file names.
+ * @returns {Array} An array of file paths that match the criteria.
+ */
 function find_all_files(root_path, filtre) {
     let results = [];
 
@@ -25,7 +34,9 @@ function find_all_files(root_path, filtre) {
     for(let i = 0; i < files.length; i++) {
         const filename = path.join(root_path, files[i]);
         const stat = fs.lstatSync(filename);
+
         if (stat.isDirectory()) {
+            //recursively search
             results = results.concat(find_all_files(filename, filtre));
         } else if (filtre.test(filename)) {
             if (filename.endsWith(".js")) {
@@ -36,7 +47,14 @@ function find_all_files(root_path, filtre) {
     return results;
 }
 
+/**
+ * obfuscates the targeted JavaScript files.
+ * It aims to protect the source code logic and structure from being easily understood and tampered with.
+ * @param {string} command - The operation mode determining which files to obfuscate.
+ */
 function obfuscation (command){
+    // command permit two mod to obfuscate, obfusc public before assembling games
+    // another time we obfusc file per file when assembling file per file the game
     try {
         const args = process.argv.slice(2);
         let files;
@@ -61,7 +79,8 @@ function obfuscation (command){
             fs.writeFileSync(jsFilePath, obfuscationResult.getObfuscatedCode());
         });
     } catch (err) {
-        console.error("Erreur lors de la manipulation de fichiers : ", err);
+        console.error("Error manipulating files : ", err);
     }
 }
+
 obfuscation(command)
