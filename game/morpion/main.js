@@ -206,11 +206,11 @@ function start() {
             let centerY = (windowHeight / 2) - (victorySize / 2);
             let centerX = (windowWidth / 2) - (victorySize / 2);
 
-            for (let i = 0; i < 10; i++) {
+            for (let i = 1; i < 10; i++) {
                 (function (i) {
                     let victory_icon = document.querySelector("#victory" + i);
                     if (!victory) {
-                        pumpkin.textContent = "❄️";
+                        victory_icon.textContent = "❄️";
                     }
                     let randomOffsetY = (Math.random() - 0.5) * (windowHeight - victorySize);
                     let randomOffsetX = (Math.random() - 0.5) * (windowWidth - victorySize);
@@ -218,12 +218,12 @@ function start() {
                     victory_icon.style.top = (centerY + randomOffsetY) + "px";
                     victory_icon.style.left = (centerX + randomOffsetX) + "px";
                     victory_icon.style.display = "block";
-                    victory_icon.style.fontSize = pumpkinSize + "px";
+                    victory_icon.style.fontSize = victorySize + "px";
                     victory_icon.classList.add("rotateAndFadeOut");
-                    setTimeout((function (pumpkin) {
+                    setTimeout((function (victory_icon) {
                         return function () {
-                            pumpkin.style.display = "none";
-                            pumpkin.classList.remove("rotateAndFadeOut");
+                            victory_icon.style.display = "none";
+                            victory_icon.classList.remove("rotateAndFadeOut");
                         }
                     })(victory_icon), 5000);
                 })(i);
