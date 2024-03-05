@@ -83,13 +83,12 @@ class Game:
                 if not exists(path, self.path):
                     raise FileNotFoundError("File %s not found" % path)
 
-    def obfusc(self, tmp_path=None):
+    def obfusc(self, p=None, tmp_path=None):
         if tmp_path is None:
             subprocess.check_call(["node", "obfusc.js", "public"])
         else:
-            shutil.copytree(os.path.join(self.path, p), tmp_path)
+            shutil.copyfile(os.path.join(self.path, p), tmp_path)
             subprocess.check_call(["node", "obfusc.js", "game", f"{tmp_path}"])
-    
     def build(self, output_folder):
         # compress all files listed in index.json in a zip file name name.game
         self.obfusc()
@@ -108,9 +107,8 @@ class Game:
                     if ".js" == p[-3:]:
                         tmp_value = os.environ.get('TMP')
                         tmp_path = os.path.join(tmp_value, p)
-                        with open(tmp_path, "w", encoding="utf8") as file:
-                            pass
-                        self.obfusc(tmp_path)
+                        open(tmp_path, "w", encoding="utf8").close()
+                        self.obfusc(p, tmp_path)
                         zip.write(tmp_path, p)
                         os.remove(tmp_path)
                     else:

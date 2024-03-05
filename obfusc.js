@@ -44,13 +44,13 @@ function obfuscation (command){
             files = find_all_files(root, filtre);
         } else if (command == "game") {
             const file = args[1];
+            console.log(file)
             files = [file]
         } else {
             return
         }
 
         files.forEach(function (jsFilePath) {
-            console.log("Fichier a obfusquer :", jsFilePath);
             const data = fs.readFileSync(jsFilePath, 'UTF-8');
 
             const obfuscationResult = JavaScriptObfuscator.obfuscate(data, {
@@ -59,7 +59,6 @@ function obfuscation (command){
             });
 
             fs.writeFileSync(jsFilePath, obfuscationResult.getObfuscatedCode());
-            console.log("Fichier obfusqué avec succès :", jsFilePath);
         });
     } catch (err) {
         console.error("Erreur lors de la manipulation de fichiers : ", err);
