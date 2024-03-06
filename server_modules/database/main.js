@@ -5,6 +5,7 @@ const CryptoJS              = require('crypto-js');
 const BCrypt                = require("bcrypt");
 const { Settings }          = require('../settings/main');
 const { URLGenerator }         = require("../url_generator/main");
+const validator = require('validator');
 
 let logger = new Logger();
 var settings = new Settings("./server.config");
@@ -75,33 +76,41 @@ class Database {
      * @param {string} emailAddress is the player's email address, is not a must.
      * @returns wether the player has been created successfully or not.
      */
-    createPlayer(name, password, emailAddress, email_url){
+    createPlayer(name, password, emailAddress, email_url) {
         return new Promise(async (resolve, reject) => {
+            if (!validator.isEmail(emailAddress)) {
+                logger.error(`Invalid email address: ${emailAddress}`);
+                return reject(new Error('Invalid email address'));
+            }
+
             let salt = BCrypt.genSaltSync(settings.get("database.bcryptRounds"));
             let hashedPassword = BCrypt.hashSync(password, salt);
-    
-            const exists = await this.doPlayerExists(name);
-            if(exists == true) {
-                resolve(false);
-            } else {
-                this._db.exec(`INSERT INTO player (playername, password, email) VALUES ('${name}', '${hashedPassword}','${emailAddress}')`, (err) => {
-                    if(err) {
-                        logger.error(`Can not create player : ${err.toString()}`);
-                        resolve(false);
-                    } else {
-                        logger.fine(`Successfully created ${name}'s account in table players`);
-                    }
-                });
-                this._db.exec(`INSERT INTO unconfirmed_players (playerid, email_url) VALUES ((SELECT playerid FROM player WHERE playername='${name}'), '${email_url}')`, (err) => {
-                    if(err) {
-                        logger.error(`Can not create unconfirmed player : ${err.toString()}`);
-                        resolve(false);
-                    } else {
-                        logger.fine(`Successfully created ${name}'s account in unconfirmed players`);
-                        resolve(true);
-                    }
-                });
 
+            const database = this;
+
+            const exists = await this.doPlayerExists(name);
+            if (exists) {
+                resolve({"created": false, "reason": "Player already exists"});
+            } else {
+                const insertPlayerQuery = `INSERT INTO player (playername, password, email) VALUES (?, ?, ?)`;
+                database._db.run(insertPlayerQuery, [name, hashedPassword, emailAddress], function (err) {
+                    if (err) {
+                        logger.error(`Can not create player: ${err.toString()}`);
+                        resolve({"created": false, "reason": "Can not create player"});
+                    } else {
+                        const playerId = this.lastID;
+                        const insertUnconfirmedPlayerQuery = `INSERT INTO unconfirmed_players (playerid, email_url) VALUES (?, ?)`;
+                        database._db.run(insertUnconfirmedPlayerQuery, [playerId, email_url], (err) => { // Utilisez 'database' au lieu de 'this'
+                            if (err) {
+                                logger.error(`Can not create unconfirmed player: ${err.toString()}`);
+                                resolve({"created": false, "reason": "Can not create unconfirmed player"});
+                            } else {
+                                logger.fine(`Successfully created ${name}'s account in unconfirmed players`);
+                                resolve({"created": true, "playerId": playerId});
+                            }
+                        });
+                    }
+                });
             }
         });
     }
@@ -161,9 +170,18 @@ class Database {
      */
     login(name, password) {
         return new Promise(async (resolve, reject) => {
-            const dbpassword = await this.getPassword(name).catch( (err) => logger.error(err.toString()));
-            const compareResult = await this.comparePassword(password, dbpassword).catch( (err) => logger.error(err.toString()));;
-            resolve(compareResult);
+            if (!name || !validator.isAlphanumeric(name, 'en-US', { ignore: ' -_@.' })) {
+                return reject(new Error('Invalid username'));
+            }
+
+            try {
+                const dbpassword = await this.getPassword(name);
+                const compareResult = await this.comparePassword(password, dbpassword);
+                resolve(compareResult);
+            } catch (err) {
+                logger.error(err.toString());
+                reject(err);
+            }
         });
     }
 
@@ -270,10 +288,10 @@ class Database {
      * @return {string} Player's hashed password.
      */
     getPassword(playerName){
-        return new Promise(async (resolve, reject) => {
-            this._db.get(`SELECT password FROM player WHERE playername='${playerName}';`, [], (err, row) => {
+        return new Promise((resolve, reject) => {
+            this._db.get(`SELECT password FROM player WHERE playername = ?`, [playerName], (err, row) => {
                 if (err) {
-                    logger.error(`Can not retrieve ${playerName}'s password : ${err.toString()}`);
+                    logger.error(`Cannot retrieve ${playerName}'s password : ${err.toString()}`);
                     reject(false);
                 } else {
                     let password = row ? row.password : null;

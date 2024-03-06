@@ -16,8 +16,10 @@
 		"socket.io-client": "^4.7.2",
 		"sqlite3": "^5.1.6",
 		"taffydb": "^2.7.3",
-		"javascript-obfuscator": "^4.1.0"
-		
+		"javascript-obfuscator": "^4.1.0",
+		"jsonwebtoken": "^9.0.2",
+		"helmet": "^7.1.0",
+		"validator": "^13.11.0"
 	},
 	"scripts": {
 		"start": "npx nodemon server.js"

@@ -91,7 +91,6 @@ class Game:
             subprocess.check_call(["node", "obfusc.js", "game", f"{tmp_path}"])
     def build(self, output_folder):
         # compress all files listed in index.json in a zip file name name.game
-        self.obfusc()
         name = self.index["name"].lower()
         version = self.index["version"]
         filename = "%s.game" % name

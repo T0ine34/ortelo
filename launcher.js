@@ -1,4 +1,5 @@
 const { spawnSync } = require('child_process');
+const { obfuscation } = require("obfusc")
 
 const python = process.platform === 'win32' ? 'python' : 'python3';
 
@@ -43,5 +44,5 @@ function main(){
         }
     }
 }
-
+obfuscation();
 main();

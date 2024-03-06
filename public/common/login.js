@@ -19,31 +19,30 @@ document.addEventListener('DOMContentLoaded', function () {
                 "Content-Type": "application/json",
             },
         })
-            .then(response => response.text())
+            .then(response => response.json())
             .then(data => {
-
-                if(data == "true") {
-                    cookies.set("username", username, 1); //save the username for 1 hour
-                    console.info("username set to " + username +" for 1 hour");
-
+                if(data.success) {
+                    cookies.set("username", username, 1);
+                    console.info("username set to " + username + " for 1 hour");
+                    localStorage.setItem("token", data.token);
                     this.location.href = "/";
                 } else {
-                    if (data.includes("erreur")) {
-                        const seconds = data.split(':')[1];
+                    if (data.message && data.message.includes("erreur")) {
+                        const seconds = data.message.split(':')[1];
                         alert(`Trop de tentatives, veuillez réessayer dans ${seconds} secondes`);
                     } else {
                         alert("Nom d'utilisateur ou mot de passe incorrect");
                     }
                 }
-
             })
             .catch(error => console.error('Can not retrieve data from login', error));
+
     });
 
     // Event listener for sign up form
     document.querySelector('#signup-form').addEventListener('submit', (event) => {
         event.preventDefault();
-
+        const user_label = document.querySelector('label[for="signup_username"]');
         const username  = document.querySelector('#signup_username').value;
         const password  = document.querySelector('#signup_password').value;
         const password2 = document.querySelector('#confirm_password').value;
@@ -85,6 +84,10 @@ document.addEventListener('DOMContentLoaded', function () {
                     console.info("username set to " + username +" for 1 hour");
 
                     this.location.href = "/";
+                } else {
+                    const errorElement = document.querySelector('#error_message');
+                    errorElement.innerHTML = `<p style="color: red;">${data.reason}</p>`;
+                    errorElement.style.display = 'block';
                 }
 
             })

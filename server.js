@@ -23,8 +23,11 @@ const bodyParser = require('body-parser');
 const vm = require('vm');
 const mailer = require('@emailjs/browser');
 const rateLimit = require("express-rate-limit");
+const jwt = require('jsonwebtoken');
+const helmet = require('helmet');
 
 let logger = new Logger();
+const JWT_SECRET = 'eR3y8D9zC2wB5pN7qS1tV8xM6jH4kF0gR2uL5vA3fH6yQ9xZ';//openssl rand -base64 32
 
 // -------------------------------------------------------------------- SERVER INITIALIZATION
 logger.debug("intitializing express app");
@@ -48,6 +51,46 @@ mailer.init("Oy9a9uSnZvDAnliA0");
 
 // -------------------------------------------------------------------- SERVER CONFIGURATION
 
+//contre les attaques XSS
+app.use(helmet({
+    contentSecurityPolicy: {
+        directives: {
+            defaultSrc: ["'self'"],
+            scriptSrc: ["'self'", "https://cdn.jsdelivr.net", "'unsafe-inline'"],
+            connectSrc: ["'self'", "https://api.qrserver.com/"],
+            imgSrc: ["'self'", "data:", "https://api.qrserver.com/"],
+        }
+    }
+}));
+
+
+/**
+ * Verify the token in the authorization header of an HTTP request.
+ *
+ * @param {Object} req - The HTTP request object.
+ * @param {Object} res - The HTTP response object.
+ * @param {Function} next - The next middleware function.
+ * @returns {void}
+ */
+const verifyToken = (req, res, next) => {
+    const bearerHeader = req.headers['authorization'];
+
+    if (typeof bearerHeader !== 'undefined') {
+        const bearer = bearerHeader.split(' ');
+        const bearerToken = bearer[1];
+
+        jwt.verify(bearerToken, JWT_SECRET, (err, authData) => {
+            if (err) {
+                res.sendStatus(403);
+            } else {
+                req.user = authData;
+                next();
+            }
+        });
+    } else {
+        res.sendStatus(403);
+    }
+};
 
 /**
  * Start a new game with the given game name and username.
@@ -55,7 +98,7 @@ mailer.init("Oy9a9uSnZvDAnliA0");
  * @param {string} username - Name of the user initiating the game.
  * @returns {JSON} - JSON object with room URL and a message.
  */
-app.get('/game-start/:gameName/:username', async (req, res) => {
+app.get('/game-start/:gameName/:username', verifyToken, async (req, res) => {
     const gameName = req.params.gameName.toLowerCase();
     const username = req.params.username;
     if (!gameName || typeof gameName !== 'string' || !username || typeof username !== 'string') {
@@ -99,7 +142,7 @@ app.get('/game-start/:gameName/:username', async (req, res) => {
  * @param {string} roomUrl - URL of the game room.
  * @returns {JSON} - JSON object with a message about the room's status.
  */
-app.get('/game-wait/game/:roomUrl', async (req, res) => {
+app.get('/game-wait/game/:roomUrl', verifyToken, async (req, res) => {
 
     let roomUrl = req.params.roomUrl;
     if (!roomUrl || typeof roomUrl !== 'string') {
@@ -149,7 +192,7 @@ app.get('/game-wait/game/:roomUrl', async (req, res) => {
  * @param {string} username - Username of the player joining.
  * @returns {JSON} - JSON object with a success message.
  */
-app.get('/gameUrl/:roomUrl/:username', (req, res) => {
+app.get('/gameUrl/:roomUrl/:username', verifyToken, (req, res) => {
     const roomUrl = 'game/'+req.params.roomUrl;
     const username = req.params.username;
     if (!roomUrl || typeof roomUrl !== 'string' || !username || typeof username !== 'string') {
@@ -202,7 +245,7 @@ app.get('/gameUrl/:roomUrl/:username', (req, res) => {
  * @param {string[]} [fields] - Optional. Specific fields to retrieve.
  * @returns {JSON} - JSON array of game information.
  */
-app.get('/games-info', (req, res) => {
+app.get('/games-info', verifyToken, (req, res) => {
     try {
         const gamesData = gameLoader.gamesData;
         const fields = req.query.x ? req.query.x.split(',') : null;
@@ -257,6 +300,7 @@ function getGameInfo(game, fields) {
  * @returns {HTML} - HTML content for the game.
  */
 app.get('/game/:url', (req, res) => {
+    //pas de verifyToken car première apparition de l'utilisateur
     if (!req.params.url || typeof req.params.url !== 'string') {
         return res.status(400).json({ message : 'Invalid URL.' });
     }
@@ -320,10 +364,17 @@ const limiter = rateLimit({
  * @returns {boolean} True if the user is logged in
  */
 app.post('/login', limiter, async (req, res) => {
-    const logged = await database.login(req.body.username, req.body.password);
-    logger.info(`Logging player ${req.body.username} : ${logged}`);
-    return res.send(logged);
+    const { username, password } = req.body;
+    const logged = await database.login(username, password);
 
+    if (logged) {
+        const token = jwt.sign({ username }, JWT_SECRET, { expiresIn: '24h' });
+
+        return res.json({ success: true, token });
+    } else {
+        logger.info(`Échec de la connexion pour l'utilisateur ${username}`);
+        return res.status(401).json({ success: false, message: 'Nom d’utilisateur ou mot de passe incorrect' });
+    }
 });
 
 /**
@@ -334,14 +385,24 @@ app.post('/login', limiter, async (req, res) => {
  * @returns {boolean} True if the user is logged in
  */
 app.post('/register', async (req, res) => {
-    const email_url = URLGenerator.genURL('confirm-register', req.body.username);
-    const created = await database.createPlayer(req.body.username, req.body.password, req.body.email, email_url.replace('confirm-register/', ''));
-    logger.info(`Creating player ${req.body.username} : ${created}`);
+    try {
+        const email_url = URLGenerator.genURL('confirm-register', req.body.username);
+        const created = await database.createPlayer(req.body.username, req.body.password, req.body.email, email_url.replace('confirm-register/', ''));
+        logger.info(`Creating player ${req.body.username} : ${JSON.stringify(created)}`);
 
-    const host = req.get('host');
-    const protocol = req.protocol;
-    const fullUrl = `${protocol}://${host}`;
-    return res.send({ created: created, email_url: email_url, host_url: fullUrl });
+        if (!created.created) {
+            return res.status(409).send({ created: false, reason: created.reason });
+        }
+
+        const host = req.get('host');
+        const protocol = req.protocol;
+        const fullUrl = `${protocol}://${host}`;
+        return res.send({ created: true, email_url: email_url, host_url: fullUrl });
+
+    } catch (error) {
+        logger.error(`An unexpected error occurred: ${error.toString()}`);
+        return res.status(500).send({ created: false, message: 'An unexpected error occurred' });
+    }
 });
 
 

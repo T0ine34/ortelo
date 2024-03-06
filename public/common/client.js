@@ -12,6 +12,10 @@ const MAX_HISTORY_SIZE = 100;
     If the user is not logged, they will be redirected to the login page.
 */
 let username;
+
+// si l'étranger a le token il sera finalement normalement déconnecté en 24h car le token expire en 24h
+const token = localStorage.getItem("token");// au lieu de se baser sur la présence en ligne d'un pseudo
+
 if(cookies.exists("username")){
     username = cookies.get("username");
     console.info("username read from cookies : " + username);
@@ -289,7 +293,13 @@ function clearChat() {
  * Each game item is clickable and triggers the PlayGame function.
  */
 function fetchGames() {
-    fetch('/games-info?x=name,icon')
+    fetch('/games-info?x=name,icon',{
+            method: 'GET',
+                headers: {
+                'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${token}`,
+            },
+        })
         .then(response => response.json())
         .then(games => {
             let gameContainer = document.querySelector('.gamesContainer');
@@ -325,7 +335,13 @@ function PlayGame(name) {
     let roomWaitContainer = document.querySelector('.popup_wait_users');
     clearChat();
 
-    fetch(`/games-info?${name}=html,css,js`)
+    fetch(`/games-info?${name}=html,css,js`,{
+            method: 'GET',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${token}`,
+            },
+        })
         .then(gameResponse => gameResponse.json())
         .then(game => {
 
@@ -347,7 +363,13 @@ function PlayGame(name) {
             window.username = username;
             document.body.appendChild(scriptTag);
 
-            return fetch(`/game-start/${name}/${username}`);
+            return fetch(`/game-start/${name}/${username}`,{
+                method: 'GET',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${token}`,
+                },
+            });
         })
         .then(startResponse => startResponse.json())
         .then(async startData => {
@@ -397,7 +419,13 @@ function PlayGame(name) {
             });
             csocket.on(EVENTS.GAME.START, (timestamp) => {
                 if (timestamp) {
-                    fetch(`/game-wait/${startData.roomUrl}`)
+                    fetch(`/game-wait/${startData.roomUrl}`,{
+                        method: 'GET',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'Authorization': `Bearer ${token}`,
+                        },
+                    })
                         .then(gameLaunchResponse => gameLaunchResponse.json())
                         .then(gameLaunchData => {
                             if (gameLaunchData.message.includes("started successfully")) {
@@ -454,7 +482,13 @@ async function joinGameRoom(urlParts) {
         const gameKey = gameNameParts[0];
         const roomUrl = urlParts[2];
 
-        const joinRoomResponse = await fetch(`/gameUrl/${roomUrl}/${username}`);
+        const joinRoomResponse = await fetch(`/gameUrl/${roomUrl}/${username}`,{
+            method: 'GET',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${token}`,
+            },
+        });
         const joinRoomData = await joinRoomResponse.json();
         if (joinRoomData.message.includes(("You are already in the room"))) {
             let htmlContent = '<html><body><h1>Error</h1><p>' + joinRoomData.message + '</p></body></html>';
@@ -468,14 +502,26 @@ async function joinGameRoom(urlParts) {
         }
 
         const checkRoomInterval = setInterval(async function (){
-            const gameLaunchResponse = await fetch(`/game-wait/game/${roomUrl}`);
+            const gameLaunchResponse = await fetch(`/game-wait/game/${roomUrl}`,{
+                method: 'GET',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${token}`,
+                },
+            });
             const gameLaunchData = await gameLaunchResponse.json();
 
             if (gameLaunchData.message.includes("already running successfully")) {
 
                 clearInterval(checkRoomInterval);
 
-                const gameUIResponse = await fetch(`/games-info?${gameKey}=html,css,js`);
+                const gameUIResponse = await fetch(`/games-info?${gameKey}=html,css,js`,{
+                    method: 'GET',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${token}`,
+                    },
+                });
                 const gameUIData = await gameUIResponse.json();
                 loadGameUI(gameUIData);
             }

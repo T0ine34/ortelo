@@ -84,3 +84,4 @@ function obfuscation (command){
 }
 
 obfuscation(command)
+module.exports = { obfuscation };
