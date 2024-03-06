@@ -95,7 +95,6 @@ class Database {
                     if(err) {
                         logger.error(`Can not create player : ${err.toString()}`);
                         resolve({"created": false, "reason": "Can not create player"});
-                        resolve({"created": true, "playerId": identifier});
                     }
                 });
 
@@ -172,7 +171,10 @@ class Database {
                 if(err) {
                     logger.error(`Can not retrieve ${username}'s identifier : ${err.toString()}`);
                     resolve(null);
-                } else resolve(row.identifier);
+                } else {
+                    logger.info(`Successfully retrieved ${username}'s identifier : ${row.identifier}`);
+                    resolve(row.identifier);
+                }
             });
         });
     }

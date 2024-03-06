@@ -23,7 +23,9 @@ userManager.signinRedirectCallback().then(async (user) => {
         if(playerExistsData.success == true) {
             
             const playeridResponse = await fetch(`/getId/${username}`);
+            console.log(playeridResponse);
             const playeridData = await playeridResponse.json();
+            console.log(playeridData);
             cookies.set("playerid", playeridData.identifier, 1);
         
         } else {

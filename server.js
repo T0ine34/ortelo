@@ -336,13 +336,12 @@ app.get('/status/:username', async (req, res) => {
     if(!found) { return res.send( { success: false, reason: "player not found" }); }
     const online = await database.isPlayerOnline(req.params.username);
     const confirmed = await database.isPlayerConfirmed(req.params.username);
-    res.send({ 
+    return res.send({ 
         success: true,
         online: online,
         isConfirmed: confirmed
     });
     
-    return res.send({ created: created, email_url: email_url, host_url: fullUrl });
 });
 
 
@@ -352,7 +351,7 @@ app.get('/status/:username', async (req, res) => {
  * @param {String} username The player's username
  * @returns {String} The playerId
  */
-app.get('/getId/:username', limiter, async (req, res) => {
+app.get('/getId/:username', async (req, res) => {
     const id = await database.getPlayerIdentifier(req.params.username);
     return res.send({identifier: id});
 });
@@ -364,7 +363,7 @@ app.get('/getId/:username', limiter, async (req, res) => {
  * @param {String} password The user's password
  * @returns {boolean} True if the user is logged in
  */
-app.post('/login', limiter, async (req, res) => {
+app.post('/login', async (req, res) => {
     const logged = await database.login(req.body.username, req.body.password);
     logger.info(`Logging player ${req.body.username} : ${logged}`);
     return res.send(logged);
