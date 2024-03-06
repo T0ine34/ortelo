@@ -12,6 +12,7 @@
 		"json5": "^2.2.3",
 		"jszip": "^3.10.1",
 		"nodemon": "^3.0.1",
+		"oidc-client": "^1.11.5",
 		"socket.io": "^4.7.2",
 		"socket.io-client": "^4.7.2",
 		"sqlite3": "^5.1.6",
