@@ -20,8 +20,7 @@
 		"socket.io-client": "^4.7.2",
 		"sqlite3": "^5.1.6",
 		"taffydb": "^2.7.3",
-		"unit-test": "^0.0.9",
-		"javascript-obfuscator": "^4.1.0"
+		"unit-test": "^0.0.9"
 	},
 	"scripts": {
 		"start": "npx nodemon launcher.js",
