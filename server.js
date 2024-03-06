@@ -57,11 +57,12 @@ app.use(helmet({
         directives: {
             defaultSrc: ["'self'"],
             scriptSrc: ["'self'", "https://cdn.jsdelivr.net", "'unsafe-inline'"],
-            connectSrc: ["'self'", "https://api.qrserver.com/"],
+            connectSrc: ["'self'", "https://api.qrserver.com/", "https://accounts.google.com"], // Add the Google's OpenID configuration URL here
             imgSrc: ["'self'", "data:", "https://api.qrserver.com/"],
         }
     }
 }));
+
 
 
 /**
@@ -338,6 +339,27 @@ app.get('/game/:url', (req, res) => {
     }
 });
 
+
+/**
+ * Retrieves the oidc js file
+ */
+app.get('/oidc', (req, res) => {
+    const oidcFilePath = path.join(__dirname, "node_modules", "oidc-client", "dist", "oidc-client.min.js");
+    fs.exists(oidcFilePath, (exists) => {
+        if (exists) {
+            res.setHeader('Content-Type', 'application/javascript');
+            res.sendFile(oidcFilePath);
+        } else {
+            res.status(404).send('File not found');
+        }
+    });
+});
+
+
+app.get('/emailjs', (req, res) => {
+    return res.send(fs.readFileSync(path.join(__dirname, "node_modules", "@emailjs", "browser", "dist", "email.js"), 'utf8'));
+});
+
 /**
  * Object representing the login attempts.
  * @typedef {Object} LoginAttempts
@@ -356,6 +378,36 @@ const limiter = rateLimit({
         return `erreur:${secondsRemaining}`;
     },
 });
+/**
+ * Checks the status of the user with the given username
+ * @param {String} username The player's username
+ * @returns {json} With most data available and free to see
+ */
+app.get('/status/:username', async (req, res) => {
+    const found = await database.doPlayerExists(req.params.username);
+    if(!found) { return res.send( { success: false, reason: "player not found" }); }
+    const online = await database.isPlayerOnline(req.params.username);
+    const confirmed = await database.isPlayerConfirmed(req.params.username);
+    return res.send({
+        success: true,
+        online: online,
+        isConfirmed: confirmed
+    });
+
+});
+
+
+
+/**
+ * Gets the playerId from an IdP user.
+ * @param {String} username The player's username
+ * @returns {String} The playerId
+ */
+app.get('/getId/:username', async (req, res) => {
+    const id = await database.getPlayerIdentifier(req.params.username);
+    return res.send({identifier: id});
+});
+
 
 /**
  * Tries to log in the user with the given username and password
@@ -365,17 +417,21 @@ const limiter = rateLimit({
  */
 app.post('/login', limiter, async (req, res) => {
     const { username, password } = req.body;
-    const logged = await database.login(username, password);
-
-    if (logged) {
-        const token = jwt.sign({ username }, JWT_SECRET, { expiresIn: '24h' });
-
-        return res.json({ success: true, token });
-    } else {
-        logger.info(`Échec de la connexion pour l'utilisateur ${username}`);
-        return res.status(401).json({ success: false, message: 'Nom d’utilisateur ou mot de passe incorrect' });
+    try {
+        const loginResult = await database.login(username, password);
+        if (loginResult.logged) {
+            const token = jwt.sign({ username: username, id: loginResult.identifier }, JWT_SECRET, { expiresIn: '24h' });
+            return res.json({ success: true, token: token });
+        } else {
+            logger.info(`Échec de la connexion pour l'utilisateur ${username}`);
+            return res.status(401).json({ success: false, message: 'Nom d’utilisateur ou mot de passe incorrect' });
+        }
+    } catch (error) {
+        logger.error(`An error occurred during login: ${error.toString()}`);
+        return res.status(500).json({ success: false, message: 'An error occurred during login' });
     }
 });
+
 
 /**
  * Tries to register the user with the given username and password
@@ -385,25 +441,23 @@ app.post('/login', limiter, async (req, res) => {
  * @returns {boolean} True if the user is logged in
  */
 app.post('/register', async (req, res) => {
+    const { username, password, email } = req.body;
+    const email_url = URLGenerator.genURL('confirm-register', username);
     try {
-        const email_url = URLGenerator.genURL('confirm-register', req.body.username);
-        const created = await database.createPlayer(req.body.username, req.body.password, req.body.email, email_url.replace('confirm-register/', ''));
-        logger.info(`Creating player ${req.body.username} : ${JSON.stringify(created)}`);
-
-        if (!created.created) {
-            return res.status(409).send({ created: false, reason: created.reason });
+        const response = await database.createPlayer(username, password, email, email_url.replace('confirm-register/', ''));
+        if (response.created) {
+            const token = jwt.sign({ username: username, id: response.playerId }, JWT_SECRET, { expiresIn: '24h' });
+            return res.json({ created: true, token: token, email_url: email_url });
+        } else {
+            logger.warning(`Cannot create player ${username}; reason: ${response.reason}`);
+            return res.status(409).json({ created: false, reason: response.reason });
         }
-
-        const host = req.get('host');
-        const protocol = req.protocol;
-        const fullUrl = `${protocol}://${host}`;
-        return res.send({ created: true, email_url: email_url, host_url: fullUrl });
-
     } catch (error) {
-        logger.error(`An unexpected error occurred: ${error.toString()}`);
-        return res.status(500).send({ created: false, message: 'An unexpected error occurred' });
+        logger.error(`An unexpected error occurred during registration: ${error.toString()}`);
+        return res.status(500).json({ created: false, message: 'An unexpected error occurred during registration' });
     }
 });
+
 
 
 /**
@@ -516,37 +570,46 @@ function set_rooms(){
 // -------------------------------------------------------------------- SERVER EVENTS
 
 cio.on(EVENTS.INTERNAL.CONNECTION, (user) => {
-    user.once(EVENTS.MISC.USERNAME, (timestamp, username) => {
-        user.username = username; //setting the username of the user
-        users.set(username, user); //registering the user in the users map
-        user.emit(EVENTS.SYSTEM.INFO, Date.now(), "Vous êtes connecté en tant que " + username);   //sending a message to the user to inform him that he is connected
-        rooms.get(general).emit(EVENTS.CHAT.USER_JOIN, Date.now(), username);               //broadcasting the newUser event to all the users of the general room, excepting the new one
-        user.joinRoom(rooms.get(general));        //adding the user to the general room
-        rooms.get(general).emit(EVENTS.CHAT.USER_JOINED, Date.now(), username);             //broadcasting the newUser event to all the users of the general room, including the new one
-
-        user.on(EVENTS.INTERNAL.DISCONNECTING, (reason) => {
-            for(let room of user.rooms.values()){
-                room.emit(EVENTS.CHAT.USER_LEAVE, Date.now(), user.username);
+    user.once(EVENTS.MISC.PLAYERID, (timestamp, playerid) => {
+        database.getUsername(playerid, (username) => {
+            if(!username && username != "null"){
+                logger.warning("A user tried to connect with an invalid playerid : " + playerid);
+                return; //if the playerid is invalid, we don't want to continue
             }
-        });
 
-        user.on(EVENTS.INTERNAL.DISCONNECT, (reason) => {
-            for(let room of user.rooms.values()){
-                room.emit(EVENTS.CHAT.USER_LEFT, Date.now(), user.username);
-            }
-        });
+            user.emit(EVENTS.MISC.USERNAME, Date.now(), username); //sending the username to the user
 
-        user.on(EVENTS.CHAT.MESSAGE, (timestamp, username, msg) => { //catching the send_message event, triggered by the client when he sends a message
-            if (!parseCMD(msg, user, cio, rooms)) {
+            user.username = username; //setting the username of the user
+            users.set(username, user); //registering the user in the users map
+            user.emit(EVENTS.SYSTEM.INFO, Date.now(), "Vous êtes connecté en tant que " + username);   //sending a message to the user to inform him that he is connected
+            rooms.get(general).emit(EVENTS.CHAT.USER_JOIN, Date.now(), username);               //broadcasting the newUser event to all the users of the general room, excepting the new one
+            user.joinRoom(rooms.get(general));        //adding the user to the general room
+            rooms.get(general).emit(EVENTS.CHAT.USER_JOINED, Date.now(), username);             //broadcasting the newUser event to all the users of the general room, including the new one
+
+            user.on(EVENTS.INTERNAL.DISCONNECTING, (reason) => {
                 for(let room of user.rooms.values()){
-                    if(room.isIn(user)){
-                        room.transmit(EVENTS.CHAT.MESSAGE, Date.now(), username, msg); //broadcasting the new_message event to all the users, including the sender
+                    room.emit(EVENTS.CHAT.USER_LEAVE, Date.now(), user.username);
+                }
+            });
+
+            user.on(EVENTS.INTERNAL.DISCONNECT, (reason) => {
+                for(let room of user.rooms.values()){
+                    room.emit(EVENTS.CHAT.USER_LEFT, Date.now(), user.username);
+                }
+            });
+
+            user.on(EVENTS.CHAT.MESSAGE, (timestamp, username, msg) => { //catching the send_message event, triggered by the client when he sends a message
+                if (!parseCMD(msg, user, cio, rooms)) {
+                    for(let room of user.rooms.values()){
+                        if(room.isIn(user)){
+                            room.transmit(EVENTS.CHAT.MESSAGE, Date.now(), username, msg); //broadcasting the new_message event to all the users, including the sender
+                        }
                     }
                 }
-            }
-        });
+            });
 
-        // here, the user is connected, and the server is ready to receive events from him
+            // here, the user is connected, and the server is ready to receive events from him
+        });
     });
 
 });

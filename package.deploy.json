@@ -22,6 +22,6 @@
 		"validator": "^13.11.0"
 	},
 	"scripts": {
-		"start": "npx nodemon server.js"
+		"start": "node launcher.js"
 	}
 }

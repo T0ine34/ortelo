@@ -7,22 +7,27 @@ new ClipboardJS('.urlShareButton');
 // Defines the maximum size for chat history
 const MAX_HISTORY_SIZE = 100;
 
+// si l'étranger a le token il sera finalement normalement déconnecté en 24h car le token expire en 24h
+const token = localStorage.getItem("token");// au lieu de se baser sur la présence en ligne d'un pseudo
+
+
 /*
     Checks if the user is already logged.
     If the user is not logged, they will be redirected to the login page.
 */
 let username;
-
-// si l'étranger a le token il sera finalement normalement déconnecté en 24h car le token expire en 24h
-const token = localStorage.getItem("token");// au lieu de se baser sur la présence en ligne d'un pseudo
-
-if(cookies.exists("username")){
-    username = cookies.get("username");
-    console.info("username read from cookies : " + username);
+let playerid;
+if(cookies.exists("playerid") || true){
+    playerid = cookies.get("playerid");
+    playerid = "g";
+    console.info("playerid read from cookies : " + playerid);
 } else {
-    console.info("username not found in cookies");
+    console.info("player not found in cookies");
     location.href = "connection.html"; // Will redirect user to log in page
 }
+
+
+
 
 /*
     Defines the socket associated to the current user.
@@ -32,10 +37,18 @@ let csocket = window.csocket = new CSocket(io());
 
 
 /*
-    Client sends a message to the server
-    Telling the username taken.
+    set the username of the user to the one sent by the server
 */
-csocket.emit(EVENTS.MISC.USERNAME, Date.now(), username);  
+csocket.once(EVENTS.MISC.USERNAME, (timestamp, _username) => {
+    username = _username;
+    console.info("username received from server : " + username);
+});
+
+/*
+    Client sends a message to the server
+    Telling the playerid of the user
+*/
+csocket.emit(EVENTS.MISC.PLAYERID, Date.now(), playerid);
 
 
 /*
@@ -550,7 +563,7 @@ function mayjoinroom() {
  * On click, deletes the 'username' cookie and redirects to the homepage.
  */
 document.querySelector("#logoutBtn").addEventListener('click', () => {
-    cookies.delete("username");
+    cookies.delete("playerid");
     window.location.href = "";
 })
 

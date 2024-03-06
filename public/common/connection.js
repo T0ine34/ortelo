@@ -1,6 +1,29 @@
 import { cookies } from "./modules/cookies/main.js";
 emailjs.init("Oy9a9uSnZvDAnliA0");
 
+// Google Identity Provider configuration
+const config = {
+    authority: 'https://accounts.google.com',
+    client_id: '51873909339-6n41as7geb9le4cg77m3l18e88pv51j7.apps.googleusercontent.com',
+    redirect_uri: 'http://localhost:3000/identityprovider_login/oidcredirect.html',
+    response_type: 'id_token token',
+    scope: 'openid profile email',
+};
+
+// Create a UserManager instance with the configuration
+const userManager = new Oidc.UserManager(config);
+
+// Event listener for the login with google button
+document.querySelector('.login-google-button').addEventListener('click', async () => {
+    try {
+        // Redirect the user to the Google Identity Provider for authentication
+        const signIn = await userManager.signinRedirect();
+    } catch (error) {
+        console.error('Error when opening login with google popup:', error);
+    }
+});
+
+
 document.addEventListener('DOMContentLoaded', function () {
 
     // Event listener for login form
@@ -143,3 +166,4 @@ function sendResetEmail() {
     const confirmationMessage = `A password reset email has been sent to ${emailInput}. Please check your inbox.`;
     alert(confirmationMessage); // For now, we just show an alert. You can improve this.
 }
+
