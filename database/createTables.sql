@@ -49,3 +49,19 @@ CREATE TABLE IF NOT EXISTS inGame (
     FOREIGN KEY (playerid) REFERENCES player(playerid),
     FOREIGN KEY (gameid) REFERENCES game(gameid)
 );
+
+CREATE TABLE IF NOT EXISTS password_reset_requests (
+    requestid INTEGER PRIMARY KEY AUTOINCREMENT,
+    playerid INTEGER,
+    request_time TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    used BOOLEAN DEFAULT 0,
+    FOREIGN KEY (playerid) REFERENCES player(playerid)
+);
+
+CREATE TABLE IF NOT EXISTS password_reset_tokens (
+    tokenid INTEGER PRIMARY KEY AUTOINCREMENT,
+    playerid INTEGER,
+    token TEXT,
+    expiration_time TIMESTAMP,
+    FOREIGN KEY (playerid) REFERENCES player(playerid)
+);
