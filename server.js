@@ -375,7 +375,7 @@ const limiter = rateLimit({
     message: function(req, res, next) {
         const resetTime = req.rateLimit.resetTime;
         const secondsRemaining = resetTime ? Math.ceil((resetTime - new Date().getTime()) / 1000) : 60;
-        return `erreur:${secondsRemaining}`;
+        return {erreur:secondsRemaining};
     },
 });
 /**

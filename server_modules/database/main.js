@@ -101,7 +101,6 @@ class Database {
                 }
 
                 // Utilisation de requêtes préparées pour éviter les injections SQL
-                console.log(insertPlayerQuery, params);
                 this._db.run(insertPlayerQuery, params, function(err) {
                     if (err) {
                         logger.error(`Cannot create player: ${err}`);
