@@ -163,10 +163,10 @@ function start() {
      * @return {void}
      */
     function resetFightersDisplay() {
-        const zombie = document.querySelector("#playerX");
-        const ghost = document.querySelector("#playerO");
-        zombie.classList.remove("X");
-        ghost.classList.remove("O");
+        const playerX = document.querySelector("#playerX");
+        const playerO = document.querySelector("#playerO");
+        playerX.classList.remove("playerX");
+        playerO.classList.remove("playerO");
     }
 
 
@@ -177,16 +177,16 @@ function start() {
      * @return {void}
      */
     function updateFightersDisplay() {
-        const zombie = document.querySelector("#playerX");
-        const ghost = document.querySelector("#playerO");
+        const playerX = document.querySelector("#playerX");
+        const playerO = document.querySelector("#playerO");
 
         if (players) {
             if (players["X"] === username) {
-                zombie.classList.add("X");
-                ghost.classList.remove("O");
+                playerX.classList.add("playerX");
+                playerO.classList.remove("playerO");
             } else if (players["O"] === username) {
-                ghost.classList.add("O");
-                zombie.classList.remove("X");
+                playerO.classList.add("playerO");
+                playerX.classList.remove("playerX");
             }
         }
     }
@@ -199,33 +199,33 @@ function start() {
      */
     function showVictoryAnimation(victory) {
         try {
-            let pumpkinSize = 100;
+            let victorySize = 100;
             let windowHeight = window.innerHeight;
             let windowWidth = window.innerWidth;
 
-            let centerY = (windowHeight / 2) - (pumpkinSize / 2);
-            let centerX = (windowWidth / 2) - (pumpkinSize / 2);
+            let centerY = (windowHeight / 2) - (victorySize / 2);
+            let centerX = (windowWidth / 2) - (victorySize / 2);
 
             for (let i = 0; i < 10; i++) {
                 (function (i) {
-                    let pumpkin = document.querySelector("#victory" + i);
+                    let victory_icon = document.querySelector("#victory" + i);
                     if (!victory) {
                         pumpkin.textContent = "❄️";
                     }
-                    let randomOffsetY = (Math.random() - 0.5) * (windowHeight - pumpkinSize);
-                    let randomOffsetX = (Math.random() - 0.5) * (windowWidth - pumpkinSize);
+                    let randomOffsetY = (Math.random() - 0.5) * (windowHeight - victorySize);
+                    let randomOffsetX = (Math.random() - 0.5) * (windowWidth - victorySize);
 
-                    pumpkin.style.top = (centerY + randomOffsetY) + "px";
-                    pumpkin.style.left = (centerX + randomOffsetX) + "px";
-                    pumpkin.style.display = "block";
-                    pumpkin.style.fontSize = pumpkinSize + "px";
-                    pumpkin.classList.add("rotateAndFadeOut");
+                    victory_icon.style.top = (centerY + randomOffsetY) + "px";
+                    victory_icon.style.left = (centerX + randomOffsetX) + "px";
+                    victory_icon.style.display = "block";
+                    victory_icon.style.fontSize = pumpkinSize + "px";
+                    victory_icon.classList.add("rotateAndFadeOut");
                     setTimeout((function (pumpkin) {
                         return function () {
                             pumpkin.style.display = "none";
                             pumpkin.classList.remove("rotateAndFadeOut");
                         }
-                    })(pumpkin), 5000);
+                    })(victory_icon), 5000);
                 })(i);
             }
         } catch (error) {
@@ -253,8 +253,8 @@ function start() {
     function restartGame() {
         csocket.emit(EVENTS.GAME.DATA, Date.now(), { "restartKey": "restart"});
         this.style.display = 'none';
-        let ghost = document.querySelector("#playerO");
-        ghost.classList.remove("O");
+        let playerO = document.querySelector("#playerO");
+        playerO.classList.remove("playerO");
     }
 }
 
