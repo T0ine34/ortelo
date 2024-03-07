@@ -66,7 +66,7 @@ document.addEventListener('DOMContentLoaded', function () {
             return;
         }
 
-        if (!checkPasswordStrength(password).startsWith("Extremely difficult")) {
+        if (!checkPasswordStrength(password).includes("Fort")) {
             alert('Le mot de passe ne respecte pas les critères de sécurité.');
             return;
         }
@@ -159,21 +159,24 @@ function checkPasswordStrength(password) {
         strengthElement.textContent = "Faible. " + tips;
         strengthElement.style.color = "black";
         strengthElement.style.backgroundColor = "orangered";
+        return "Faible";
     } else if (strength === 2) {
         strengthElement.textContent = "Moyen. " + tips;
         strengthElement.style.color = "black";
         strengthElement.style.backgroundColor = "orangeyellow";
+        return "Moyen";
     } else if (strength === 3) {
         strengthElement.textContent = "Fort. " + tips;
         strengthElement.style.color = "black";
         strengthElement.style.backgroundColor = "yellowgreen";
+        return "Fort";
     } else {
         strengthElement.textContent = "Très fort. " + tips;
         strengthElement.style.color = "black";
         strengthElement.style.backgroundColor = "green";
+        return "Très Fort";
     }
 
-    return strengthElement.textContent;
 }
 
 

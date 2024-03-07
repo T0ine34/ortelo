@@ -70,6 +70,7 @@ function registerPlayer(emailjs, username, password, email, hasIdp = false) {
                 console.info("cookie set for user " + username +" for 1 hour");
                 
                 resolve( {success: true, playerId: playerId} );
+                location.href = "/";
             }
             
         })
