@@ -1,21 +1,25 @@
-import { cookies } from "./modules/cookies/main.js";
+import { loginPlayer, registerPlayer } from "./login/main.js";
 emailjs.init("Oy9a9uSnZvDAnliA0");
-
-// Google Identity Provider configuration
-const config = {
-    authority: 'https://accounts.google.com',
-    client_id: '51873909339-6n41as7geb9le4cg77m3l18e88pv51j7.apps.googleusercontent.com',
-    redirect_uri: '/identityprovider_login/oidcredirect.html',
-    response_type: 'id_token token',
-    scope: 'openid profile email',
-};
-
-// Create a UserManager instance with the configuration
-const userManager = new Oidc.UserManager(config);
 
 // Event listener for the login with google button
 document.querySelector('.login-google-button').addEventListener('click', async () => {
     try {
+        const redirect_uri = await fetch('/redirectUri');
+        const redirect_uri_data = await redirect_uri.json();
+        console.log(redirect_uri_data);
+
+        // Google Identity Provider configuration
+        const config = {
+            authority: 'https://accounts.google.com',
+            client_id: '51873909339-6n41as7geb9le4cg77m3l18e88pv51j7.apps.googleusercontent.com',
+            redirect_uri: redirect_uri_data.redirect_uri,
+            response_type: 'id_token token',
+            scope: 'openid profile email',
+        };
+
+        // Create a UserManager instance with the configuration
+        const userManager = new Oidc.UserManager(config);
+
         // Redirect the user to the Google Identity Provider for authentication
         const signIn = await userManager.signinRedirect();
     } catch (error) {
@@ -33,34 +37,7 @@ document.addEventListener('DOMContentLoaded', function () {
         const username = document.querySelector('#username').value;
         const password = document.querySelector('#password').value;
 
-        fetch(`/login`, {
-            method: "POST",
-            body: JSON.stringify({
-                username, password
-            }),
-            headers: {
-                "Content-Type": "application/json",
-            },
-        })
-            .then(response => response.text())
-            .then(data => {
-
-                if(data == "true") {
-                    cookies.set("username", username, 1); //save the username for 1 hour
-                    console.info("username set to " + username +" for 1 hour");
-
-                    this.location.href = "/";
-                } else {
-                    if (data.includes("erreur")) {
-                        const seconds = data.split(':')[1];
-                        alert(`Trop de tentatives, veuillez réessayer dans ${seconds} secondes`);
-                    } else {
-                        alert("Nom d'utilisateur ou mot de passe incorrect");
-                    }
-                }
-
-            })
-            .catch(error => console.error('Can not retrieve data from login', error));
+        loginPlayer(username, password);
     });
 
     // Event listener for sign up form
@@ -76,42 +53,7 @@ document.addEventListener('DOMContentLoaded', function () {
             return;
         }
 
-        fetch(`/register`, {
-            method: "POST",
-            body: JSON.stringify({
-                username, password, email
-            }),
-            headers: {
-                "Content-Type": "application/json",
-            },
-        })
-            .then(response => response.json())
-            .then(data => {
-                if(data.created == true) {
-
-                    const templateParams = {
-                        to_mail: email,
-                        from_name: 'Ortello',
-                        message: `${data.host_url}/${data.email_url}`,
-                        to_name: username
-                    };
-
-
-                    emailjs.send('gmail', 'register_confirmation', templateParams)
-                        .then(function(response) {
-                            console.log('SUCCESS!', response.status, response.text);
-                        }, function(error) {
-                            console.log('FAILED...', error);
-                        });
-
-                    cookies.set("username", username, 1); //save the username for 1 hour
-                    console.info("username set to " + username +" for 1 hour");
-
-                    this.location.href = "/";
-                }
-
-            })
-            .catch(error => console.error('Can not retrieve data from register', error));
+        registerPlayer(emailjs, username, password, email);
     });
 
     document.querySelector('#forgot-password button').addEventListener('submit', sendResetEmail);

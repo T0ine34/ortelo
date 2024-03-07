@@ -14,14 +14,14 @@ function loginPlayer(username, password) {
     .then(data => {
 
         if(data.logged == true) {
-            if(data.playerId){
-                cookies.set("playerid", data.playerId, 1); //save the username for 1 hour
+            if(data.identifier){
+                cookies.set("playerid", data.identifier, 1); //save the username for 1 hour
                 console.info("connection cookie set for " + username +" for 1 hour");
             } else{
                 console.error("no identifier found");
             }
-            
             location.href = "/";
+            
         } else {
             if (data.includes("erreur")) {
                 const seconds = data.split(':')[1];

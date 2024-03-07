@@ -4,11 +4,20 @@ import { registerPlayer } from "../login/main.js";
 // EmailJS configuration for sending emails
 emailjs.init("Oy9a9uSnZvDAnliA0");
 
+const getConfig = async () => {
+    const redirect_uri = await fetch('/redirectUri');
+    const redirect_uri_data = await redirect_uri.json();
+    return redirect_uri_data;
+
+}
+
+const redirect_uri = getConfig().redirect_uri;
+
 // IdP configuration
 const config = {
     authority: 'https://accounts.google.com',
     client_id: '51873909339-6n41as7geb9le4cg77m3l18e88pv51j7.apps.googleusercontent.com',
-    redirect_uri: '/identityprovider_login/oidcredirect.html',
+    redirect_uri: redirect_uri,
     response_type: 'id_token token',
     scope: 'openid profile email',
 };
