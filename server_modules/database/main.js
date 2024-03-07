@@ -94,25 +94,24 @@ class Database {
                 this._db.exec(sql, (err) => {
                     if(err) {
                         logger.error(`Can not create player : ${err.toString()}`);
-                        resolve({"created": false, "reason": "Can not create player"});
+                        resolve({created: false, reason: "Can not create player"});
                     }
                 });
 
 
+                let playerId = await this.getPlayerIdentifier(name);
                 if(hasIdp == true) {
-                    let playerId = await this.getPlayerIdentifier(name);
                     logger.fine(`Successfully created ${name}'s account as an IdP user`);
                     logger.fine('Id of the player is ' + playerId);
-                    resolve({"created": true, "playerId": playerId});
+                    resolve({created: true, playerId: playerId});
                 } else {
                     this._db.exec(`INSERT INTO unconfirmed_players (playerid, email_url) VALUES ((SELECT playerid FROM player WHERE playername='${name}'), '${email_url}')`, (err) => {
                         if(err) {
                             logger.error(`Can not create unconfirmed player : ${err.toString()}`);
-                            resolve({"created": false, "reason": "Can not create unconfirmed player"});
+                            resolve({created: false, reason: "Can not create unconfirmed player"});
                         } else {
                             logger.fine(`Successfully created ${name}'s account in unconfirmed players`);
-                            let playerId = this.getPlayerIdentifier(name);
-                            resolve({"created": true, "playerId": playerId});
+                            resolve({created: true, playerId: playerId});
                         }
                     });
                 }
