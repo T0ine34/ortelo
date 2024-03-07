@@ -358,6 +358,15 @@ app.get('/getId/:username', async (req, res) => {
 
 
 /**
+ * Gets the redirect uri for the IdP
+ * @returns {String} The redirect uri
+ */
+app.get('/redirectUri', async (req, res) => {
+    const redirect_uri = process.env.OrteloDEPLOY ? 'https://lila.vps.boxtoplay.com/identityprovider_login/oidcredirect.html' : 'http://localhost:3000/identityprovider_login/oidcredirect.html';
+    return res.send({redirect_uri: redirect_uri});
+});
+
+/**
  * Tries to log in the user with the given username and password
  * @param {String} username The player's username
  * @param {String} password The user's password
