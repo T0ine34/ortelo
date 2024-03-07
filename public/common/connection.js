@@ -26,40 +26,32 @@ document.querySelector('.login-google-button').addEventListener('click', async (
 
 document.addEventListener('DOMContentLoaded', function () {
 
-    // Event listener for login form
-    document.querySelector('#login-form').addEventListener('submit', (event) => {
+    document.querySelector('#login-form').addEventListener('submit', async (event) => {
         event.preventDefault();
 
         const username = document.querySelector('#username').value;
         const password = document.querySelector('#password').value;
 
-        fetch(`/login`, {
-            method: "POST",
-            body: JSON.stringify({
-                username, password
-            }),
-            headers: {
-                "Content-Type": "application/json",
-            },
-        })
-            .then(response => response.json())
-            .then(data => {
-                if(data.success) {
-                    cookies.set("username", username, 1);
-                    console.info("username set to " + username + " for 1 hour");
-                    localStorage.setItem("token", data.token);
-                    this.location.href = "/";
-                } else {
-                    if (data.message && data.message.includes("erreur")) {
-                        const seconds = data.message.split(':')[1];
-                        alert(`Trop de tentatives, veuillez réessayer dans ${seconds} secondes`);
-                    } else {
-                        alert("Nom d'utilisateur ou mot de passe incorrect");
-                    }
-                }
-            })
-            .catch(error => console.error('Can not retrieve data from login', error));
+        try {
+            const response = await fetch(`/login`, {
+                method: "POST",
+                body: JSON.stringify({ username, password }),
+                headers: { "Content-Type": "application/json" },
+            });
+            const data = await response.json();
 
+            if(data.success) {
+                const playeridResponse = await fetch(`/getId/${username}`);
+                const playeridData = await playeridResponse.json();
+                cookies.set("playerid", playeridData.identifier, 1);
+                localStorage.setItem("token", data.token);
+                window.location.href = "/";
+            } else {
+                handleLoginError(data);
+            }
+        } catch (error) {
+            console.error('Cannot retrieve data from login', error);
+        }
     });
 
     // Event listener for sign up form

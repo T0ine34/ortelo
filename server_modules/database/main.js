@@ -101,6 +101,7 @@ class Database {
                 }
 
                 // Utilisation de requêtes préparées pour éviter les injections SQL
+                console.log(insertPlayerQuery, params);
                 this._db.run(insertPlayerQuery, params, function(err) {
                     if (err) {
                         logger.error(`Cannot create player: ${err}`);
@@ -173,6 +174,21 @@ class Database {
                 } else resolve(true);
             });
         });
+    }
+    getUsername(playerid, callback) {
+        const query = `SELECT playername FROM player WHERE identifier = ?;`;
+        const stmt = this._db.prepare(query);
+        stmt.get(playerid, (err, row) => {
+            if(err) {
+                logger.error(`Can not retrieve ${playerid}'s username: ${err.toString()}`);
+                callback("null");
+            } else if(row) {
+                callback(row.playername);
+            } else {
+                callback("null");
+            }
+        });
+        stmt.finalize();
     }
 
     confirmRegistration(username) {

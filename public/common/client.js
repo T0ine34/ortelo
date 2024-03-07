@@ -17,9 +17,8 @@ const token = localStorage.getItem("token");// au lieu de se baser sur la prése
 */
 let username;
 let playerid;
-if(cookies.exists("playerid") || true){
+if(cookies.exists("playerid")){
     playerid = cookies.get("playerid");
-    playerid = "g";
     console.info("playerid read from cookies : " + playerid);
 } else {
     console.info("player not found in cookies");
