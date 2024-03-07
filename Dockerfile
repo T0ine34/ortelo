@@ -14,6 +14,9 @@ RUN pip3 install json5
 # Create app directory
 WORKDIR /usr/src/app
 
+# Set environment variables
+ENV OrteloDEPLOY=1
+
 # Install app dependencies
 COPY database/ database/
 COPY json_structures/ json_structures/

@@ -85,5 +85,5 @@ document.querySelector("#showPassword").addEventListener("click", function() {
     })
     .catch(error => {
     console.error('Error fetching user data:', error);
-    });
+    }); 
     });

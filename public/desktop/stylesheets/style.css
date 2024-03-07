@@ -348,3 +348,18 @@ body{
 .gamesContainer.dimmed {
     background-color: rgba(0, 0, 0, 0.5);
 }
+
+#password-strength-indicator{
+    padding: 4px;
+    border-radius: 8px;
+    font-size: 12px;    
+}
+
+#username-validate-indicator {
+    padding: 4px;
+    border-radius: 8px; 
+    font-size: 12px;
+}
+
+
+
