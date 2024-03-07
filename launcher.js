@@ -44,5 +44,7 @@ function main(){
         }
     }
 }
-obfuscation();
+if (process.env.OrteloDEPLOY) {
+    obfuscation();
+}
 main();
