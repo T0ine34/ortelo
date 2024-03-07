@@ -1,6 +1,28 @@
 import { cookies } from "./modules/cookies/main.js";
 emailjs.init("Oy9a9uSnZvDAnliA0");
 
+
+var script_oidc = document.createElement('script');
+script_oidc.src = "/oidc";
+script_oidc.type = "text/javascript";
+document.head.appendChild(script_oidc);
+script_oidc.onload = function() {
+    // Create a UserManager instance with the configuration
+    const userManager = new Oidc.UserManager(config);
+    // Event listener for the login with google button
+    document.querySelector('.login-google-button').addEventListener('click', async () => {
+        try {
+            // Redirect the user to the Google Identity Provider for authentication
+            const signIn = await userManager.signinRedirect();
+        } catch (error) {
+            console.error('Error when opening login with google popup:', error);
+        }
+    });
+};
+script_oidc.onerror = function(event) {
+    console.error("Le chargement du script OIDC a échoué", event);
+};
+
 // Google Identity Provider configuration
 const config = {
     authority: 'https://accounts.google.com',
@@ -9,19 +31,6 @@ const config = {
     response_type: 'id_token token',
     scope: 'openid profile email',
 };
-
-// Create a UserManager instance with the configuration
-const userManager = new Oidc.UserManager(config);
-
-// Event listener for the login with google button
-document.querySelector('.login-google-button').addEventListener('click', async () => {
-    try {
-        // Redirect the user to the Google Identity Provider for authentication
-        const signIn = await userManager.signinRedirect();
-    } catch (error) {
-        console.error('Error when opening login with google popup:', error);
-    }
-});
 
 
 document.addEventListener('DOMContentLoaded', function () {
