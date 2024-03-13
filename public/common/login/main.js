@@ -35,12 +35,12 @@ function loginPlayer(username, password) {
     .catch(error => console.error('Can not retrieve data from login', error));
 }
 
-function registerPlayer(emailjs, username, password, email, hasIdp = false) {
+function registerPlayer(emailjs, username, password, email, hasIdp, idpName) {
     return new Promise((resolve, reject) => {
         fetch(`/register`, {
             method: "POST",
             body: JSON.stringify({
-                username, password, email, hasIdp
+                username, password, email, hasIdp, idpName
             }),
             headers: {
                 "Content-Type": "application/json",

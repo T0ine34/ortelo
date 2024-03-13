@@ -26,19 +26,28 @@ const userManager = new Oidc.UserManager(config);
 
 userManager.signinRedirectCallback().then(async (user) => {
     if (user) {
-        let username = user.profile.name.split(" ")[0];
-        const playerExistsResponse = await fetch(`/status/${username}`);
+        let email = user.profile.email;
+        const playerExistsResponse = await fetch(`/status/${email}`);
         const playerExistsData = await playerExistsResponse.json();
         if(playerExistsData.success == true) {
+            const username = playerExistsData.username;
             
-            const playeridResponse = await fetch(`/getId/${username}`);
-            console.log(playeridResponse);
-            const playeridData = await playeridResponse.json();
-            console.log(playeridData);
-            cookies.set("playerid", playeridData.identifier, 1);
+            const loginResponse = await fetch(`/login`, {
+                method: "POST",
+                body: JSON.stringify({
+                    username, password:undefined, hasIdp:true, idpName:"Google"
+                }),
+                headers: {
+                    "Content-Type": "application/json",
+                },
+            })
+            const loginData = await loginResponse.json();
+            if(loginData.logged == true) cookies.set("playerid", loginData.identifier, 1);
         
         } else {
-            const registerData = await registerPlayer(emailjs, username, null, user.profile.email, true);
+
+            const registerData = await registerPlayer(emailjs, user.profile.name.split(" ")[0], null, user.profile.email, true, "Google");
+
             if(registerData.success == true) {
                 cookies.set("playerid", registerData.playerId, 1);
             } else {
