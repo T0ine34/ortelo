@@ -1,10 +1,6 @@
 html, body {
     padding: 0;
     margin: 0;
-    overflow: hidden;
-}
-
-body {
     background-color: var(--background-color);
     color: var(--border-color);
 }
@@ -13,10 +9,10 @@ body {
     display: flex;
     justify-content: center;
     align-items: center;
-    flex-direction: column ;
+    flex-direction: column;
     margin: 0;
     padding: 0;
-    min-height: 100vh;
+    min-height: 96vh;
     width: 100%;
 }
 
@@ -25,23 +21,14 @@ body {
     display: flex;
     justify-content: center;
 }
+.head header { width: 100%; }
 
-.head header {
-    width: 100%;
-}
 
-img {
-    height: auto;
-    width: 100%;
-}
-
-#login, #register, #forgot-password {
+#login {
     display: flex;
-    flex-direction: column;
-    justify-content: center;
-    width: 100%;
-    height: 100%;
-    font-size: 1.25rem;
+    justify-content: space-between;
+    max-width: 600px;
+    margin: 0 auto;
 }
 
 #login header, #register header, #forgot-password header {
@@ -49,34 +36,57 @@ img {
     text-align: center;
 }
 
-form {
+#login-with { box-shadow: 0 1px 2px 0 rgba(255, 228, 228, 0.09); }
+
+#login-form {
+    width: 60%;
     display: flex;
     flex-direction: column;
     justify-content: center;
     margin: auto;
-    width: 40%;
+    padding-left: 0.75rem;
 }
 
-form button {
-    margin-bottom: 0.55rem;
-    height: 1.45rem;
-}
-
-.center-content {
+.login-google-button {
+    height: 10%;
     display: flex;
-    justify-content: center;
     align-items: center;
-    width: 70%;
-    height: 100%;
+    margin: 0;
+}
+            
+.form-group { margin-bottom: 15px; }
+label { margin-bottom: 5px; }
+   
+
+input[type="text"], input[type="password"], button[type="submit"], button[type="button"] {
+    width: 100%;
+    padding: 8px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
 }
 
-.form-item {
-    width: 70%;
-    height: 1.7rem;
+input[type="checkbox"] {
+    width: auto;
+    margin: auto;
+}
+            
+button[type="button"],
+button[type="submit"] {
+    cursor: pointer;
+    background-color: #007bff;
+    color: #fff;
+    border: none;
+    margin-bottom: 2px;
+    margin-top: 2px;
+    border-radius: 5px;
+    transition: all 0.25s ease-in-out;
 }
 
-.form-group {
-    padding: 0.60rem;
+            
+button[type="button"]:hover,
+button[type="submit"]:hover {
+    background-color: #5aa9ff;
+    transition: all 0.25s ease-in-out;
 }
 
 .round-border {
