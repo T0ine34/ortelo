@@ -8,6 +8,7 @@
         --accent-color: rgba(84, 146, 246, 0.69);
         --accent-color-hover: rgba(49, 127, 253, 0.9);
         --detail-color: #888888;
+        --colored-element: #186b18;
     }
 }
 
@@ -18,6 +19,7 @@
         --accent-color : rgba(115, 165, 245, 0.69);
         --accent-color-hover : rgba(40, 108, 218, 0.9);
         --detail-color : #888888;
+        --colored-element: var(--detail-color);
     }
 }
 
