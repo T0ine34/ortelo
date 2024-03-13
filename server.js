@@ -330,13 +330,15 @@ const limiter = rateLimit({
  * @param {String} username The player's username
  * @returns {json} With most data available and free to see
  */
-app.get('/status/:username', async (req, res) => {
-    const found = await database.doPlayerExists(req.params.username);
+app.get('/status/:email', async (req, res) => {
+    const found = await database.doPlayerExists(req.params.email);
     if(!found) { return res.send( { success: false, reason: "player not found" }); }
-    const online = await database.isPlayerOnline(req.params.username);
-    const confirmed = await database.isPlayerConfirmed(req.params.username);
+    const online = await database.isPlayerOnline(req.params.email);
+    const confirmed = await database.isPlayerConfirmed(req.params.email);
+    const username = await database.getUsername(req.params.email);
     return res.send({ 
         success: true,
+        username: username,
         online: online,
         isConfirmed: confirmed
     });
@@ -350,8 +352,8 @@ app.get('/status/:username', async (req, res) => {
  * @param {String} username The player's username
  * @returns {String} The playerId
  */
-app.get('/getId/:username', async (req, res) => {
-    const id = await database.getPlayerIdentifier(req.params.username);
+app.get('/getId/:email', async (req, res) => {
+    const id = await database.getPlayerIdentifier(req.params.email);
     return res.send({identifier: id});
 });
 
@@ -393,7 +395,7 @@ app.post('/getAccessToken', async (req, res) => {
  * @returns {boolean} True if the user is logged in
  */
 app.post('/login', async (req, res) => {
-    const logged = await database.login(req.body.username, req.body.password);
+    const logged = await database.login(req.body.username, req.body.password, req.body.hasIdp == true ? req.body.hasIdp : false, req.body.idpName ? req.body.idpName : null);
     logger.info(`Logging player ${req.body.username} : ${logged}`);
     return res.send(logged);
 });
@@ -408,7 +410,7 @@ app.post('/login', async (req, res) => {
  */
 app.post('/register', async (req, res) => {
     const email_url = URLGenerator.genURL('confirm-register', req.body.username);
-    const response = await database.createPlayer(req.body.username, req.body.password, req.body.email, email_url.replace('confirm-register/', ''), req.body.hasIdp == true ? req.body.hasIdp : false);
+    const response = await database.createPlayer(req.body.username, req.body.password, req.body.email, email_url.replace('confirm-register/', ''), req.body.hasIdp == true ? req.body.hasIdp : false, req.body.idpName ? req.body.idpName : null);
     const created = response.created;
     if(created) {
         logger.info(`Player ${req.body.username} created successfully`);
@@ -533,48 +535,47 @@ function set_rooms(){
 // -------------------------------------------------------------------- SERVER EVENTS
 
 cio.on(EVENTS.INTERNAL.CONNECTION, (user) => {
-    user.once(EVENTS.MISC.PLAYERID, (timestamp, playerid) => {
-        database.getUsername(playerid, (username) => {
-            if(!username && username != "null"){
-                logger.warning("A user tried to connect with an invalid playerid : " + playerid);
-                return; //if the playerid is invalid, we don't want to continue
+    user.once(EVENTS.MISC.PLAYERID, async (timestamp, playerid) => {
+        const username = await database.getUsername(playerid, true);
+        console.log(username)
+        if(!username && username != "null"){
+            logger.warning("A user tried to connect with an invalid playerid : " + playerid);
+            return; //if the playerid is invalid, we don't want to continue
+        }
+
+        user.emit(EVENTS.MISC.USERNAME, Date.now(), username); //sending the username to the user
+
+        user.username = username; //setting the username of the user
+        users.set(username, user); //registering the user in the users map
+        user.emit(EVENTS.SYSTEM.INFO, Date.now(), "Vous êtes connecté en tant que " + username);   //sending a message to the user to inform him that he is connected
+        rooms.get(general).emit(EVENTS.CHAT.USER_JOIN, Date.now(), username);               //broadcasting the newUser event to all the users of the general room, excepting the new one
+        user.joinRoom(rooms.get(general));        //adding the user to the general room
+        rooms.get(general).emit(EVENTS.CHAT.USER_JOINED, Date.now(), username);             //broadcasting the newUser event to all the users of the general room, including the new one
+
+        user.on(EVENTS.INTERNAL.DISCONNECTING, (reason) => {
+            for(let room of user.rooms.values()){
+                room.emit(EVENTS.CHAT.USER_LEAVE, Date.now(), user.username);
             }
+        });
 
-            user.emit(EVENTS.MISC.USERNAME, Date.now(), username); //sending the username to the user
+        user.on(EVENTS.INTERNAL.DISCONNECT, (reason) => {
+            for(let room of user.rooms.values()){
+                room.emit(EVENTS.CHAT.USER_LEFT, Date.now(), user.username);
+            }
+        });
 
-            user.username = username; //setting the username of the user
-            users.set(username, user); //registering the user in the users map
-            user.emit(EVENTS.SYSTEM.INFO, Date.now(), "Vous êtes connecté en tant que " + username);   //sending a message to the user to inform him that he is connected
-            rooms.get(general).emit(EVENTS.CHAT.USER_JOIN, Date.now(), username);               //broadcasting the newUser event to all the users of the general room, excepting the new one
-            user.joinRoom(rooms.get(general));        //adding the user to the general room
-            rooms.get(general).emit(EVENTS.CHAT.USER_JOINED, Date.now(), username);             //broadcasting the newUser event to all the users of the general room, including the new one
-
-            user.on(EVENTS.INTERNAL.DISCONNECTING, (reason) => {
+        user.on(EVENTS.CHAT.MESSAGE, (timestamp, username, msg) => { //catching the send_message event, triggered by the client when he sends a message
+            if (!parseCMD(msg, user, cio, rooms)) {
                 for(let room of user.rooms.values()){
-                    room.emit(EVENTS.CHAT.USER_LEAVE, Date.now(), user.username);
-                }
-            });
-
-            user.on(EVENTS.INTERNAL.DISCONNECT, (reason) => {
-                for(let room of user.rooms.values()){
-                    room.emit(EVENTS.CHAT.USER_LEFT, Date.now(), user.username);
-                }
-            });
-
-            user.on(EVENTS.CHAT.MESSAGE, (timestamp, username, msg) => { //catching the send_message event, triggered by the client when he sends a message
-                if (!parseCMD(msg, user, cio, rooms)) {
-                    for(let room of user.rooms.values()){
-                        if(room.isIn(user)){
-                            room.transmit(EVENTS.CHAT.MESSAGE, Date.now(), username, msg); //broadcasting the new_message event to all the users, including the sender
-                        }
+                    if(room.isIn(user)){
+                        room.transmit(EVENTS.CHAT.MESSAGE, Date.now(), username, msg); //broadcasting the new_message event to all the users, including the sender
                     }
                 }
-            });
-
-            // here, the user is connected, and the server is ready to receive events from him
+            }
         });
-    });
 
+        // here, the user is connected, and the server is ready to receive events from him
+    });
 });
 
 set_redirections();
