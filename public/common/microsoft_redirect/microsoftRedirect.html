@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    <script>
+        function getUrlParams(url) {
+            const params = {};
+            const urlSearchParams = new URLSearchParams(url.split('?')[1]);
+            for (const [key, value] of urlSearchParams.entries()) {
+                params[key] = value;
+            }
+            return params;
+        }
+        const redirectUrl = window.location.href;
+        const urlParams = getUrlParams(redirectUrl);
+        console.log(urlParams)
+
+
+
+        // Fonction pour récupérer les informations de l'utilisateur Microsoft
+        function getUserInfo() {
+            // Endpoint de l'API Microsoft Graph pour récupérer les informations de l'utilisateur
+            const graphApiEndpoint = 'https://graph.microsoft.com/v1.0/me';
+
+            // Effectuer une requête à l'API Microsoft Graph en incluant le jeton d'accès dans les en-têtes
+            fetch(graphApiEndpoint, {
+                headers: {
+                    'Authorization': `Bearer ${urlParams.code}`
+                }
+            })
+            .then(response => response.json())
+            .then(data => {
+                // Les données de l'utilisateur Microsoft sont disponibles dans l'objet 'data'
+                console.log('User Info:', data);
+            })
+            .catch(error => {
+                console.error('Error:', error);
+            });
+        }
+
+        // Appeler la fonction getUserInfo avec le jeton d'accès
+        getUserInfo();
+
+    </script>
+</body>
+</html>

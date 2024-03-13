@@ -2,7 +2,7 @@ import { loginPlayer, registerPlayer } from "./login/main.js";
 emailjs.init("Oy9a9uSnZvDAnliA0");
 
 // Event listener for the login with google button
-document.querySelector('.login-google-button').addEventListener('click', async () => {
+document.querySelector('.google').addEventListener('click', async () => {
     try {
         const redirect_uri = await fetch('/redirectUri');
         const redirect_uri_data = await redirect_uri.json();
@@ -25,6 +25,19 @@ document.querySelector('.login-google-button').addEventListener('click', async (
     } catch (error) {
         console.error('Error when opening login with google popup:', error);
     }
+});
+
+
+document.querySelector('.microsoft').addEventListener('click', async () => {
+    // Remplacez ces valeurs par celles de votre application
+    const clientId = 'ed4adea3-500d-4db7-b5da-1e4fee5bd6a1';
+    const redirectUri = 'http://localhost:3000/microsoft_redirect/microsoftRedirect.html'; // L'URI de redirection de votre application
+    
+    // Créez l'URL d'authentification Microsoft
+    const authUrl = `https://login.microsoftonline.com/common/oauth2/v2.0/authorize?client_id=${clientId}&response_type=id_token&redirect_uri=${redirectUri}&scope=https://graph.microsoft.com/user.read`;
+
+    // Redirigez l'utilisateur vers l'URL d'authentification Microsoft
+    window.location.href = authUrl;
 });
 
 

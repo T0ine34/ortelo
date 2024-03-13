@@ -24,6 +24,11 @@ const vm = require('vm');
 const mailer = require('@emailjs/browser');
 const rateLimit = require("express-rate-limit");
 
+// Connexion / Inscription avec Microsoft
+const passport = require('passport');
+const OIDCStrategy = require('passport-azure-ad').OIDCStrategy;
+const session = require('express-session');
+
 let logger = new Logger();
 
 // -------------------------------------------------------------------- SERVER INITIALIZATION
@@ -47,7 +52,6 @@ mailer.init("Oy9a9uSnZvDAnliA0");
 
 
 // -------------------------------------------------------------------- SERVER CONFIGURATION
-
 
 /**
  * Start a new game with the given game name and username.
