@@ -29,14 +29,9 @@ document.querySelector('.google').addEventListener('click', async () => {
 
 
 document.querySelector('.microsoft').addEventListener('click', async () => {
-    // Remplacez ces valeurs par celles de votre application
     const clientId = 'ed4adea3-500d-4db7-b5da-1e4fee5bd6a1';
-    const redirectUri = 'http://localhost:3000/microsoft_redirect/microsoftRedirect.html'; // L'URI de redirection de votre application
-    
-    // Créez l'URL d'authentification Microsoft
-    const authUrl = `https://login.microsoftonline.com/common/oauth2/v2.0/authorize?client_id=${clientId}&response_type=id_token&redirect_uri=${redirectUri}&scope=https://graph.microsoft.com/user.read`;
-
-    // Redirigez l'utilisateur vers l'URL d'authentification Microsoft
+    const redirectUri = 'http://localhost:3000/microsoft_redirect/microsoftRedirect.html'; 
+    const authUrl = `https://login.microsoftonline.com/common/oauth2/v2.0/authorize?client_id=${clientId}&response_type=code&redirect_uri=${redirectUri}&scope=https://graph.microsoft.com/user.read`;
     window.location.href = authUrl;
 });
 

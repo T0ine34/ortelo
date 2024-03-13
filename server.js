@@ -24,11 +24,6 @@ const vm = require('vm');
 const mailer = require('@emailjs/browser');
 const rateLimit = require("express-rate-limit");
 
-// Connexion / Inscription avec Microsoft
-const passport = require('passport');
-const OIDCStrategy = require('passport-azure-ad').OIDCStrategy;
-const session = require('express-session');
-
 let logger = new Logger();
 
 // -------------------------------------------------------------------- SERVER INITIALIZATION
@@ -368,6 +363,27 @@ app.get('/getId/:username', async (req, res) => {
 app.get('/redirectUri', async (req, res) => {
     const redirect_uri = process.env.OrteloDEPLOY ? 'https://lila.vps.boxtoplay.com/identityprovider_login/oidcredirect.html' : 'http://localhost:3000/identityprovider_login/oidcredirect.html';
     return res.send({redirect_uri: redirect_uri});
+});
+
+/**
+ * Gets the Access Token from Microsoft
+ * @param {String} token The token from Microsoft
+ */
+app.post('/getAccessToken', async (req, res) => {
+    try {
+        const response = await fetch('https://login.microsoftonline.com/common/oauth2/v2.0/token', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/x-www-form-urlencoded'
+            },
+            body: `client_id=ed4adea3-500d-4db7-b5da-1e4fee5bd6a1&client_secret=fEY8Q~Cyt0CZGc.W28dQ3qH2DpJMz3lqXDiNkaF.&tenant=common&scope=user.read&grant_type=authorization_code&code=${req.body.code}&redirect_uri=${encodeURIComponent("http://localhost:3000/microsoft_redirect/microsoftRedirect.html")}`
+        });
+        const data = await response.json();
+        res.json(data);
+    } catch (error) {
+        console.error('Error:', error);
+        res.status(500).json({ error: 'Internal Server Error' });
+    }
 });
 
 /**

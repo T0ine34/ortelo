@@ -3,48 +3,41 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
+    <title>Redirected...</title>
+
+    <style>
+        html, body {
+            width: 100vw;
+            height: 100vh;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            flex-direction: column;
+        }
+
+        .loader {
+            border: 16px solid #f3f3f3; /* Light grey */
+            border-top: 16px solid #3498db; /* Blue */
+            border-radius: 50%;
+            width: 120px;
+            height: 120px;
+            animation: spin 2s linear infinite;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+    </style>
 </head>
+
 <body>
-    <script>
-        function getUrlParams(url) {
-            const params = {};
-            const urlSearchParams = new URLSearchParams(url.split('?')[1]);
-            for (const [key, value] of urlSearchParams.entries()) {
-                params[key] = value;
-            }
-            return params;
-        }
-        const redirectUrl = window.location.href;
-        const urlParams = getUrlParams(redirectUrl);
-        console.log(urlParams)
-
-
-
-        // Fonction pour récupérer les informations de l'utilisateur Microsoft
-        function getUserInfo() {
-            // Endpoint de l'API Microsoft Graph pour récupérer les informations de l'utilisateur
-            const graphApiEndpoint = 'https://graph.microsoft.com/v1.0/me';
-
-            // Effectuer une requête à l'API Microsoft Graph en incluant le jeton d'accès dans les en-têtes
-            fetch(graphApiEndpoint, {
-                headers: {
-                    'Authorization': `Bearer ${urlParams.code}`
-                }
-            })
-            .then(response => response.json())
-            .then(data => {
-                // Les données de l'utilisateur Microsoft sont disponibles dans l'objet 'data'
-                console.log('User Info:', data);
-            })
-            .catch(error => {
-                console.error('Error:', error);
-            });
-        }
-
-        // Appeler la fonction getUserInfo avec le jeton d'accès
-        getUserInfo();
-
-    </script>
+    <h1>You are being redirected</h1> 
+    <h3> This might take some time <br> Please wait... </h3>
+    <div class="loader"></div>
+    <script src="microsoft.js"></script>
 </body>
 </html>
