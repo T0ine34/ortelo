@@ -23,12 +23,24 @@ html, body {
 }
 .head header { width: 100%; }
 
+main { width: 80%; }
 
-#login {
+#login, #register {
     display: flex;
     justify-content: space-between;
-    max-width: 600px;
     margin: 0 auto;
+}
+
+#login { max-width: 50%; }
+#register { max-width: 80%; }
+#forgot-password {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+    margin: 0 auto;
+    max-width: 50%;
+
 }
 
 #login header, #register header, #forgot-password header {
@@ -36,9 +48,9 @@ html, body {
     text-align: center;
 }
 
-#login-with { box-shadow: 0 1px 2px 0 rgba(255, 228, 228, 0.09); }
+.join-with { box-shadow: 0 1px 2px 0 rgba(255, 228, 228, 0.09); }
 
-#login-form {
+#login-form, #signup-form {
     width: 60%;
     display: flex;
     flex-direction: column;
@@ -54,11 +66,12 @@ html, body {
     margin: 0;
 }
             
-.form-group { margin-bottom: 15px; }
+#login .form-group { margin-bottom: 15px; }
+.form-group { flex: 0 0 50%; }
 label { margin-bottom: 5px; }
    
 
-input[type="text"], input[type="password"], button[type="submit"], button[type="button"] {
+input[type="text"], input[type="email"], input[type="password"], button[type="submit"], button[type="button"] {
     width: 100%;
     padding: 8px;
     border: 1px solid #ccc;
@@ -93,4 +106,9 @@ button[type="submit"]:hover {
     border-width: 1px;
     border-color: var(--border-color);
     border-radius: 0.8em;
+}
+
+.form-columns {
+    display: flex;
+    flex-wrap: wrap;
 }

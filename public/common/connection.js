@@ -87,19 +87,19 @@ document.addEventListener('DOMContentLoaded', function () {
 });
 
 function showLogin() {
-    document.querySelector("#login").style.display = "block";
+    document.querySelector("#login").style.display = "flex";
     document.querySelector("#register").style.display = "none";
     document.querySelector("#forgot-password").style.display = "none";
 }
 
 function showSignup() {
-    document.querySelector("#register").style.display = "block";
+    document.querySelector("#register").style.display = "flex";
     document.querySelector("#login").style.display = "none";
     document.querySelector("#forgot-password").style.display = "none";
 }
 
 function showForgotPassword() {
-    document.querySelector("#forgot-password").style.display = "block";
+    document.querySelector("#forgot-password").style.display = "flex";
     document.querySelector("#login").style.display = "none";
     document.querySelector("#register").style.display = "none";
 }
