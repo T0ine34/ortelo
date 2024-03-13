@@ -378,7 +378,7 @@ app.post('/getAccessToken', async (req, res) => {
             headers: {
                 'Content-Type': 'application/x-www-form-urlencoded'
             },
-            body: `client_id=ed4adea3-500d-4db7-b5da-1e4fee5bd6a1&client_secret=fEY8Q~Cyt0CZGc.W28dQ3qH2DpJMz3lqXDiNkaF.&tenant=common&scope=user.read&grant_type=authorization_code&code=${req.body.code}&redirect_uri=${encodeURIComponent("http://localhost:3000/microsoft_redirect/microsoftRedirect.html")}`
+            body: `client_id=ed4adea3-500d-4db7-b5da-1e4fee5bd6a1&client_secret=fEY8Q~Cyt0CZGc.W28dQ3qH2DpJMz3lqXDiNkaF.&tenant=common&scope=user.read&grant_type=authorization_code&code=${req.body.code}&redirect_uri=${encodeURIComponent(`${process.env.OrteloDEPLOY ? "https://lila.vps.boxtoplay.com/" : "http://localhost:3000/"}microsoft_redirect/microsoftRedirect.html`)}`
         });
         const data = await response.json();
         res.json(data);
@@ -537,7 +537,6 @@ function set_rooms(){
 cio.on(EVENTS.INTERNAL.CONNECTION, (user) => {
     user.once(EVENTS.MISC.PLAYERID, async (timestamp, playerid) => {
         const username = await database.getUsername(playerid, true);
-        console.log(username)
         if(!username && username != "null"){
             logger.warning("A user tried to connect with an invalid playerid : " + playerid);
             return; //if the playerid is invalid, we don't want to continue
