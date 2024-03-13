@@ -1,13 +1,4 @@
 
-:root {
-        --background-color: #FFFFFF;
-        --border-color: #000000;
-        --accent-color: rgba(84, 146, 246, 0.69);
-        --accent-color-hover: rgba(49, 127, 253, 0.9);
-        --detail-color: #888888;
-        --colored-element: #186b18;
-    }
-
 
 body {
     font-family: Arial, sans-serif;
