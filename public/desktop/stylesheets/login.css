@@ -25,6 +25,12 @@ html, body {
 
 main { width: 80%; }
 
+.round-border {
+    border-width: 1px;
+    border-color: var(--border-color);
+    border-radius: 0.8em;
+}
+
 #login, #register {
     display: flex;
     justify-content: space-between;
@@ -40,7 +46,6 @@ main { width: 80%; }
     flex-direction: column;
     margin: 0 auto;
     max-width: 50%;
-
 }
 
 #login header, #register header, #forgot-password header {
@@ -62,14 +67,20 @@ main { width: 80%; }
 .login-google-button {
     height: 10%;
     display: flex;
+    background-color: #fff;
     align-items: center;
     margin: 0;
+    border: none;
+    transition: all 0.25s ease-in-out;
+}
+.login-google-button:hover { 
+    cursor: pointer;
+    background-color: #dbdbdb;
 }
             
 #login .form-group { margin-bottom: 15px; }
 .form-group { flex: 0 0 50%; }
 label { margin-bottom: 5px; }
-   
 
 input[type="text"], input[type="email"], input[type="password"], button[type="submit"], button[type="button"] {
     width: 100%;
@@ -100,12 +111,6 @@ button[type="button"]:hover,
 button[type="submit"]:hover {
     background-color: #5aa9ff;
     transition: all 0.25s ease-in-out;
-}
-
-.round-border {
-    border-width: 1px;
-    border-color: var(--border-color);
-    border-radius: 0.8em;
 }
 
 .form-columns {
