@@ -42,7 +42,7 @@ fetch('/getAccessToken', {
         const playerExistsData = await playerExistsResponse.json();
 
         if(playerExistsData.success == true) {
-            username = playerExistsData.username;
+            const username = playerExistsData.username;
 
             const loginResponse = await fetch(`/login`, {
                 method: "POST",

@@ -198,7 +198,7 @@ class Database {
                     resolve(null);
                 } else {
                     logger.info(`Successfully retrieved ${email}'s idpList : ${row.idpList}`);
-                    resolve(row.idpList);
+                    resolve(row.idpList ? row.idpList : "");
                 }
             });
         });
@@ -235,7 +235,7 @@ class Database {
         return new Promise(async (resolve, reject) => {
             if(hasIdP == true) {
                 const email = await this.getEmail(name).catch( (err) => logger.error(err.toString()));
-                const dbidpList = await this.getPlayerIdPList(email).catch( (err) => logger.error(err.toString()));
+                let dbidpList = await this.getPlayerIdPList(email).catch( (err) => logger.error(err.toString()));
                 if(!dbidpList.includes(idpName)) {
                     this.addIdp(email, idpName).catch( (err) => logger.error(err.toString()));
                 }
