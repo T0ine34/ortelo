@@ -75,17 +75,19 @@ class Database {
      * @param {string} emailAddress is the player's email address, is not a must.
      * @returns wether the player has been created successfully or not.
      */
-    createPlayer(name, password, emailAddress, email_url, hasIdp = false){
+    createPlayer(name, password, emailAddress, email_url, hasIdp, idpName){
         return new Promise(async (resolve, reject) => {
             
-            const exists = await this.doPlayerExists(name);
+            const exists = await this.doPlayerExists(emailAddress);
+            const usernameAlreadyExists = await this.doUsernameExists(name);
+            if(usernameAlreadyExists.exists == true) name = name + ++usernameAlreadyExists.quantity;
             if(exists == true) {
                 resolve({"created" : false, "reason": "Player already exists"});
             } else {
                 let identifier = this.#generateRandomKey(64);
                 let sql;
                 if(hasIdp == true) {
-                    sql = `INSERT INTO player (playername, email, identifier, hasIdP) VALUES ('${name}', '${emailAddress}', '${identifier}', ${hasIdp})`;
+                    sql = `INSERT INTO player (playername, email, identifier, hasIdP, idpList) VALUES ('${name}', '${emailAddress}', '${identifier}', ${hasIdp}, '${idpName}')`;
                 } else {
                     let salt = BCrypt.genSaltSync(settings.get("database.bcryptRounds"));
                     let hashedPassword = BCrypt.hashSync(password, salt);
@@ -99,7 +101,7 @@ class Database {
                 });
 
 
-                let playerId = await this.getPlayerIdentifier(name);
+                let playerId = await this.getPlayerIdentifier(emailAddress);
                 if(hasIdp == true) {
                     logger.fine(`Successfully created ${name}'s account as an IdP user`);
                     logger.fine('Id of the player is ' + playerId);
@@ -164,16 +166,59 @@ class Database {
         });
     }
 
-    getPlayerIdentifier(username){
+    /**
+     * Gets the player's identifier
+     * @param {string} email the player's email address
+     * @returns the player's identifier
+     */
+    getPlayerIdentifier(email){
         return new Promise(async (resolve, reject) => {
-            this._db.get(`SELECT identifier FROM player WHERE playername='${username}'`, [], (err, row) => {
+            this._db.get(`SELECT identifier FROM player WHERE email='${email}'`, [], (err, row) => {
                 if(err) {
-                    logger.error(`Can not retrieve ${username}'s identifier : ${err.toString()}`);
+                    logger.error(`Can not retrieve ${email}'s identifier : ${err.toString()}`);
                     resolve(null);
                 } else {
-                    logger.info(`Successfully retrieved ${username}'s identifier : ${row.identifier}`);
+                    logger.info(`Successfully retrieved ${email}'s identifier : ${row.identifier}`);
                     resolve(row.identifier);
                 }
+            });
+        });
+    }
+
+    /**
+     * Gets the player's idp List from the database.
+     * @param {string} email the player's email address
+     * @returns 
+     */
+    getPlayerIdPList(email){
+        return new Promise(async (resolve, reject) => {
+            this._db.get(`SELECT idpList FROM player WHERE email='${email}'`, [], (err, row) => {
+                if(err) {
+                    logger.error(`Can not retrieve ${email}'s idpList : ${err.toString()}`);
+                    resolve(null);
+                } else {
+                    logger.info(`Successfully retrieved ${email}'s idpList : ${row.idpList}`);
+                    resolve(row.idpList);
+                }
+            });
+        });
+    }
+
+
+    /**
+     * @description Checks wether the player's username exists in the database or not.
+     * @param {string} username The username to check if it exists.
+     * @returns {boolean} wether the username exists or not.
+     */
+    doUsernameExists(username) {
+        return new Promise(async (resolve, reject) => {
+            this._db.all(`SELECT playername FROM player WHERE playername='${username}';`, [], (err, rows) => {
+                if(err) {
+                    logger.error(`Can not retrieve wether the username ${username} exists or no : ${err.toString()}`);
+                    resolve({exists: true, quantity: 0});
+                }
+                if(rows.length >= 1) resolve({exists: true, quantity: rows.length});
+                else resolve({exists: false});
             });
         });
     }
@@ -186,15 +231,23 @@ class Database {
      * @param  {string} password Player's password.
      * @return {boolean} True/False depending on logging in being successful or not.
      */
-    login(name, password) {
+    login(name, password, hasIdP, idpName) {
         return new Promise(async (resolve, reject) => {
-            const dbpassword = await this.getPassword(name).catch( (err) => logger.error(err.toString()));
-            const compareResult = await this.comparePassword(password, dbpassword).catch( (err) => logger.error(err.toString()));
-            let identifier = null;
-            if(compareResult) { //only get the identifier if the password is correct
-                identifier = await this.getPlayerIdentifier(name).catch( (err) => logger.error(err.toString()));
+            if(hasIdP == true) {
+                const email = await this.getEmail(name).catch( (err) => logger.error(err.toString()));
+                const dbidpList = await this.getPlayerIdPList(email).catch( (err) => logger.error(err.toString()));
+                if(!dbidpList.includes(idpName)) {
+                    this.addIdp(email, idpName).catch( (err) => logger.error(err.toString()));
+                }
+                const identifier = await this.getPlayerIdentifier(email).catch( (err) => logger.error(err.toString()));
+                resolve({"logged": true, "identifier": identifier});
+            } else {
+                const dbpassword = await this.getPassword(name).catch( (err) => logger.error(err.toString()));
+                const compareResult = await this.comparePassword(password, dbpassword).catch( (err) => logger.error(err.toString()));
+                let identifier = null;
+                if(compareResult) { identifier = await this.getPlayerIdentifier(name).catch( (err) => logger.error(err.toString())); }
+                resolve({"logged": compareResult, "identifier": identifier});
             }
-            resolve({"logged": compareResult, "identifier": identifier});
         });
     }
 
@@ -223,11 +276,11 @@ class Database {
      * @param  {string} name Player's name.
      * @return {boolean} True if player already exists, false otherwise.
      */
-    doPlayerExists(name) {
+    doPlayerExists(email) {
         return new Promise(async (resolve, reject) => {
-            this._db.all(`SELECT playername FROM player WHERE playername='${name}';`, [], (err, rows) => {
+            this._db.all(`SELECT email FROM player WHERE email='${email}';`, [], (err, rows) => {
                 if(err){
-                    logger.error(`Can not retrieve wether the player ${name} exists or no : ${err.toString()}`);
+                    logger.error(`Can not retrieve wether the player with email ${email} exists or no : ${err.toString()}`);
                     reject(true);
                 } 
                 if(rows.length > 0) resolve(true);
@@ -294,14 +347,30 @@ class Database {
         })
     }
 
-    getUsername(playerid, callback){
-        this._db.get(`SELECT playername FROM player WHERE identifier='${playerid}';`, [], (err, row) => {
-            if(err) {
-                logger.error(`Can not retrieve ${playerid}'s username : ${err.toString()}`);
-                callback("null");
-            }
-            if(row) callback(row.playername);
-            else callback("null");
+    getUsername(email, fromPlayerid = false){
+        return new Promise(async (resolve, reject) => {
+            this._db.get(`SELECT playername FROM player WHERE ${fromPlayerid == true ? 'identifier' : 'email'}='${email}';`, [], (err, row) => {
+                if(err) {
+                    logger.error(`Can not retrieve ${email}'s username : ${err.toString()}`);
+                    resolve(null);
+                }
+                if(row) resolve(row.playername);
+                else resolve(null);
+            });
+        });
+    }
+    
+
+    getEmail(username) {
+        return new Promise(async (resolve, reject) => {
+            this._db.get(`SELECT email FROM player WHERE playername='${username}';`, [], (err, row) => {
+                if(err) {
+                    logger.error(`Can not retrieve ${username}'s email : ${err.toString()}`);
+                    resolve(null);
+                }
+                if(row) resolve(row.email);
+                else resolve(null);
+            });
         });
     }
 
@@ -345,11 +414,11 @@ class Database {
         });
     }
 
-    isPlayerOnline(username) {
+    isPlayerOnline(email) {
         return new Promise(async (resolve, reject) => {
-            this._db.get(`SELECT online FROM player WHERE playername='${username}';`, [], (err, row) => {
+            this._db.get(`SELECT online FROM player WHERE email='${email}';`, [], (err, row) => {
                 if(err) {
-                    logger.error(`Can not retrieve wether ${username} is online or not : ${err.toString()}`);
+                    logger.error(`Can not retrieve wether ${email} is online or not : ${err.toString()}`);
                     reject(false);
                 }
                 if(row.online == 1) resolve(true);
@@ -358,11 +427,11 @@ class Database {
         });
     }
 
-    isPlayerConfirmed(username) {
+    isPlayerConfirmed(email) {
         return new Promise(async (resolve, reject) => {
-            this._db.get(`SELECT email FROM player WHERE playername='${username}';`, [], (err, row) => {
+            this._db.get(`SELECT email FROM player WHERE email='${email}';`, [], (err, row) => {
                 if(err) {
-                    logger.error(`Can not retrieve wether ${username} is confirmed or not : ${err.toString()}`);
+                    logger.error(`Can not retrieve wether ${email} is confirmed or not : ${err.toString()}`);
                     reject(false);
                 }
                 if(row.email) resolve(true);
@@ -370,6 +439,20 @@ class Database {
             });
         });
     }
+
+    addIdp(email, idpName) {
+        return new Promise(async (resolve, reject) => {
+            let idpList = await this.getPlayerIdPList(email);
+            idpList += `,${idpName}`;
+            this._db.exec(`UPDATE player SET idpList='${idpList}' WHERE email='${email}';`, (err) => {
+                if(err) {
+                    logger.error(`Can not add IdP to player : ${err.toString()}`);
+                    resolve(false);
+                } else resolve(true);
+            });
+        });
+    }
+
 
 
     /**

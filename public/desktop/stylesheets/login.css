@@ -64,16 +64,18 @@ main { width: 80%; }
     padding-left: 0.75rem;
 }
 
-.login-google-button {
+.login-with-button {
     height: 10%;
     display: flex;
     background-color: #fff;
     align-items: center;
-    margin: 0;
+    width: 100%;
+    margin-right: 10px;
+    margin-bottom: 10px;
     border: none;
     transition: all 0.25s ease-in-out;
 }
-.login-google-button:hover { 
+.login-with-button:hover { 
     cursor: pointer;
     background-color: #dbdbdb;
 }
