@@ -141,7 +141,7 @@ td:hover {
     animation: rotateAndFadeOut 5s;
 }
 
-.victory {
+.victory-icon {
     position: fixed;
     top: 50%;
     left: 50%;

@@ -1,5 +1,7 @@
 let EVENTS;
 let csocket;
+
+
 function start() {
     let currentPlayer;
     let isGameOver;
@@ -206,11 +208,20 @@ function start() {
             let centerY = (windowHeight / 2) - (victorySize / 2);
             let centerX = (windowWidth / 2) - (victorySize / 2);
 
+            const game_div = document.querySelector(".morpion_game_div");
+
             for (let i = 0; i < 10; i++) {
                 (function (i) {
-                    let victory_icon = document.querySelector("#victory" + i);
-                    if (!victory) {
-                        pumpkin.textContent = "❄️";
+
+                    //create 10 victory or defeat icons, and display them in random positions on the screen
+                    let victory_icon = document.createElement("div");
+                    victory_icon.classList.add("victory-icon");
+                    game_div.appendChild(victory_icon); 
+                    if (victory) {
+                        victory_icon.textContent = "🎉";
+                    }
+                    else{
+                        victory_icon.textContent = "❄️";
                     }
                     let randomOffsetY = (Math.random() - 0.5) * (windowHeight - victorySize);
                     let randomOffsetX = (Math.random() - 0.5) * (windowWidth - victorySize);
@@ -218,12 +229,12 @@ function start() {
                     victory_icon.style.top = (centerY + randomOffsetY) + "px";
                     victory_icon.style.left = (centerX + randomOffsetX) + "px";
                     victory_icon.style.display = "block";
-                    victory_icon.style.fontSize = pumpkinSize + "px";
+                    victory_icon.style.fontSize = "50px";
                     victory_icon.classList.add("rotateAndFadeOut");
-                    setTimeout((function (pumpkin) {
+                    setTimeout((function (victory_icon) {
                         return function () {
-                            pumpkin.style.display = "none";
-                            pumpkin.classList.remove("rotateAndFadeOut");
+                            victory_icon.style.display = "none";
+                            victory_icon.classList.remove("rotateAndFadeOut");
                         }
                     })(victory_icon), 5000);
                 })(i);
