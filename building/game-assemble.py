@@ -77,7 +77,7 @@ class Game:
                 raise KeyError("Key %s not found in index.json" % key)
             if not self.index[key]:
                 raise ValueError("Key %s cannot be empty in index.json" % key)
-        for key, path in self.index.items():
+        for key, path in flatten(self.index).items():
             if key not in ["name", "version", "description"]:
                 if not exists(path, self.path):
                     raise FileNotFoundError("File %s not found" % path)
