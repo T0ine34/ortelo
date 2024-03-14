@@ -32,7 +32,7 @@ document.querySelector('.microsoft').addEventListener('click', async () => {
     const clientId = 'ed4adea3-500d-4db7-b5da-1e4fee5bd6a1';
     const redirectUriResponse = await fetch("/redirectUriMicrosoft");
     const redirectUriData = await redirectUriResponse.json();
-    const authUrl = `https://login.microsoftonline.com/common/oauth2/v2.0/authorize?client_id=${clientId}&response_type=code&redirect_uri=${redirectUriData.redirectUri}&scope=https://graph.microsoft.com/user.read`;
+    const authUrl = `https://login.microsoftonline.com/common/oauth2/v2.0/authorize?client_id=${clientId}&response_type=code&redirect_uri=${redirectUriData.redirect_uri}&scope=https://graph.microsoft.com/user.read`;
     window.location.href = authUrl;
 });
 
