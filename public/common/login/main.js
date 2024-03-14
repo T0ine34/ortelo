@@ -23,12 +23,13 @@ function loginPlayer(username, password) {
             location.href = "/";
             
         } else {
-            if (data.includes("erreur")) {
-                const seconds = data.split(':')[1];
-                alert(`Trop de tentatives, veuillez réessayer dans ${seconds} secondes`);
-            } else {
-                alert("Nom d'utilisateur ou mot de passe incorrect");
-            }
+            alert("Nom d'utilisateur ou mot de passe incorrect.");
+            // if (data.includes("erreur")) {
+            //     const seconds = data.split(':')[1];
+            //     alert(`Trop de tentatives, veuillez réessayer dans ${seconds} secondes`);
+            // } else {
+            //     alert("Nom d'utilisateur ou mot de passe incorrect");
+            // }
         }
         
     })

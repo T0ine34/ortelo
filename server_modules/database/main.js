@@ -233,8 +233,8 @@ class Database {
      */
     login(name, password, hasIdP, idpName) {
         return new Promise(async (resolve, reject) => {
+            const email = await this.getEmail(name).catch( (err) => logger.error(err.toString()));
             if(hasIdP == true) {
-                const email = await this.getEmail(name).catch( (err) => logger.error(err.toString()));
                 let dbidpList = await this.getPlayerIdPList(email).catch( (err) => logger.error(err.toString()));
                 if(!dbidpList.includes(idpName)) {
                     this.addIdp(email, idpName).catch( (err) => logger.error(err.toString()));
@@ -245,7 +245,7 @@ class Database {
                 const dbpassword = await this.getPassword(name).catch( (err) => logger.error(err.toString()));
                 const compareResult = await this.comparePassword(password, dbpassword).catch( (err) => logger.error(err.toString()));
                 let identifier = null;
-                if(compareResult) { identifier = await this.getPlayerIdentifier(name).catch( (err) => logger.error(err.toString())); }
+                if(compareResult) { identifier = await this.getPlayerIdentifier(email).catch( (err) => logger.error(err.toString())); }
                 resolve({"logged": compareResult, "identifier": identifier});
             }
         });
