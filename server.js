@@ -367,6 +367,16 @@ app.get('/redirectUri', async (req, res) => {
     return res.send({redirect_uri: redirect_uri});
 });
 
+
+/**
+ * Gets the redirect uri for the Microsoft
+ * @returns {String} The redirect uri
+ */
+app.get('/redirectUriMicrosoft', async (req, res) => {
+    const redirect_uri = process.env.OrteloDEPLOY ? 'https://lila.vps.boxtoplay.com/microsoft_redirect/microsoftRedirect.html' : 'http://localhost:3000/microsoft_redirect/microsoftRedirect.html';
+    return res.send({redirect_uri: redirect_uri});
+});
+
 /**
  * Gets the Access Token from Microsoft
  * @param {String} token The token from Microsoft
