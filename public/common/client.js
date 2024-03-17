@@ -2,7 +2,7 @@ import { CSocket, EVENTS } from "./modules/events/main.js";
 import { cookies } from "./modules/cookies/main.js";
 
 // Required to put data in user's clipboard.
-new ClipboardJS('.urlShareButton');
+new ClipboardJS('#CopyButton');
 
 // Defines the maximum size for chat history
 const MAX_HISTORY_SIZE = 100;
@@ -323,6 +323,15 @@ function fetchGames() {
     });
 }
 
+async function GenQrCode(shareUrl){
+    let qrCodeElement = document.querySelector('#qrCode'); //type: HtmlImgElement
+    let url = `https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=${shareUrl}&format=svg&qzone=1&ecc=M`;
+
+    qrCodeElement.src = url;
+    qrCodeElement.alt = shareUrl;
+    
+}
+
 
 /**
  * Initiates the process to play a game.
@@ -370,34 +379,55 @@ function PlayGame(name) {
             }
 
             let roomWaitContainer = document.querySelector('.popup_wait_users');
-            let shareButton = document.querySelector('.urlShareButton');
-            let waitingScreen = document.querySelector('.waitingScreen');
-            let roomUrlbrute = document.querySelector('.roomUrlbrute');
+            let copyButton = document.querySelector('#copyButton');
+            let shareButton = document.querySelector('#shareButton');
 
             let shareUrl = window.location.href + startData.roomUrl;
-            roomUrlbrute.textContent = shareUrl;
 
-            let urlQrCode = document.querySelector('#roomUrlQrCode');
-            let qrUrl = `https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=%22${shareUrl}%22&format=svg&qzone=1`;
-            let qrResponse = await fetch(qrUrl);
-            if(qrResponse.ok) {
-                let responseText = await qrResponse.text();
-                urlQrCode.innerHTML = responseText;
-            } 
+
+
+            GenQrCode(shareUrl);
+
+            const roomUrlElement = document.querySelector('#roomUrl');
+            roomUrlElement.querySelector("#url").textContent = shareUrl;
+
+            const showButton = document.querySelector("#showUrlButton");
+
+            showButton.addEventListener('click', () => {
+                if(roomUrlElement.style.visibility !== 'visible') {
+                    roomUrlElement.style.visibility = 'visible';
+                    showButton.querySelector("img").src = "assets/images/eye-slash.svg";
+                    showButton.querySelector("p").textContent = "Cacher le lien";
+                } else {
+                    roomUrlElement.style.visibility = 'hidden';
+                    showButton.querySelector("img").src = "assets/images/eye.svg";
+                    showButton.querySelector("p").textContent = "Afficher le lien";
+                }
+            });
+
 
             roomWaitContainer.style.display = 'flex';
-            waitingScreen.style.display = 'block';
-            shareButton.style.display = 'inline-block';
-            roomUrlbrute.style.display = 'block';
-            urlQrCode.style.display = 'flex';
 
-            new ClipboardJS('.urlShareButton', {
+            new ClipboardJS('#copyButton', {
                 text: function () {
                     return shareUrl;
                 }
             });
 
             shareButton.addEventListener('click', function () {
+                try{
+                    navigator.share({
+                        title: 'Partager le lien de la salle',
+                        text: 'Rejoignez moi sur ce jeu',
+                        url: shareUrl
+                    });
+                }
+                catch(e){
+                    console.error("Error while sharing the link: ", e);
+                }
+            });
+
+            copyButton.addEventListener('click', function () {
                 this.classList.add('clicked');
                 let originalText = this.textContent;
                 this.textContent = 'Copié!';
@@ -406,6 +436,7 @@ function PlayGame(name) {
                     this.textContent = originalText;
                 }, 1000);
             });
+
             csocket.on(EVENTS.GAME.START, (timestamp) => {
                 if (timestamp) {
                     fetch(`/game-wait/${startData.roomUrl}`)
@@ -413,9 +444,6 @@ function PlayGame(name) {
                         .then(gameLaunchData => {
                             if (gameLaunchData.message.includes("started successfully")) {
                                 roomWaitContainer.style.display = 'none';
-                                waitingScreen.style.display = 'none';
-                                shareButton.style.display = 'none';
-                                roomUrlbrute.style.display = 'none';
                             }
                         });
                 }
