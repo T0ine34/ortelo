@@ -58,14 +58,28 @@
             <main class="games">
                 <div class="popup_wait_users">
                     <div class="roomWaitSomeUsers">
-                        <div class="waitingScreen" style="display: none;">
+                        <div class="waitingScreen">
                             <h2>Partagez avec votre ami !</h2>
                         </div>
-                        <button class="urlShareButton" style="display: none;">
-                            Copier le lien 
+                        <button id="copyButton" class="urlButton">
+                            Copier le lien
+                            <img src="assets/images/clipboard.svg" alt="Copier" class="clipboard icon">
                         </button>
-                        <a class="roomUrlbrute" style="display: none;"></a>
-                        <div id="roomUrlQrCode" class="" style="display: none;"></div>
+                        <button id="shareButton" class="urlButton">
+                            Partager
+                            <img src="assets/images/share.svg" alt="Partager" class="share icon">
+                        </button>
+                        <div id="roomUrlQrCode">
+                            <p>Scan me !</p>
+                            <img id="qrCode" src="blank" alt="QR Code">
+                        </div>
+                        <button id="showUrlButton" class="urlButton">
+                            Afficher le lien
+                            <img src="assets/images/eye.svg" alt="Afficher" class="eye icon">
+                        </button>
+                        <div id="roomUrl">
+                            <p id="url"></p>
+                        </div>
                     </div>
                 </div>
                 <div class="gamesContainer">
