@@ -25,6 +25,9 @@ server-test:
 client-test:
 	node test/client.js
 
+html-test:
+	$(PYTHON) test/html-tests.py public
+
 end-to-end-test:
 	$(PYTHON) test/end-to-end.py
 
