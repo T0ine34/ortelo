@@ -326,10 +326,10 @@ body{
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
 }
 
-.urlButton > p {
+.urlButton{
     display: inline-block;
-    margin: 0;
-    padding: 0;
+    margin: 0.5em 0;
+    padding: 0.5em 1em;
 }
 
 .urlButton:hover {
@@ -376,7 +376,8 @@ body{
 }
 
 #roomUrl{
-    visibility: hidden;
+    opacity: 0; /* Hide the element */
+    transition: opacity 0.25s linear;
 }
 
 .gamesContainer.dimmed {

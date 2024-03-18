@@ -394,12 +394,12 @@ function PlayGame(name) {
             const showButton = document.querySelector("#showUrlButton");
 
             showButton.addEventListener('click', () => {
-                if(roomUrlElement.style.visibility !== 'visible') {
-                    roomUrlElement.style.visibility = 'visible';
+                if(roomUrlElement.style.opacity === '0' || roomUrlElement.style.opacity === '') {
+                    roomUrlElement.style.opacity = '1';
                     showButton.querySelector("img").src = "assets/images/eye-slash.svg";
                     showButton.querySelector("p").textContent = "Cacher le lien";
                 } else {
-                    roomUrlElement.style.visibility = 'hidden';
+                    roomUrlElement.style.opacity = '0';
                     showButton.querySelector("img").src = "assets/images/eye.svg";
                     showButton.querySelector("p").textContent = "Afficher le lien";
                 }
