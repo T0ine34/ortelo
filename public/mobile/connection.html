@@ -5,7 +5,6 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="icon" type="image/x-icon" href="assets/images/Logo.svg">
-    <link rel="stylesheet" href="stylesheets/style.css">
     <link rel="stylesheet" href="stylesheets/login.css">
 </head>
 <body>
@@ -45,6 +44,15 @@
                     <button type="submit" class="round-border">Se connecter</button>
                     <button id="showSignup" class="round-border" type="button">Créer un compte</button>
                     <button id="showForgotPassword" class="round-border" type="button">Mot de passe oublié ?</button>
+
+                    <button class="login-with-button google form-item round-border">
+                        <img src="assets/images/google_logo.svg" alt="Google" style="width: 1.5rem; height: 1.5rem;">
+                        Se connecter avec Google
+                    </button>
+                    <button class="login-with-button microsoft form-item round-border">
+                        <img src="assets/images/microsoft_logo.svg" alt="Microsoft" style="width: 1.5rem; height: 1.5rem;">
+                        Se connecter avec Microsoft
+                    </button>
                 </form>
             </div>
 
@@ -59,6 +67,7 @@
                         <label for="signup_username">Nom d'utilisateur</label>
                         <div>
                             <input type="text" class="form-item round-border" id="signup_username" required>
+                            <p id="username-validate-indicator"></p>
                         </div>
                     </div>
 
@@ -74,6 +83,7 @@
                         <div>
                             <input type="password" class="form-item round-border" id="signup_password" required>
                             <button type="button" class="round-border" id="show_signup_password">Afficher</button>
+                            <p id="password-strength-indicator"></p>
                         </div>
                     </div>
 
@@ -87,6 +97,15 @@
 
                     <button type="submit" class="round-border">Créer un compte</button>
                     <button class="showLogin round-border" type="button">Retour à la connexion</button>
+
+                    <button class="login-with-button google form-item round-border">
+                        <img src="assets/images/google_logo.svg" alt="Google" style="width: 1.5rem; height: 1.5rem;">
+                        S'inscrire avec Google
+                    </button>
+                    <button class="login-with-button microsoft form-item round-border">
+                        <img src="assets/images/microsoft_logo.svg" alt="Microsoft" style="width: 1.5rem; height: 1.5rem;">
+                        S'inscrire avec Microsoft
+                    </button>
                 </form>
             </div>
 
@@ -115,7 +134,8 @@
     </div>
 
     <script src="/socket.io/socket.io.js"></script>
-    <script src="login.js" type="module"></script>
+    <script src="/oidc"></script>
+    <script src="connection.js" type="module"></script>
     <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
 </body>
 </html>

@@ -2,7 +2,7 @@ import { loginPlayer, registerPlayer } from "./login/main.js";
 emailjs.init("Oy9a9uSnZvDAnliA0");
 
 // Event listener for the login with google button
-document.querySelector('.google').addEventListener('click', async () => {
+document.querySelectorAll('.google').forEach( (googleButton) => googleButton.addEventListener('click', async () => {
     try {
         const redirect_uri = await fetch('/redirectUri');
         const redirect_uri_data = await redirect_uri.json();
@@ -25,16 +25,16 @@ document.querySelector('.google').addEventListener('click', async () => {
     } catch (error) {
         console.error('Error when opening login with google popup:', error);
     }
-});
+}));
 
 
-document.querySelector('.microsoft').addEventListener('click', async () => {
+document.querySelectorAll('.microsoft').forEach( (microsoftButton) => microsoftButton.addEventListener('click', async () => {
     const clientId = 'ed4adea3-500d-4db7-b5da-1e4fee5bd6a1';
     const redirectUriResponse = await fetch("/redirectUriMicrosoft");
     const redirectUriData = await redirectUriResponse.json();
     const authUrl = `https://login.microsoftonline.com/common/oauth2/v2.0/authorize?client_id=${clientId}&response_type=code&redirect_uri=${redirectUriData.redirect_uri}&scope=https://graph.microsoft.com/user.read`;
     window.location.href = authUrl;
-});
+}));
 
 
 document.addEventListener('DOMContentLoaded', function () {

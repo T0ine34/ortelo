@@ -1,10 +1,24 @@
+@media not all and (prefers-color-scheme: dark) {
+    :root{
+        --background-color : #FFFFFF;
+        --border-color : #000000;
+        --accent-color : rgba(84, 146, 246, 0.69);
+        --detail-color : #888888;
+    }
+}
+
+@media (prefers-color-scheme: dark){
+    :root{
+        --background-color : rgb(43, 42, 51);
+        --border-color : #FFFFFF;
+        --accent-color : rgba(84, 146, 246, 0.69);
+        --detail-color : #888888;
+    }
+}
+
 html, body {
     padding: 0;
     margin: 0;
-    overflow: hidden;
-}
-
-body {
     background-color: var(--background-color);
     color: var(--border-color);
 }
@@ -13,81 +27,31 @@ body {
     display: flex;
     justify-content: center;
     align-items: center;
-    flex-direction: column ;
+    flex-direction: column;
     margin: 0;
     padding: 0;
-    min-height: 100vh;
+    min-height: 96vh;
     width: 100%;
 }
 
 .head {
-    min-width: 50%;
-    display: flex;
-    justify-content: center;
-}
-
-.head header {
-    width: 100%;
     display: flex;
     justify-content: center;
     align-items: center;
 }
 
 .head figure {
-    width: 100%;
     display: flex;
-    justify-content: center;
-    align-items: center;
 }
 
-img {
-    height: auto;
-    width: 100%;
-}
-
-#login, #register, #forgot-password {
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    width: 100%;
-    height: 100%;
-    font-size: 0.65rem;
-}
-
-#login header, #register header, #forgot-password header {
-    margin: auto;
-    text-align: center;
-}
-
-form {
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    margin: auto;
-    width: 100%;
-}
-
-form button {
-    margin-top: 0.55rem;
-    height: 1.45rem;
-}
-
-.center-content {
-    display: flex;
-    justify-content: center;
-    align-items: center;
+.app_banner {
     width: 70%;
-    height: 100%;
+    margin: 0 auto;
 }
 
-.form-item {
-    width: 70%;
-    height: 1.7rem;
-}
+.head header { width: 100%; }
 
-.form-group {
-    padding: 0.60rem;
-}
+main { width: 80%; }
 
 .round-border {
     border-width: 1px;
@@ -95,36 +59,99 @@ form button {
     border-radius: 0.8em;
 }
 
-@media (orientation: landscape) {
-    html {
-        overflow: scroll;
-    }
+#login, #register {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    margin: 0 auto;
+}
 
-    .head {
-        height: 20%;
-    }
+#login, #register { max-width: 100%; }
+#forgot-password, #forgot-password-form {
+    display: flex;
+    justify-content: center;
+    flex-direction: column;
+    margin: 0 auto;
+    max-width: 100%;
+}
 
-    figure {
-        margin: 0;
-    }
-    img {
-        width: 50%;
-        height: auto;
-    }
+#login header, #register header, #forgot-password header {
+    margin: auto;
+    text-align: center;
+}
 
-    #login, #register, #forgot-password {
-        height: 90%;
-        font-size: 0.5rem;
-    }
+.join-with { box-shadow: 0 1px 2px 0 rgba(255, 228, 228, 0.09); }
 
-    .form-item {
-        width: 70%;
-        height: 1.1rem;
-    }
+#login-form, #signup-form {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    margin: auto;
+}
 
-    form button {
-        margin-top: 0.5rem;
-        height: 1.2rem;
-    }
+.login-with-button {
+    height: 10%;
+    display: flex;
+    background-color: #fff;
+    align-items: center;
+    width: 100%;
+    border: none;
+    transition: all 0.25s ease-in-out;
+}
+.login-with-button:hover { 
+    cursor: pointer;
+    background-color: #dbdbdb;
+}
+            
+#login .form-group { margin-bottom: 15px; }
+.form-group { flex: 0 0 50%; }
 
+input[type="text"], input[type="email"], input[type="password"], button[type="submit"], button[type="button"] {
+    padding: 8px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+}
+
+input[type="checkbox"] {
+    width: auto;
+    margin: auto;
+}
+            
+button[type="button"],
+button[type="submit"] {
+    cursor: pointer;
+    background-color: #007bff;
+    color: #fff;
+    border: none;
+    margin-bottom: 2px;
+    margin-top: 2px;
+    border-radius: 5px;
+    transition: all 0.25s ease-in-out;
+}
+
+            
+button[type="button"]:hover,
+button[type="submit"]:hover {
+    background-color: #5aa9ff;
+    transition: all 0.25s ease-in-out;
+}
+
+.form-columns {
+    display: flex;
+    flex-wrap: wrap;
+}
+
+.login-with-button {
+    background-color: #bcbcbc;
+    border: none;
+    color: #fff;
+    margin-bottom: 2px;
+    margin-top: 4px;
+    border-radius: 5px;
+    transition: all 0.25s ease-in-out;
+}
+
+.form-item {
+    width: auto;
 }
