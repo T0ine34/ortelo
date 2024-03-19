@@ -24,7 +24,8 @@
 	},
 	"scripts": {
 		"start": "npx nodemon launcher.js",
-		"document": "npx jsdoc -c jsdoc.config --verbose"
+		"document": "npx jsdoc -c jsdoc.config --verbose",
+		"doc": "jsdoc2md ./server_modules/cmd/main.js"
 	},
 	"nodemonConfig": {
 		"ignore": [
@@ -34,5 +35,8 @@
 			"docs/"
 		],
 		"ext": "js json game"
+	},
+	"devDependencies": {
+		"jsdoc-to-markdown": "^8.0.1"
 	}
 }

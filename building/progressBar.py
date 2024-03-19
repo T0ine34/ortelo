@@ -28,4 +28,11 @@ class ProgressBar:
         self.erase()
         print(*values, sep = sep, end = end)
         self.draw()
-        
+    
+    def __iadd__(self, other : int):
+        self.update(self.current + other)
+        return self
+    
+    def __isub__(self, other : int):
+        self.update(self.current - other)
+        return self
