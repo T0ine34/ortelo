@@ -48,3 +48,6 @@ games: game/* clear_games #build all games
 # generic rule for all games
 %: game/%/*
 	$(PYTHON) building/game-assemble.py --game game/$@
+
+doc:
+	$(PYTHON) building/doc.py

@@ -3,6 +3,7 @@
 /logs
 .vscode
 /docs
+/mdDocs
 *.db
 build.bat
 build.sh
