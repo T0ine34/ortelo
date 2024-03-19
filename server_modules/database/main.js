@@ -35,6 +35,7 @@ class Database {
      * @author Lila Brandon
      * @description Base function for database module. <br>
      * Creates a new database file if there isn't one already.
+     * @name load
      */
     #load() {
         logger.fine("Loading database...")
@@ -55,6 +56,7 @@ class Database {
      * @author Lila BRANDON
      * @description This will look for the SQL script used .
      * to create all tables in case the database file doesn't exsist already.
+     * @name createTables
      */
     #createTables() {
         let createTables = fs.readFileSync(settings.get("database.createTablesPath"), 'utf8');
@@ -188,7 +190,7 @@ class Database {
     /**
      * Gets the player's idp List from the database.
      * @param {string} email the player's email address
-     * @returns 
+     * @returns a promise containing the player's idpList
      */
     getPlayerIdPList(email){
         return new Promise(async (resolve, reject) => {
@@ -469,6 +471,7 @@ class Database {
      * @description Generates a random key for AES encryption algorithm.
      * @param {int} length Length of the key to generate.
      * @returns {string} The generated key.
+     * @name generateRandomKey
      */
     #generateRandomKey(length) {
         const characters = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
