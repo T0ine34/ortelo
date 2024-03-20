@@ -5,6 +5,9 @@ class ProgressBar:
         self.last = 0
         self.width = width
         
+    def setTotal(self, total):
+        self.total = total
+        
     def update(self, current):
         self.current = current
         if self.current > self.total:

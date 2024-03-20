@@ -9,6 +9,12 @@ from progressBar import ProgressBar
 
 from threadManager import Task, ThreadManager
 
+PROGRESS = ProgressBar()
+
+def callback(file):
+    global PROGRESS
+    PROGRESS += 1
+
 class Config:
     def __init__(self, path):
         with open(path, "r") as file:
@@ -44,8 +50,6 @@ def docFile(file, outputFolder, callback : Callable|None = None):
     if not os.path.exists(outputFolder + "\\" + outputName):
         open(outputFolder + "\\" + outputName, "w").close()
     
-    # os.system(f"npx jsdoc2md {file} > {outputFolder}\\{outputName}")
-    #same bug getting the output in a variable
     output = sp.run(f"npx jsdoc2md {file}", shell=True, stdout=sp.PIPE).stdout.decode("utf-8")
     with open(outputFolder + "\\" + outputName, "a", encoding="utf-8") as file:
         file.write(output)
@@ -77,7 +81,8 @@ def scan(source : dict):
                 break
     return result
     
-def main(configFile):    
+def main(configFile):   
+    global PROGRESS 
     if not os.path.exists(configFile):
         raise FileNotFoundError(f"Config file {configFile} not found")
     config = Config(configFile)
@@ -87,25 +92,23 @@ def main(configFile):
     mainFile = config["opts"]["readme"]
     
     shutil.rmtree(outputFolder, ignore_errors=True)
+    os.makedirs(outputFolder)
     
     print(len(files), "files found")
     
-    progress = ProgressBar(len(files))
-    def callback(file):
-        nonlocal progress
-        progress += 1
-        # progress.print("Parsed ", file)
+    PROGRESS.setTotal(len(files))
+    PROGRESS.draw()
     
-    TM = ThreadManager(10)
+    TM = ThreadManager()
     
     for file in files:
         # docFile(file, outputFolder, callback)
-        TM.add(docFile, (file, outputFolder, callback))
+        TM.add(docFile, (file, outputFolder), callback=callback)
     TM.run()
     
     shutil.copy(mainFile, outputFolder+"\\home.md")
     
-    progress.erase()
+    PROGRESS.erase()
     print("Done")
     
 if __name__ == "__main__":
