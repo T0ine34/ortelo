@@ -13,7 +13,8 @@ all:
 	@echo 	make client-test 	- run the client tests
 	@echo 	make games		- build all games
 	@echo 	make clear_games 	- delete all .game files in public/commmon/games witch they are not a folder with the same name in game/
-	@echo 	make <game_name> 	- build a specific game
+	@echo 	make game_name 		- build a specific game
+	@echo 	make doc		- generate the documentation
 
 test: server-test client-test
 
