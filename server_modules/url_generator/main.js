@@ -9,8 +9,9 @@ class URLGenerator {
 
     /**
      * Generates a random URL for a room.
+     * @param {string} prefix the prefix of the URL
      * @param {string} name the game name
-     * @returns a string of 25+(length of name) characters
+     * @returns {string} a string of 25+(length of name) characters
      * @static
      */
     static genURL(prefix, name) {
