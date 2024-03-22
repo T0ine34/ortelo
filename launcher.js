@@ -38,7 +38,7 @@ const STEPS = { //define steps here
 // if required is false, the step will be skipped if it fails
 // if required is true, the app will exit if the step fails
 STEPS.updateDatabase.required = false;
-SETPS.obfuscateCode.required = false;
+STEPS.obfuscateCode.required = false;
 STEPS.startServer.required = true;
 
 
