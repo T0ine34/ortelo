@@ -2,7 +2,7 @@ const { spawnSync } = require('child_process');
 const { obfuscation } = require("./obfusc");
 
 const python = process.platform === 'win32' ? 'python' : 'python3';
-
+const node = 'node';
 /**
  * Run a process from the command line, printing stdout and stderr to the console.
  * Waits for the process to exit before returning.
