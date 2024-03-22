@@ -1,7 +1,6 @@
 const { spawnSync } = require('child_process');
 
 const python = process.platform === 'win32' ? 'python' : 'python3';
-
 /**
  * Run a process from the command line, printing stdout and stderr to the console.
  * Waits for the process to exit before returning.
@@ -19,7 +18,13 @@ const STEPS = { //define steps here
     updateDatabase : function(){
         return runProcess(python, ['building/database.py']);
     },
-
+    obfuscateCode : function() {
+        if (process.env.OrteloDEPLOY) {
+            return runProcess('node', ['obfusc.js' ,'public'])
+        } else {
+            return 0
+        }
+    },
     startServer : function(){
         return runProcess('node', ['server.js']);
     }
@@ -29,6 +34,7 @@ const STEPS = { //define steps here
 // if required is false, the step will be skipped if it fails
 // if required is true, the app will exit if the step fails
 STEPS.updateDatabase.required = false;
+STEPS.obfuscateCode.required = false;
 STEPS.startServer.required = true;
 
 

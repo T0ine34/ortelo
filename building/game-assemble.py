@@ -1,5 +1,7 @@
 import sys
 import os
+import shutil
+import subprocess
 from zipfile import ZipFile
 
 from config import Config
@@ -53,7 +55,13 @@ class Game:
             if key not in ["name", "version", "description"]:
                 if not exists(path, self.path):
                     raise FileNotFoundError("File %s not found" % path)
-    
+
+    def obfusc(self, p=None, tmp_path=None):
+        if tmp_path is None:
+            subprocess.check_call(["node", "obfusc.js", "public"])
+        else:
+            shutil.copyfile(os.path.join(self.path, p), tmp_path)
+
     
     def build(self, output_folder):
         # compress all files listed in index.json in a zip file name name.game
@@ -69,7 +77,17 @@ class Game:
         with ZipFile(path, "w") as zip:
             for key, p in flat.items():
                 if key not in ["name", "version", "description"]:
-                    zip.write(os.path.join(self.path, p), p)
+                    if ".js" == p[-3:]:
+                        #depend of windows and linux
+                        tmp_value = os.environ.get('TMP', '/tmp')
+                        tmp_path = os.path.join(tmp_value, p)
+                        open(tmp_path, "w", encoding="utf8").close()
+                        self.obfusc(p, tmp_path)
+                        zip.write(tmp_path, p)
+                        os.remove(tmp_path)
+                    else:
+                        zip.write(os.path.join(self.path, p), p)
+
             zip.write(os.path.join(self.path, "index.json"), "index.json")
     
     
