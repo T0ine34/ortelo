@@ -75,7 +75,6 @@ function obfuscation (command){
                 compact: true,
                 controlFlowFlattening: true
             });
-
             fs.writeFileSync(jsFilePath, obfuscationResult.getObfuscatedCode());
         });
     } catch (err) {
