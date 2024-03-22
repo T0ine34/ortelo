@@ -22,7 +22,7 @@ const STEPS = { //define steps here
     },
     obfuscateCode : function() {
         if (process.env.OrteloDEPLOY) {
-            return runProcess(node, ['public'])
+            return runProcess(node, ['obfusc.js public'])
         } else {
             return 0
         }
