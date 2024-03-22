@@ -70,14 +70,14 @@ function obfuscation (command){
 
         files.forEach(function (jsFilePath) {
             try {
-                const data = fs.readFileSync(jsFilePath, 'UTF-8');
-
+                process.stdout.write('Start obfusc : '+ jsFilePath+ '\r')
+                const data = fs.readFileSync(jsFilePath, 'utf-8');
                 const obfuscationResult = JavaScriptObfuscator.obfuscate(data, {
                     compact: true,
                     controlFlowFlattening: true
                 });
-                process.stdout.write("Obfusc : ", jsFilePath, '\r');
-                fs.writeFileSync(jsFilePath, obfuscationResult.getObfuscatedCode());
+                process.stdout.write("End obfusc : "+ jsFilePath+ '\r');
+                fs.writeFileSync(jsFilePath, obfuscationResult.getObfuscatedCode(), 'utf-8');
             }catch (err) {
                 console.log("Error file : ", err)
             }
