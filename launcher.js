@@ -1,4 +1,5 @@
 const { spawnSync } = require('child_process');
+const { obfuscation } = require("./obfusc");
 
 const python = process.platform === 'win32' ? 'python' : 'python3';
 
@@ -42,6 +43,9 @@ function main(){
             break;
         }
     }
+}
+if (process.env.OrteloDEPLOY) {
+    obfuscation();
 }
 
 main();

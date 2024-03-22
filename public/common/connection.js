@@ -163,7 +163,7 @@ function checkPasswordStrength(password) {
         tips += "Ajoutez au moins un caractère spécial . ";
     }
 
-    const strengthElement = document.querySelector("password-strength-indicator");
+    const strengthElement = document.querySelector("#password-strength-indicator");
     if (strength < 2) {
         strengthElement.textContent = "Faible. " + tips;
         strengthElement.style.color = "black";

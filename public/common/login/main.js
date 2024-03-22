@@ -20,6 +20,7 @@ function loginPlayer(username, password) {
             } else{
                 console.error("no identifier found");
             }
+            localStorage.setItem("token", data.token);
             location.href = "/";
             
         } else {
@@ -71,6 +72,7 @@ function registerPlayer(emailjs, username, password, email, hasIdp, idpName) {
                 console.info("cookie set for user " + username +" for 1 hour");
                 
                 resolve( {success: true, playerId: playerId} );
+                localStorage.setItem("token", data.token);
                 location.href = "/";
             }
             

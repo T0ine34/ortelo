@@ -23,9 +23,11 @@ const bodyParser = require('body-parser');
 const vm = require('vm');
 const mailer = require('@emailjs/browser');
 const rateLimit = require("express-rate-limit");
+const jwt = require('jsonwebtoken');
+const helmet = require('helmet');
 
 let logger = new Logger();
-
+const JWT_SECRET = 'eR3y8D9zC2wB5pN7qS1tV8xM6jH4kF0gR2uL5vA3fH6yQ9xZ';
 // -------------------------------------------------------------------- SERVER INITIALIZATION
 logger.debug("intitializing express app");
 const app = express();
@@ -45,7 +47,36 @@ app.use(bodyParser.urlencoded({ extended: false }));
 
 mailer.init("Oy9a9uSnZvDAnliA0");
 
+//contre les attaques XSS
+app.use(helmet({
+    contentSecurityPolicy: {
+        directives: {
+            defaultSrc: ["'self'"],
+            scriptSrc: ["'self'", "https://cdn.jsdelivr.net", "'unsafe-inline'"],
+            connectSrc: ["'self'", "https://api.qrserver.com/", "https://accounts.google.com"],
+            imgSrc: ["'self'", "data:", "https://api.qrserver.com/"],
+        }
+    }
+}));
+const verifyToken = (req, res, next) => {
+    const bearerHeader = req.headers['authorization'];
 
+    if (typeof bearerHeader !== 'undefined') {
+        const bearer = bearerHeader.split(' ');
+        const bearerToken = bearer[1];
+
+        jwt.verify(bearerToken, JWT_SECRET, (err, authData) => {
+            if (err) {
+                res.sendStatus(403);
+            } else {
+                req.user = authData;
+                next();
+            }
+        });
+    } else {
+        res.sendStatus(401);
+    }
+};
 // -------------------------------------------------------------------- SERVER CONFIGURATION
 
 /**
@@ -54,20 +85,23 @@ mailer.init("Oy9a9uSnZvDAnliA0");
  * @param {string} username - Name of the user initiating the game.
  * @returns {JSON} - JSON object with room URL and a message.
  */
-app.get('/game-start/:gameName/:username', async (req, res) => {
+app.get('/game-start/:gameName/:username', verifyToken, async (req, res) => {
+
+    // verif data in the request
     const gameName = req.params.gameName.toLowerCase();
     const username = req.params.username;
     if (!gameName || typeof gameName !== 'string' || !username || typeof username !== 'string') {
         return res.status(400).json({message: 'Invalid input.'});
     }
+
     try {
         const user = users.get(username);
         if (!user) {
             return res.status(404).json({message: `${username} does not exist.`});
         }
 
+        //add the user to his new room & chat
         let room = new Room(gameName, username);
-
         room.addUser(user);
         user.leave(rooms.get(general));
         msg = `${username} à rejoint le chat du jeu.`;
@@ -75,18 +109,20 @@ app.get('/game-start/:gameName/:username', async (req, res) => {
         room.on(EVENTS.CHAT.MESSAGE, (timestamp, username, msg) => {
             room.transmit(EVENTS.CHAT.MESSAGE, Date.now(), username, msg);
         });
+
+        //create an unic url for joining the room
         let urlExist = true
         let roomUrl;
         while (urlExist) {
             roomUrl = URLGenerator.genURL('game', gameName);
             urlExist = await database.doGameURLExists(roomUrl)
         }
-
         gameRooms.set(roomUrl, room);
 
-        res.json({roomUrl: roomUrl, message: `Game ${gameName} initiated. Waiting for second player.`});
         const creategame = await database.createGameRoom(gameName, username, roomUrl, 2);
+
         logger.info(`Creation of game ${gameName}, with url ${roomUrl} : ${creategame}`)
+        return res.json({roomUrl: roomUrl, message: `Game ${gameName} initiated. Waiting for second player.`});
     } catch (error) {
         logger.info(`Internal server error : ${error.message}`)
         return res.status(500).json({ message: 'Internal server error.', error: error.message });
@@ -98,15 +134,15 @@ app.get('/game-start/:gameName/:username', async (req, res) => {
  * @param {string} roomUrl - URL of the game room.
  * @returns {JSON} - JSON object with a message about the room's status.
  */
-app.get('/game-wait/game/:roomUrl', async (req, res) => {
-
+app.get('/game-wait/game/:roomUrl', verifyToken, async (req, res) => {
+    // verif data in the request
     let roomUrl = req.params.roomUrl;
     if (!roomUrl || typeof roomUrl !== 'string') {
         return res.status(400).json({ message : 'Invalid URL.' });
     }
     try {
+        //verif if room is valid
         let room = gameRooms.get("game/"+roomUrl);
-
         if (!room) {
             return res.status(404).json({message : `The room ${roomUrl} does not exist.`});
         } else if (room.users.size < 2) {
@@ -115,8 +151,12 @@ app.get('/game-wait/game/:roomUrl', async (req, res) => {
         if (room.run) {
             return res.json({ message: `Game ${room.name} already running successfully.` });
         }
+
+        //fetch game's data
         const game = gameLoader.gamesData[room.name];
         const serverScriptContent = new TextDecoder('utf-8').decode(new Uint8Array(game.serverData));
+
+        //start game's server in sandbox
         const sandbox = {
             require: require,
             console: console,
@@ -131,10 +171,10 @@ app.get('/game-wait/game/:roomUrl', async (req, res) => {
         if (typeof sandbox[room.name] === 'function') {
             sandbox[room.name](room);
             room.run= true;
-            res.json({ message: `Game ${room.name} started successfully.` });
+            return res.json({ message: `Game ${room.name} started successfully.` });
         } else {
             logger.error('Starter function not found in server script.')
-            res.status(500)
+            return res.status(500)
         }
     } catch (error) {
         logger.info(`Internal server error : ${error.message}`)
@@ -148,27 +188,28 @@ app.get('/game-wait/game/:roomUrl', async (req, res) => {
  * @param {string} username - Username of the player joining.
  * @returns {JSON} - JSON object with a success message.
  */
-app.get('/gameUrl/:roomUrl/:username', (req, res) => {
+app.get('/gameUrl/:roomUrl/:username', verifyToken, (req, res) => {
+    // verif data in the request
     const roomUrl = 'game/'+req.params.roomUrl;
     const username = req.params.username;
     if (!roomUrl || typeof roomUrl !== 'string' || !username || typeof username !== 'string') {
         return res.status(400).json({ message : 'Invalid input.' });
     }
     try {
-        const user = users.get(username);
-
-        if (!user) {
-            return res.status(404).json({ message : `User ${username} does not exist.` });
-        }
-
+        //verif room
         let room = gameRooms.get(roomUrl);
-
         if (!room) {
             return res.status(404).json({ message : `The room ${roomUrl} does not exist.` });
         }
 
+        //verif user
+        const user = users.get(username);
+        if (!user) {
+            return res.status(404).json({ message : `User ${username} does not exist.` });
+        }
         const usersArray = Array.from(room.users.values());
         const usernameExists = usersArray.some(user => user.username === username);
+        //if reconnect after disconnection
         if (usernameExists) {
             const lastuser = usersArray.find(user => user.username === username);
             room.removeUser(lastuser);
@@ -178,7 +219,7 @@ app.get('/gameUrl/:roomUrl/:username', (req, res) => {
 
             msg = `${username} is back in the game chat.`;
             room.emit(EVENTS.CHAT.SERVER_MESSAGE, Date.now(), msg);
-            res.json({message : `${username} joined game room ${roomUrl} successfully`});
+            return res.json({message : `${username} joined game room ${roomUrl} successfully`});
         } else {
             if (room.users && room.users.size >= 2) {
                 return res.status(403).json({ message : `The room ${roomUrl} is full.` });
@@ -188,7 +229,7 @@ app.get('/gameUrl/:roomUrl/:username', (req, res) => {
             user.leave(rooms.get(general));
             msg = `${username} à rejoint le chat du jeu.`;
             room.emit(EVENTS.CHAT.SERVER_MESSAGE, Date.now(), msg);
-            res.json({message : `${username} joined game room ${roomUrl} successfully`});
+            return res.json({message : `${username} joined game room ${roomUrl} successfully`});
         }
     } catch (error) {
         logger.info(`Internal server error : ${error.message}`)
@@ -201,14 +242,16 @@ app.get('/gameUrl/:roomUrl/:username', (req, res) => {
  * @param {string[]} [fields] - Optional. Specific fields to retrieve.
  * @returns {JSON} - JSON array of game information.
  */
-app.get('/games-info', (req, res) => {
+app.get('/games-info', verifyToken, (req, res) => {
     try {
+        //fetch all games data
         const gamesData = gameLoader.gamesData;
         const fields = req.query.x ? req.query.x.split(',') : null;
         const specificGameKey = Object.keys(req.query).find(key => key !== 'x' && gamesData[key]);
         const specificGameData = specificGameKey ? gamesData[specificGameKey] : null;
 
         let gameInfos = [];
+        //specific games or all depending on the fields
         if (fields) {
             gameInfos = Object.values(gamesData).map(game => getGameInfo(game, fields));
         } else if (specificGameData) {
@@ -217,7 +260,7 @@ app.get('/games-info', (req, res) => {
         } else if (specificGameKey) {
             return res.json({});
         }
-        res.json(gameInfos);
+        return res.json(gameInfos);
     } catch (error) {
         logger.info(`Internal server error : ${error.message}`)
         return res.status(500).json({ message: 'Internal server error.', error: error.message });
@@ -256,6 +299,7 @@ function getGameInfo(game, fields) {
  * @returns {HTML} - HTML content for the game.
  */
 app.get('/game/:url', (req, res) => {
+    //verif request data
     if (!req.params.url || typeof req.params.url !== 'string') {
         return res.status(400).json({ message : 'Invalid URL.' });
     }
@@ -271,8 +315,7 @@ app.get('/game/:url', (req, res) => {
         fs.readFile(filePath, 'utf8', (err, data) => {
             if (err) {
                 console.error("Erreur lors de la lecture du fichier :", err);
-                res.status(500).send('Erreur lors du chargement du script');
-                return;
+                return res.status(500).send('Erreur lors du chargement du script');
             }
 
             res.send(`
@@ -391,10 +434,10 @@ app.post('/getAccessToken', async (req, res) => {
             body: `client_id=ed4adea3-500d-4db7-b5da-1e4fee5bd6a1&client_secret=fEY8Q~Cyt0CZGc.W28dQ3qH2DpJMz3lqXDiNkaF.&tenant=common&scope=user.read&grant_type=authorization_code&code=${req.body.code}&redirect_uri=${encodeURIComponent(`${process.env.OrteloDEPLOY ? "https://lila.vps.boxtoplay.com/" : "http://localhost:3000/"}microsoft_redirect/microsoftRedirect.html`)}`
         });
         const data = await response.json();
-        res.json(data);
+        return res.json(data);
     } catch (error) {
         console.error('Error:', error);
-        res.status(500).json({ error: 'Internal Server Error' });
+        return res.status(500).json({ error: 'Internal Server Error' });
     }
 });
 
@@ -407,6 +450,9 @@ app.post('/getAccessToken', async (req, res) => {
 app.post('/login', async (req, res) => {
     const logged = await database.login(req.body.username, req.body.password, req.body.hasIdp == true ? req.body.hasIdp : false, req.body.idpName ? req.body.idpName : null);
     logger.info(`Logging player ${req.body.username} : ${logged}`);
+    const username = req.body.username;
+    const token = jwt.sign({ username }, JWT_SECRET, { expiresIn: '24h' });
+    logged.token = token;
     return res.send(logged);
 });
 
@@ -431,7 +477,9 @@ app.post('/register', async (req, res) => {
     const host = req.get('host');
     const protocol = req.protocol;
     const fullUrl = `${protocol}://${host}`;
-    return res.send({ created: created, email_url: email_url, host_url: fullUrl, playerId: response.playerId });
+    const username = req.body.username;
+    const token = jwt.sign({ username }, JWT_SECRET, { expiresIn: '24h' });
+    return res.send({ created: created, email_url: email_url, host_url: fullUrl, playerId: response.playerId, token:token });
 });
 
 
