@@ -28,11 +28,6 @@
     }
 }
 
-html{
-    box-sizing: border-box;
-    scroll-behavior: smooth;
-}
-
 body{
     background-color: var(--background-color);
     color: var(--border-color);
