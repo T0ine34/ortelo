@@ -1,7 +1,6 @@
 const { spawnSync } = require('child_process');
 
 const python = process.platform === 'win32' ? 'python' : 'python3';
-const node = 'node';
 /**
  * Run a process from the command line, printing stdout and stderr to the console.
  * Waits for the process to exit before returning.
@@ -21,7 +20,7 @@ const STEPS = { //define steps here
     },
     obfuscateCode : function() {
         if (process.env.OrteloDEPLOY) {
-            return runProcess(node, ['obfusc.js' ,'public'])
+            return runProcess('node', ['obfusc.js' ,'public'])
         } else {
             return 0
         }
