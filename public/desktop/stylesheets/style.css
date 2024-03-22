@@ -297,6 +297,10 @@ body{
     width: 40%;
 }
 
+.popup_wait_users > *{
+    pointer-events: all;
+}
+
 .roomWaitSomeUsers {
     display: flex;
     justify-content: center;
