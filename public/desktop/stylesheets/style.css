@@ -239,7 +239,7 @@ body{
     justify-content: center;
     align-items: center;
 
-    color: var(--background-color);
+    color: #000000;
     font-size: 2em;
 
     border: 1px solid var(--border-color);
@@ -286,6 +286,7 @@ body{
 }
 
 .popup_wait_users {
+    pointer-events: none;
     display: none;
     align-items: center;
     justify-content: center;

@@ -3,21 +3,34 @@
 }
 
 @media not all and (prefers-color-scheme: dark) {
-    :root{
-        --background-color : #FFFFFF;
-        --border-color : #000000;
-        --accent-color : rgba(84, 146, 246, 0.69);
-        --detail-color : #888888;
+    /* light mode */
+    :root {
+        --background-color: #FFFFFF;
+        --border-color: #000000;
+        --accent-color: rgba(84, 146, 246, 0.69);
+        --accent-color-hover: rgba(49, 127, 253, 0.9);
+        --accent-color-active: rgba(27, 75, 153, 0.9);
+        --detail-color: #aaaaaa;
+        --colored-element: #186b18;
     }
 }
 
 @media (prefers-color-scheme: dark){
+    /* dark mode */
     :root{
-        --background-color : rgb(43, 42, 51);
+        --background-color : #2b2a33;
         --border-color : #FFFFFF;
-        --accent-color : rgba(84, 146, 246, 0.69);
-        --detail-color : #888888;
+        --accent-color : #73a5f5;  /* rgba(115, 165, 245, 0.69); */
+        --accent-color-hover : #286cda; /* rgba(40, 108, 218, 0.9); */
+        --accent-color-active : #1b4b99; /* rgba(27, 75, 153, 0.9); */
+        --detail-color : #666666;
+        --colored-element: #888888;
     }
+}
+
+html{
+    box-sizing: border-box;
+    scroll-behavior: smooth;
 }
 
 body{
@@ -173,7 +186,7 @@ body{
             border-color: var(--border-color);
             border-radius: 0.8em;
             margin-left: 2.5%;
-            color: var(--border-color);
+            color: #000000;
         }
 
         .confirm{
@@ -336,7 +349,7 @@ body{
     border-radius: 20px;
     box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
     width: 90%;
-    opacity: 0.92;
+    opacity: 0.95;
     z-index: 100; /* ensure it's on top of everything */
 }
 
@@ -404,6 +417,22 @@ body{
 #roomUrl{
     opacity: 0; /* Hide the element */
     transition: opacity 0.25s linear;
+}
+
+#roomUrlQrCode{
+    color: #000000;
+    font-size: 0.75em;
+
+    border: 1px solid var(--border-color);
+    border-radius: 20px;
+    height: fit-content;
+    width: fit-content;
+    padding: 10px;
+    background-color: #fff;
+}
+
+#url{
+    font-size: 0.5em;
 }
 
 

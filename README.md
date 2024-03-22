@@ -5,7 +5,12 @@
 
 This project is a part of the SAE-S3.A.01-2023 course at IUT AIX-MARSEILLE. It is a web application that allows students to play online together. We have a some games avaliable, and we can add more games in the future.
 
+## Documentation
+
+the documentation is available in [here](https://etulab.univ-amu.fr/sae-s3.a.01-2023/sae-s3.a.01-2023-sujet02/-/wikis)
+
 ### Technologies used
+
 
 - [Node.js](https://nodejs.org/en/)
 - [Express](https://expressjs.com/) for the http server
@@ -52,6 +57,8 @@ A docker image is avaliable on docker hub. To install the server, you need to :
 
 ---
 ### Create documentation
+
+#### HTML documentation
 To create the documentation, you need to run the following command in the root folder :
 
 `npx jsdoc -c jsdoc.config`
@@ -61,6 +68,17 @@ To create the documentation, you need to run the following command in the root f
 Then,
 the documentation will be created in the `./docs` folder as an aggregate of html files.
 
+
+#### Markdown documentation
+
+To create the documentation in markdown, you need to run the following command in the root folder :
+
+`make doc`
+
+> You need to have `make` installed on your machine to run this command.
+
+Then,
+the documentation will be created in the `./mdDocs` folder as an aggregate of markdown files, including the README.md file.
 
 ## Run the tests
 To run the tests, you need to run the `make test` command in the root folder.
