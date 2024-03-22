@@ -163,7 +163,7 @@ function checkPasswordStrength(password) {
         tips += "Ajoutez au moins un caractère spécial . ";
     }
 
-    const strengthElement = document.getElementById("password-strength-indicator");
+    const strengthElement = document.querySelector("#password-strength-indicator");
     if (strength < 2) {
         strengthElement.textContent = "Faible. " + tips;
         strengthElement.style.color = "black";
@@ -207,7 +207,7 @@ function validateUsername(username) {
     }
 
     
-    const validationElement = document.getElementById("username-validate-indicator");
+    const validationElement = document.querySelector("username-validate-indicator");
     if (isValid) {
         validationElement.textContent = "Identifiant valide.";
         validationElement.style.color = "black";
