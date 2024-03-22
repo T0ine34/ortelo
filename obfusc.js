@@ -69,13 +69,18 @@ function obfuscation (command){
         }
 
         files.forEach(function (jsFilePath) {
-            const data = fs.readFileSync(jsFilePath, 'UTF-8');
+            try {
+                const data = fs.readFileSync(jsFilePath, 'UTF-8');
 
-            const obfuscationResult = JavaScriptObfuscator.obfuscate(data, {
-                compact: true,
-                controlFlowFlattening: true
-            });
-            fs.writeFileSync(jsFilePath, obfuscationResult.getObfuscatedCode());
+                const obfuscationResult = JavaScriptObfuscator.obfuscate(data, {
+                    compact: true,
+                    controlFlowFlattening: true
+                });
+                process.stdout.write("Obfusc : ", jsFilePath, '\r');
+                fs.writeFileSync(jsFilePath, obfuscationResult.getObfuscatedCode());
+            }catch (err) {
+                console.log("Error file : ", err)
+            }
         });
     } catch (err) {
         console.error("Error manipulating files : ", err);
@@ -83,4 +88,3 @@ function obfuscation (command){
 }
 
 obfuscation(command)
-module.exports = { obfuscation };
