@@ -79,12 +79,21 @@ class Database {
      */
     createPlayer(name, password, emailAddress, email_url, hasIdp, idpName){
         return new Promise(async (resolve, reject) => {
-            
-            const exists = await this.doPlayerExists(emailAddress);
-            const usernameAlreadyExists = await this.doUsernameExists(name);
-            if(usernameAlreadyExists.exists == true) name = name + ++usernameAlreadyExists.quantity;
-            if(exists == true) {
+            let EmailAlreadyExists;
+            let usernameAlreadyExists;
+            try{
+                EmailAlreadyExists = await this.doPlayerExists(emailAddress);
+                usernameAlreadyExists = await this.doUsernameExists(name);
+            } catch(err) {
+                logger.error(err);
+                resolve({"created" : false, "reason": "Error while checking if player exists"});
+            }
+            // if(usernameAlreadyExists.exists == true) name = name + ++usernameAlreadyExists.quantity;
+            if(usernameAlreadyExists == true) {
                 resolve({"created" : false, "reason": "Player already exists"});
+            }
+            if(EmailAlreadyExists == true) {
+                resolve({"created" : false, "reason": "Email already exists"});
             } else {
                 let identifier = this.#generateRandomKey(64);
                 let sql;
@@ -217,10 +226,10 @@ class Database {
             this._db.all(`SELECT playername FROM player WHERE playername='${username}';`, [], (err, rows) => {
                 if(err) {
                     logger.error(`Can not retrieve wether the username ${username} exists or no : ${err.toString()}`);
-                    resolve({exists: true, quantity: 0});
+                    throw err;
                 }
-                if(rows.length >= 1) resolve({exists: true, quantity: rows.length});
-                else resolve({exists: false});
+                if(rows.length >= 1) resolve(true);
+                else resolve(false);
             });
         });
     }
@@ -261,7 +270,7 @@ class Database {
      */
     listOnlinePlayers(callback) {
         this._db.all(`SELECT playername FROM player WHERE online='1' ORDER BY playername;`, [], (err, rows) => {
-            if(err) {
+            if (err) {
                 logger.error(`Can not fetch all online players : ${err.toString()}`);
                 return [];
             } else {

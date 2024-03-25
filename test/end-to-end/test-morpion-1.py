@@ -1,10 +1,10 @@
 from interface import Interface, Morpion
 
 with Interface() as player1, Interface() as player2:
-    player1.connect_or_register("antoine", "antoine", "antoine.buirey@gmail.com")
-    player2.connect_or_register("toto", "toto", "antoine.buirey@gmail.com")
-    
+    player1.connect_or_register("Antoine", "Antoine2", "a@example.com")
+    player2.connect_or_register("Toto", "Toto2#", "b@example.com") # password : Toto2#    
     url = player1.start_game("morpion")
+    print("Game URL :", url)
     player2.join_game(url)
     
     morpion1 = Morpion(player1.getGamesContainer())

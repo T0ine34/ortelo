@@ -22,30 +22,30 @@ def remove_user(username):
 def test_connection():
     already_exists = False
     try:
-        add_user("antoine", "antoine", "toine34.34@gmail.com")
+        add_user("Antoine", "Ru4ETRL2okiIimlWL6zrWbmozCX6XS2aLvHCca3WZHYfCHxI5MQnxLI7ZsG5nLch", "toine34.34@gmail.com")
     except: # the user already exists
         already_exists = True
     with Interface() as player:
-        player.connect("antoine", "antoine")
+        player.connect("Antoine", "Antoine2")
         assert player.is_connected()
     
     if not already_exists:
-        remove_user("antoine")
+        remove_user("Antoine")
     
 
 def test_disconnection():
     already_exists = False
     try:
-        add_user("antoine", "antoine", "toine34.34@gmail.com")
+        add_user("antoine", "Ru4ETRL2okiIimlWL6zrWbmozCX6XS2aLvHCca3WZHYfCHxI5MQnxLI7ZsG5nLch", "toine34.34@gmail.com")
     except: # the user already exists
         already_exists = True
     with Interface() as player:
-        player.connect("antoine", "antoine")
+        player.connect("Antoine", "Antoine2")
         player.disconnect()
         assert not player.is_connected()
     
     if not already_exists:
-        remove_user("antoine")
+        remove_user("Antoine")
         
         
 def main():

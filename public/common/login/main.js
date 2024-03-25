@@ -75,6 +75,11 @@ function registerPlayer(emailjs, username, password, email, hasIdp, idpName) {
                 localStorage.setItem("token", data.token);
                 location.href = "/";
             }
+            else {
+                const reason = data.reason;
+                alert(reason);
+                reject( {success: false, reason: reason} );
+            }
             
         })
         .catch(error => console.error('Can not retrieve data from register', error));

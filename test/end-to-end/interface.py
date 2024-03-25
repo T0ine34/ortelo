@@ -472,7 +472,8 @@ class Interface():
             raise GameNotFoundException()
         # Wait for the game to start
         sleep(1)
-        url = gamesContainer.find_element(By.CLASS_NAME, "roomUrlbrute").text
+        gamesContainer.find_element(By.ID, "showUrlButton").click()
+        url = gamesContainer.find_element(By.ID, "url").text
         return url
     
     def join_game(self, url):

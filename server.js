@@ -341,7 +341,8 @@ app.get('/game/:url', (req, res) => {
  * Retrieves the oidc js file
  */
 app.get('/oidc', (req, res) => {
-    return res.send(fs.readFileSync(path.join(__dirname, "node_modules", "oidc-client", "dist", "oidc-client.js"), 'utf8'));
+    return res.set('Content-Type', 'application/javascript')
+            .send(fs.readFileSync(path.join(__dirname, "node_modules", "oidc-client", "dist", "oidc-client.js"), 'utf8'));
 });
 
 app.get('/emailjs', (req, res) => {
@@ -406,7 +407,8 @@ app.get('/getId/:email', async (req, res) => {
  * @returns {String} The redirect uri
  */
 app.get('/redirectUri', async (req, res) => {
-    const redirect_uri = process.env.OrteloDEPLOY ? 'https://lila.vps.boxtoplay.com/identityprovider_login/oidcredirect.html' : 'http://localhost:3000/identityprovider_login/oidcredirect.html';
+    // const redirect_uri = process.env.OrteloDEPLOY ? 'https://lila.vps.boxtoplay.com/identityprovider_login/oidcredirect.html' : 'http://localhost:3000/identityprovider_login/oidcredirect.html';
+    const redirect_uri = 'http://localhost:3000/identityprovider_login/oidcredirect.html';
     return res.send({redirect_uri: redirect_uri});
 });
 
@@ -479,7 +481,7 @@ app.post('/register', async (req, res) => {
     const fullUrl = `${protocol}://${host}`;
     const username = req.body.username;
     const token = jwt.sign({ username }, JWT_SECRET, { expiresIn: '24h' });
-    return res.send({ created: created, email_url: email_url, host_url: fullUrl, playerId: response.playerId, token:token });
+    return res.send({ created: created, email_url: email_url, host_url: fullUrl, playerId: response.playerId, token:token, reason: response.reason });
 });
 
 

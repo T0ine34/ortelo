@@ -11,6 +11,7 @@ all:
 	@echo 	make run-image 		- run the docker image
 	@echo 	make server-test 	- run the server tests
 	@echo 	make client-test 	- run the client tests
+	@echo 	make end-to-end-test 	- run the end-to-end tests
 	@echo 	make games		- build all games
 	@echo 	make clear_games 	- delete all .game files in public/commmon/games witch they are not a folder with the same name in game/
 	@echo 	make game_name 		- build a specific game
