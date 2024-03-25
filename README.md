@@ -162,7 +162,14 @@ Note that the archive should not contain your parent folder (game) </br> But sho
 
 
 ## Contributing
-As this project is a school project, we don't accept any contribution. But you can fork the project and do whatever you want with it.
+The people that worked in this project are : </br>
+Antoine BUIREY - Product Owner </br>
+Lila BRANDON - Scrum Master </br>
+Tom DIEZ - Developper </br>
+Jébril BOUFROUR - Developper </br>
+Tanguy HORARD - Developper </br>
+
+Everyone that participated in the project is following a computer science bachelor focused on application creation and project management.
 
 ## Project status
 Currently in development, we are working on the first release.
