@@ -189,8 +189,14 @@ class Database {
                     logger.error(`Can not retrieve ${email}'s identifier : ${err.toString()}`);
                     resolve(null);
                 } else {
-                    logger.info(`Successfully retrieved ${email}'s identifier : ${row.identifier}`);
-                    resolve(row.identifier);
+                    if(row == undefined){
+                        logger.error(`Can not retrieve ${email}'s identifier : row is undefined`);
+                        resolve(null);
+                    }
+                    else {
+                        logger.info(`Successfully retrieved ${email}'s identifier : ${row.identifier}`);
+                        resolve(row.identifier);
+                    }
                 }
             });
         });
