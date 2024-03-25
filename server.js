@@ -407,8 +407,7 @@ app.get('/getId/:email', async (req, res) => {
  * @returns {String} The redirect uri
  */
 app.get('/redirectUri', async (req, res) => {
-    // const redirect_uri = process.env.OrteloDEPLOY ? 'https://lila.vps.boxtoplay.com/identityprovider_login/oidcredirect.html' : 'http://localhost:3000/identityprovider_login/oidcredirect.html';
-    const redirect_uri = 'http://localhost:3000/identityprovider_login/oidcredirect.html';
+    const redirect_uri = process.env.OrteloDEPLOY ? 'https://lila.vps.boxtoplay.com/identityprovider_login/oidcredirect.html' : 'http://localhost:3000/identityprovider_login/oidcredirect.html';
     return res.send({redirect_uri: redirect_uri});
 });
 
