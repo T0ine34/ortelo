@@ -53,7 +53,7 @@ app.use(helmet({
         directives: {
             defaultSrc: ["'self'"],
             scriptSrc: ["'self'", "https://cdn.jsdelivr.net", "'unsafe-inline'"],
-            connectSrc: ["'self'", "https://api.qrserver.com/", "https://accounts.google.com"],
+            connectSrc: ["'self'", "https://api.qrserver.com/", "https://accounts.google.com", "https://www.googleapis.com/", "https://openidconnect.googleapis.com/", "https://graph.microsoft.com/", "https://graph.microsoft.com/v1.0/me"],
             imgSrc: ["'self'", "data:", "https://api.qrserver.com/"],
         }
     }
